@@ -10,16 +10,16 @@ class FogTopo(Containernet):
     def __init__(self, max_cpu=1.0, max_mem=512) -> None:
         Containernet.__init__(self)
         self.addController('c0', controller=Controller)
-        self.emulation_core = EmulationCore(max_cpu, max_mem)
+        EmulationCore(max_cpu, max_mem)
 
 
     def addVirtualInstance(self, label:str):
-        if(label in self.emulation_core.nodes()):
+        if(label in EmulationCore.nodes()):
             raise Exception(f"Data center label already exists: {label}")
 
         datacenter = VirtualInstance(label)
         datacenter.net = self  # set reference to network
-        self.emulation_core.register(datacenter)
+        EmulationCore.register(datacenter)
         datacenter.create()
         return datacenter
         
