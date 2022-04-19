@@ -6,7 +6,7 @@ from fogbed.emulation import EmulationCore
 from fogbed.node import VirtualInstance
 
 
-class FogTopo(Containernet):
+class Fogbed(Containernet):
     def __init__(self, max_cpu=1.0, max_mem=512) -> None:
         Containernet.__init__(self)
         self.addController('c0', controller=Controller)

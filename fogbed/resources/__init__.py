@@ -1,4 +1,6 @@
+from abc import ABC, abstractmethod
 from mininet.node import Docker
+
 
 DEFAULT_RESOURCES = dict(
     tiny   = {'cu': 0.5,  'mu': 32},
@@ -9,7 +11,7 @@ DEFAULT_RESOURCES = dict(
 )
 
 
-class ResourceModel(object):
+class ResourceModel(ABC):
     TINY   = DEFAULT_RESOURCES['tiny']
     SMALL  = DEFAULT_RESOURCES['small']
     MEDIUM = DEFAULT_RESOURCES['medium']
@@ -21,19 +23,45 @@ class ResourceModel(object):
         self.max_mu = max_mu
         self.allocated_cu = 0
         self.allocated_mu = 0
-        self.allocated_containers:dict[str, Docker] = dict()
+        self.allocated_containers: list[Docker] = []
 
 
-    def allocate(self, container:Docker):
+    def allocate(self, container: Docker):
+        self.allocated_containers.append(container)
+        self.allocate_cpu(container)
+        self.allocate_memory(container)
+
+    @abstractmethod
+    def allocate_cpu(self, container: Docker):
         pass
 
+    @abstractmethod
+    def allocate_memory(self, container: Docker):
+        pass
+    
+
     def free(self, container:Docker):
+        self.allocated_containers.remove(container)
+        self.free_cpu(container)
+        self.free_memory(container)
+    
+    @abstractmethod
+    def free_cpu(self, container: Docker):
+        pass
+
+    @abstractmethod
+    def free_memory(self, container: Docker):
         pass
 
 
     def get_compute_units(self, container: Docker)->float:
         return container.params['resources']['cu']
 
+    def update_cpu_limit(self, container: Docker, cpu_period:int, cpu_quota: int):
+        if(container.resources['cpu_period'] != cpu_period or container.resources['cpu_quota'] != cpu_quota):
+            container.updateCpuLimit(cpu_quota=cpu_quota, cpu_period=cpu_period)
+            #info(f"{container.name}: update cpu_quota={cpu_quota}, cpu_op_factor={self.cpu_op_factor}\n\n")
+    
 
     
 class NotEnoughResourcesAvailable(BaseException):

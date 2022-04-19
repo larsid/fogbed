@@ -1,13 +1,13 @@
 
 from mininet.log import setLogLevel
-from fogbed.net import FogTopo
+from fogbed.net import Fogbed
 from fogbed.resources import ResourceModel
 from fogbed.resources.models import CloudResourceModel, EdgeResourceModel
 
 setLogLevel('info')
 
 if(__name__=='__main__'):
-    net = FogTopo(max_cpu=0.5)#500 000 us
+    net = Fogbed(max_cpu=0.5)#500 000 us
 
     try:  
         edge = net.addVirtualInstance('edge')
