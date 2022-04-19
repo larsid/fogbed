@@ -13,7 +13,7 @@ class Fogbed(Containernet):
         EmulationCore(max_cpu, max_mem)
 
 
-    def addVirtualInstance(self, label:str):
+    def addVirtualInstance(self, label:str) -> VirtualInstance:
         if(label in EmulationCore.nodes()):
             raise Exception(f"Data center label already exists: {label}")
 

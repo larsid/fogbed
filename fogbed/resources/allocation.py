@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Tuple
 from fogbed.emulation import EmulationCore
 
 class CPUAllocator:
@@ -6,15 +6,15 @@ class CPUAllocator:
         self.compute_single_cu = compute_single_cu
 
     
-    def calculate(self, requested_cu: float):
+    def calculate(self, requested_cu: float) -> Tuple[int, int]:
         single_cu      = self.compute_single_cu()
         cpu_percentage = single_cu * requested_cu
-        cpu_period, cpu_quota = self.calculate_cpu_cfs(cpu_percentage)
+        cpu_period, cpu_quota = self.__calculate_cpu_cfs(cpu_percentage)
 
         return cpu_period, cpu_quota
     
 
-    def calculate_cpu_cfs(self, cpu_percentage:float):
+    def __calculate_cpu_cfs(self, cpu_percentage:float):
         cpu_period = EmulationCore.cpu_period()
         cpu_quota = cpu_period * cpu_percentage
 

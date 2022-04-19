@@ -23,10 +23,10 @@ class VirtualInstance(object):
 
     def create(self):
         VirtualInstance.COUNTER += 1
-        self.switch = self.net.addSwitch(self.name, pid=hex(self._next_datacenter_dpid())[2:])
+        self.switch = self.net.addSwitch(self.name, pid=hex(self._next_process_id())[2:])
 
 
-    def addDocker(self, name:str, **params):
+    def addDocker(self, name:str, **params) -> 'Docker | None':
         self._verify_container_exists(name)
         self._set_default_params(params)
         
@@ -39,7 +39,7 @@ class VirtualInstance(object):
         self._resource_model = resource_model
     
 
-    def getComputeUnits(self):
+    def getComputeUnits(self) -> float:
         if(self._resource_model is None): return 0.0
         return self._resource_model.max_cu
 
@@ -61,7 +61,7 @@ class VirtualInstance(object):
         return [c.name for c in containers]
 
 
-    def _update_container_resources(self, container: Docker):
+    def _update_container_resources(self, container: Docker) -> 'Docker | None':
         if(self._resource_model is None): return
         
         try:
@@ -89,7 +89,7 @@ class VirtualInstance(object):
             raise Exception(f'Container {name} already exists')
 
 
-    def _next_datacenter_dpid(self):
+    def _next_process_id(self):
         global DCDPID_BASE
         DCDPID_BASE += 1
         return DCDPID_BASE

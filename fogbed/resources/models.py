@@ -37,7 +37,7 @@ class EdgeResourceModel(ResourceModel):
         pass
 
     
-    def _compute_single_cu(self)->float:
+    def _compute_single_cu(self) -> float:
         return EmulationCore.e_cpu() / EmulationCore.compute_units()
         
     
@@ -63,7 +63,7 @@ class CloudResourceModel(EdgeResourceModel):
         requested_cu = self.get_compute_units(container)
         self.allocated_cu -= requested_cu
         self._update_all_containers()
-    
+
 
     def allocate_memory(self, container: Docker):
         pass
@@ -78,7 +78,7 @@ class CloudResourceModel(EdgeResourceModel):
         cpu_op_factor = self._cpu_over_provisioning_factor()
         return (e_cpu / compute_units) * cpu_op_factor
 
-    def _cpu_over_provisioning_factor(self)->float:
+    def _cpu_over_provisioning_factor(self) -> float:
         return float(self.max_cu) / max(self.max_cu, self.allocated_cu)
     
 
