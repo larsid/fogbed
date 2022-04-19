@@ -25,8 +25,8 @@ if(__name__=='__main__'):
         cloud.addDocker('d6', resources=ResourceModel.SMALL)
         cloud.addDocker('d7', resources=ResourceModel.SMALL)
         
-        #print(edge.getStatus())
-        #print(cloud.getStatus())
+        print(edge)
+        print(cloud)
 
         net.addLink(edge, cloud, delay='100ms', bw=1)
         net.start()

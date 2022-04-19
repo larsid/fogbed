@@ -35,6 +35,20 @@ class VirtualInstance(object):
         return container
 
 
+    def removeDocker(self, name: str):
+        if(name not in self.containers):
+            raise Exception(f'Container with name {name} not found')
+        
+        container = self.containers[name]
+
+        if(self._resource_model is not None):
+            self._resource_model.free(container)
+        
+        self.net.removeLink(link=None, node1=container, node2=self.switch)
+        self.net.removeDocker(name)
+        del self.containers[name]
+
+
     def assignResourceModel(self, resource_model: ResourceModel):
         self._resource_model = resource_model
     
@@ -44,7 +58,7 @@ class VirtualInstance(object):
         return self._resource_model.max_cu
 
 
-    def getStatus(self) -> str:
+    def __str__(self) -> str:
         max_cu = self._resource_model.max_cu
         max_mu = self._resource_model.max_mu
 
