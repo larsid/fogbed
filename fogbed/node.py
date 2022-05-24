@@ -1,3 +1,4 @@
+from typing import List
 from mininet.net import Containernet
 from mininet.node import Switch, Docker
 from mininet.log import info
@@ -12,8 +13,8 @@ class VirtualInstance(object):
     '''
     COUNTER = 1
 
-    def __init__(self, label:str) -> None:
-        self.net:Containernet               = None
+    def __init__(self, label:str, net: Containernet) -> None:
+        self.net                            = net
         self.label                          = label
         self.name                           = f'dc{VirtualInstance.COUNTER}'
         self.containers:dict[str, Docker]   = {}
@@ -69,7 +70,7 @@ class VirtualInstance(object):
 
 
 
-    def _all_containers_names(self) -> 'list[str]':
+    def _all_containers_names(self) -> List[str]:
         host_is_docker = lambda host: isinstance(host, Docker)
         containers = list(filter(host_is_docker, self.net.hosts))
         return [c.name for c in containers]

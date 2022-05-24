@@ -38,7 +38,7 @@ class EdgeResourceModel(ResourceModel):
 
     
     def _compute_single_cu(self) -> float:
-        return EmulationCore.e_cpu() / EmulationCore.compute_units()
+        return EmulationCore.max_cpu() / EmulationCore.compute_units()
         
     
     
@@ -73,7 +73,7 @@ class CloudResourceModel(EdgeResourceModel):
 
     
     def _compute_single_cu(self) -> float:
-        e_cpu = EmulationCore.e_cpu()
+        e_cpu = EmulationCore.max_cpu()
         compute_units = EmulationCore.compute_units()
         cpu_op_factor = self._cpu_over_provisioning_factor()
         return (e_cpu / compute_units) * cpu_op_factor

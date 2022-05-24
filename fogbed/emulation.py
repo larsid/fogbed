@@ -8,7 +8,7 @@ _emulation_core = {
     'max_mem': 512,
 }
 
-_nodes: 'dict[str, VirtualInstance]' = {}
+_nodes: Dict[str, VirtualInstance] = {}
 
 class EmulationCore:
     '''Essa classe possibilita o acesso das variaveis globais do ambiente de emulacao'''
@@ -33,7 +33,7 @@ class EmulationCore:
         return _emulation_core['cpu_period']
 
     @staticmethod
-    def e_cpu() -> float:
+    def max_cpu() -> float:
         '''Retorna o percentual de CPU disponivel para emulacao'''
         return _emulation_core['max_cpu']
 

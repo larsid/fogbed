@@ -9,12 +9,10 @@ class CPUAllocator:
     def calculate(self, requested_cu: float) -> Tuple[int, int]:
         single_cu      = self.compute_single_cu()
         cpu_percentage = single_cu * requested_cu
-        cpu_period, cpu_quota = self.__calculate_cpu_cfs(cpu_percentage)
-
-        return cpu_period, cpu_quota
+        return self.__calculate_cpu_cfs(cpu_percentage)
     
 
-    def __calculate_cpu_cfs(self, cpu_percentage:float):
+    def __calculate_cpu_cfs(self, cpu_percentage:float) -> Tuple[int, int]:
         cpu_period = EmulationCore.cpu_period()
         cpu_quota = cpu_period * cpu_percentage
 

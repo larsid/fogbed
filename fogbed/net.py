@@ -17,8 +17,7 @@ class Fogbed(Containernet):
         if(label in EmulationCore.nodes()):
             raise Exception(f"Data center label already exists: {label}")
 
-        datacenter = VirtualInstance(label)
-        datacenter.net = self  # set reference to network
+        datacenter = VirtualInstance(label, net=self)
         EmulationCore.register(datacenter)
         datacenter.create()
         return datacenter
