@@ -18,7 +18,7 @@ class ResourceModel(ABC):
     LARGE  = DEFAULT_RESOURCES['large']
     XLARGE = DEFAULT_RESOURCES['xlarge']
 
-    def __init__(self, max_cu: float, max_mu: float) -> None:
+    def __init__(self, max_cu: float, max_mu: int) -> None:
         self.max_cu = max_cu
         self.max_mu = max_mu
         self.allocated_cu = 0
@@ -54,8 +54,11 @@ class ResourceModel(ABC):
         pass
 
 
-    def get_compute_units(self, container: Docker)->float:
+    def get_compute_units(self, container: Docker) -> float:
         return container.params['resources']['cu']
+    
+    def get_memory_units(self, container: Docker) -> int:
+        return container.params['resources']['mu']
 
     def update_cpu_limit(self, container: Docker, cpu_period:int, cpu_quota: int):
         if(container.resources['cpu_period'] != cpu_period or container.resources['cpu_quota'] != cpu_quota):

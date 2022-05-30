@@ -36,8 +36,17 @@ class EmulationCore:
     def max_cpu() -> float:
         '''Retorna o percentual de CPU disponivel para emulacao'''
         return _emulation_core['max_cpu']
+    
+    @staticmethod
+    def max_memory() -> int:
+        return _emulation_core['max_mem']
 
     @staticmethod
-    def compute_units() -> float:
-        '''Retorna a quantidade total de CUs disponivel nos datacenters'''
+    def get_all_compute_units() -> float:
+        '''Retorna a soma de CUs disponivel nos datacenters'''
         return sum([dc.getComputeUnits() for dc in _nodes.values()])
+
+    @staticmethod
+    def get_all_memory_units() -> int:
+        '''Retorna a soma da memoria disponivel nos datacenters'''
+        return sum([dc.getMemoryUnits() for dc in _nodes.values()])

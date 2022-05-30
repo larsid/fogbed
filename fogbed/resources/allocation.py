@@ -18,3 +18,15 @@ class CPUAllocator:
 
         if(cpu_quota < 1000): cpu_quota = 1000
         return int(cpu_period), int(cpu_quota)
+
+
+class MemoryAllocator:
+    def __init__(self, compute_single_mu: Callable[[], float]) -> None:
+        self.compute_single_mu = compute_single_mu
+
+    def calculate(self, requested_mu: int) -> int:
+        single_mu      = self.compute_single_mu()
+        memory_limit   = single_mu * requested_mu
+
+        if(memory_limit < 4): memory_limit = 4
+        return int(memory_limit * 1024 * 1024)

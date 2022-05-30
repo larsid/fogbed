@@ -45,7 +45,7 @@ class VirtualInstance(object):
         if(self._resource_model is not None):
             self._resource_model.free(container)
         
-        self.net.removeLink(link=None, node1=container, node2=self.switch)
+        self.net.removeLink(node1=container, node2=self.switch)
         self.net.removeDocker(name)
         del self.containers[name]
 
@@ -58,6 +58,9 @@ class VirtualInstance(object):
         if(self._resource_model is None): return 0.0
         return self._resource_model.max_cu
 
+    def getMemoryUnits(self) -> int:
+        if(self._resource_model is None): return 0
+        return self._resource_model.max_mu
 
     def __str__(self) -> str:
         max_cu = self._resource_model.max_cu
@@ -65,7 +68,9 @@ class VirtualInstance(object):
 
         status = f'{self.label}: max_cu={max_cu}, max_mu={max_mu}\n'
         for container in self.containers.values():
-            status += f'{container.name}: cpu_quota={container.resources["cpu_quota"]}\n'
+            cpu_quota = container.resources['cpu_quota']
+            mem_limit = container.resources['mem_limit']
+            status += f'{container.name}: cpu_quota={cpu_quota}, mem_limit={mem_limit}\n'
         return status
 
 
