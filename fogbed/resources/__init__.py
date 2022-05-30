@@ -59,11 +59,6 @@ class ResourceModel(ABC):
     
     def get_memory_units(self, container: Docker) -> int:
         return container.params['resources']['mu']
-
-    def update_cpu_limit(self, container: Docker, cpu_period:int, cpu_quota: int):
-        if(container.resources['cpu_period'] != cpu_period or container.resources['cpu_quota'] != cpu_quota):
-            container.updateCpuLimit(cpu_quota=cpu_quota, cpu_period=cpu_period)
-            #info(f"{container.name}: update cpu_quota={cpu_quota}, cpu_op_factor={self.cpu_op_factor}\n\n")
     
 
     

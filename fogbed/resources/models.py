@@ -21,11 +21,11 @@ class EdgeResourceModel(ResourceModel):
         requested_cu = self.get_compute_units(container)
         
         if(requested_cu + self.allocated_cu > self.max_cu):
-            raise NotEnoughResourcesAvailable('Not enough compute resources left.')
+            raise NotEnoughResourcesAvailable()
         
         self.allocated_cu += requested_cu
         cpu_period, cpu_quota = self.cpu_allocator.calculate(requested_cu)
-        self.update_cpu_limit(container, cpu_period, cpu_quota)
+        container.updateCpuLimit(cpu_quota, cpu_period)
     
 
     def free_cpu(self, container: Docker):
@@ -37,7 +37,7 @@ class EdgeResourceModel(ResourceModel):
         requested_mu = self.get_memory_units(container)
 
         if(requested_mu + self.allocated_mu > self.max_mu):
-            raise NotEnoughResourcesAvailable('Not enough compute resources left.')
+            raise NotEnoughResourcesAvailable()
 
         self.allocated_mu += requested_mu
         memory_limit = self.memory_allocator.calculate(requested_mu)
@@ -45,7 +45,8 @@ class EdgeResourceModel(ResourceModel):
 
 
     def free_memory(self, container: Docker):
-        pass
+        requested_mu = self.get_memory_units(container)
+        self.allocated_mu -= requested_mu
 
     def calculate_cpu_percentage(self) -> float:
         return EmulationCore.max_cpu() / EmulationCore.get_all_compute_units()
@@ -61,7 +62,7 @@ class CloudResourceModel(EdgeResourceModel):
     def __init__(self, max_cu=32, max_mu=1024) -> None:
         super().__init__(max_cu, max_mu)
 
-        self.cpu = CPUAllocator(
+        self.cpu_allocator = CPUAllocator(
             compute_single_cu=self.calculate_cpu_percentage
         )
 
@@ -98,5 +99,5 @@ class CloudResourceModel(EdgeResourceModel):
 
         for container in self.allocated_containers:
             requested_cu = self.get_compute_units(container)
-            cpu_period, cpu_quota = self.cpu.calculate(requested_cu)
-            self.update_cpu_limit(container, cpu_period, cpu_quota)
+            cpu_period, cpu_quota = self.cpu_allocator.calculate(requested_cu)
+            container.updateCpuLimit(cpu_quota, cpu_period)
