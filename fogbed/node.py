@@ -70,7 +70,7 @@ class VirtualInstance(object):
         for container in self.containers.values():
             cpu_quota = container.resources['cpu_quota']
             mem_limit = container.resources['mem_limit']
-            status += f'{container.name}: cpu_quota={cpu_quota}, mem_limit={mem_limit}\n'
+            status += f'{container.name}: cpu_quota={cpu_quota}, mem_limit={mem_limit/(1024*1024)} MB\n'
         return status
 
 
