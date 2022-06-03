@@ -1,5 +1,4 @@
 from mininet.node import Docker
-from mininet.log import info
 
 from fogbed.emulation import EmulationCore
 from fogbed.resources import NotEnoughResourcesAvailable, ResourceModel
