@@ -18,8 +18,8 @@ import Pyro4
 import threading
 import traceback
 
-from maxinet.tools import Tools, MaxiNetConfig
-from maxinet.WorkerServer.ssh_manager import SSH_Manager
+from fogbed.maxinet.tools import Tools, MaxiNetConfig
+from fogbed.maxinet.WorkerServer.ssh_manager import SSH_Manager
 
 try:
     from mininet.net import Containernet as Mininet

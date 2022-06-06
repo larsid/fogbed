@@ -43,9 +43,9 @@ from mininet.node import RemoteController, UserSwitch
 from mininet.link import TCIntf, Intf, Link, TCLink
 import Pyro4
 
-from maxinet.Frontend.cli import CLI
-from maxinet.tools import Tools, MaxiNetConfig, SSH_Tool
-from maxinet.Frontend.partitioner import Partitioner
+from fogbed.maxinet.Frontend.cli import CLI
+from fogbed.maxinet.tools import Tools, MaxiNetConfig, SSH_Tool
+from fogbed.maxinet.Frontend.partitioner import Partitioner
 
 
 logger = logging.getLogger(__name__)

@@ -8,7 +8,7 @@ import time
 import Pyro4
 from Pyro4.naming import startNSloop
 
-from maxinet.tools import MaxiNetConfig
+from fogbed.maxinet.tools import MaxiNetConfig
 
 Pyro4.config.SOCK_REUSE = True
 
