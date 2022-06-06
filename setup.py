@@ -12,8 +12,9 @@ setup(
     author_email='esaumasc@gmail.com',
     classifiers=[
         'Intended Audience :: Developers',
-        'Programming Language :: Python',
+        'Programming Language :: Python 3.8',
         'Topic :: System :: Emulators'
+        'Operating System :: Ubunbu OS'
     ],
     packages=find_packages(),
     include_package_data=True,
