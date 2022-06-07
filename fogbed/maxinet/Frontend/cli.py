@@ -31,7 +31,7 @@ class CLI(Cmd):
     def do_help(self, s):
         "Print help"
         Cmd.do_help(self, s)
-        if s is "":
+        if(s == ''):
             print(self.helpStr)
 
     def do_hosts(self, s):

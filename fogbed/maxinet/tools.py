@@ -1,5 +1,5 @@
 import atexit
-from configparser import RawConfigParser
+from configparser import ConfigParser
 from mininet.topo import Topo
 import logging
 import os
@@ -18,18 +18,19 @@ if hasattr(Pyro4.config, 'SERIALIZERS_ACCEPTED'):
     Pyro4.config.SERIALIZERS_ACCEPTED.add('pickle')
 Pyro4.config.SERIALIZER = 'pickle'
 
-class MaxiNetConfig(RawConfigParser):
+class MaxiNetConfig():
 
-    def __init__(self, file=None, register=False, **args):
-        RawConfigParser.__init__(self, **args)
+    def __init__(self, file=None, register=False):
+        self.parser = ConfigParser()
         self.logger = logging.getLogger(__name__)
         self.daemon = None
         if(file is None):
-            self.read(["/etc/MaxiNet.cfg", os.path.expanduser("~/.MaxiNet.cfg"),
-                       "MaxiNet.cfg"])
+            self.parser.read(["/etc/MaxiNet.cfg", os.path.expanduser("~/MaxiNet.cfg"),
+                       "/usr/local/share/MaxiNet/MaxiNet.cfg"])
+        
         self.set_loglevel()
-        if(register):
-            self.register()
+        if(register): self.register()
+
 
     @Pyro4.expose
     def set_loglevel(self, level=None):
@@ -130,31 +131,31 @@ class MaxiNetConfig(RawConfigParser):
 
     @Pyro4.expose
     def get(self, section, option):
-        return RawConfigParser.get(self, section, option)
+        return self.parser.get(section, option)
 
     @Pyro4.expose
     def set(self, section, option, val):
-        return RawConfigParser.set(self, section, option, val)
+        return self.parser.set(section, option, val)
 
     @Pyro4.expose
     def has_section(self, section):
-        return RawConfigParser.has_section(self, section)
+        return self.parser.has_section(section)
 
     @Pyro4.expose
     def add_section(self, section):
-        return RawConfigParser.add_section(self, section)
+        return self.parser.add_section(section)
 
     @Pyro4.expose
     def has_option(self, section, option):
-        return RawConfigParser.has_option(self, section, option)
+        return self.parser.has_option(section, option)
 
     @Pyro4.expose
     def getint(self, section, option):
-        return RawConfigParser.getint(self, section, option)
+        return self.parser.getint(section, option)
 
     @Pyro4.expose
     def getboolean(self, section, option):
-        return RawConfigParser.getboolean(self, section, option)
+        return self.parser.getboolean(section, option)
 
 class SSH_Tool(object):
 

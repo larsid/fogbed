@@ -12,7 +12,7 @@ sshuser = root         ; On Debian set this to root. On ubuntu set this to user 
 usesudo = False        ; If sshuser is set to something different than root set this to True.
 useSTT = False         ; enables stt usage for tunnels. Only usable with OpenVSwitch. Bandwithlimitations etc do not work on STT tunnels!
 
-[ubuntu-vm1]
+[FrontendServer]
 ip = 192.168.0.169
 threadpool = 256       ; increase if more workers are needed (each Worker requires 2 threads on the FrontendServer)
 

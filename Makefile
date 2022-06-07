@@ -3,7 +3,7 @@ install:
 	mkdir -p /usr/local/share/MaxiNet
 	cp -rv fogbed/maxinet/Frontend/examples /usr/local/share/MaxiNet/
 	chmod +x /usr/local/share/MaxiNet/examples/*
-	cp share/MaxiNet-cfg-sample /usr/local/share/MaxiNet/config.cfg
+	cp share/MaxiNet-cfg-sample /usr/local/share/MaxiNet/MaxiNet.cfg
 	cp share/maxinet_plot.py /usr/local/share/MaxiNet/
 
 clean:
