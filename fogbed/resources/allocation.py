@@ -13,7 +13,7 @@ class CPUAllocator:
     
 
     def __calculate_cpu_cfs(self, cpu_percentage:float) -> Tuple[int, int]:
-        cpu_period = EmulationCore.cpu_period()
+        cpu_period = EmulationCore.cpu_period_in_microseconds()
         cpu_quota = cpu_period * cpu_percentage
 
         if(cpu_quota < 1000): cpu_quota = 1000

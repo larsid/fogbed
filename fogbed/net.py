@@ -1,5 +1,5 @@
 from mininet.net import Containernet
-from mininet.node import Controller
+from mininet.node import Controller, Link
 from mininet.cli import CLI
 
 from fogbed.emulation import EmulationCore
@@ -14,7 +14,7 @@ class Fogbed(Containernet):
 
 
     def addVirtualInstance(self, label:str) -> VirtualInstance:
-        if(label in EmulationCore.nodes()):
+        if(label in EmulationCore.virtual_instances()):
             raise Exception(f"Data center label already exists: {label}")
 
         datacenter = VirtualInstance(label, net=self)
@@ -23,7 +23,7 @@ class Fogbed(Containernet):
         return datacenter
         
 
-    def addLink(self, node1, node2, **params):
+    def addLink(self, node1, node2, **params) -> Link:
         assert node1 is not None
         assert node2 is not None
         

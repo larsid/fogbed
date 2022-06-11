@@ -48,10 +48,10 @@ class EdgeResourceModel(ResourceModel):
         self.allocated_mu -= requested_mu
 
     def calculate_cpu_percentage(self) -> float:
-        return EmulationCore.max_cpu() / EmulationCore.get_all_compute_units()
+        return EmulationCore.cpu_percentage() / EmulationCore.get_all_compute_units()
 
     def calculate_memory_percentage(self) -> float:
-        return EmulationCore.max_memory() / EmulationCore.get_all_memory_units()
+        return EmulationCore.memory_in_megabytes() / EmulationCore.get_all_memory_units()
     
 
 
@@ -84,7 +84,7 @@ class CloudResourceModel(EdgeResourceModel):
 
     
     def calculate_cpu_percentage(self) -> float:
-        e_cpu = EmulationCore.max_cpu()
+        e_cpu = EmulationCore.cpu_percentage()
         all_compute_units = EmulationCore.get_all_compute_units()
         cpu_op_factor = self._cpu_over_provisioning_factor()
         return (e_cpu / all_compute_units) * cpu_op_factor
