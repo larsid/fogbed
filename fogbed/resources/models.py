@@ -23,8 +23,7 @@ class EdgeResourceModel(ResourceModel):
             raise NotEnoughResourcesAvailable()
         
         self.allocated_cu += requested_cu
-        cpu_period, cpu_quota = self.cpu_allocator.calculate(requested_cu)
-        container.updateCpuLimit(cpu_quota, cpu_period)
+        self.cpu_allocator.allocate(container, requested_cu)
     
 
     def free_cpu(self, container: Docker):
@@ -39,8 +38,7 @@ class EdgeResourceModel(ResourceModel):
             raise NotEnoughResourcesAvailable()
 
         self.allocated_mu += requested_mu
-        memory_limit = self.memory_allocator.calculate(requested_mu)
-        container.updateMemoryLimit(mem_limit=memory_limit)
+        self.memory_allocator.allocate(container, requested_mu)
 
 
     def free_memory(self, container: Docker):
@@ -102,11 +100,9 @@ class CloudResourceModel(EdgeResourceModel):
     def _update_cpu_for_all_containers(self):
         for container in self.allocated_containers:
             requested_cu = self.get_compute_units(container)
-            cpu_period, cpu_quota = self.cpu_allocator.calculate(requested_cu)
-            container.updateCpuLimit(cpu_quota, cpu_period)
+            self.cpu_allocator.allocate(container, requested_cu)
     
     def _update_memory_for_all_containers(self):
         for container in self.allocated_containers:
             requested_mu = self.get_memory_units(container)
-            memory_limit = self.memory_allocator.calculate(requested_mu)
-            container.updateMemoryLimit(mem_limit=memory_limit)
+            self.memory_allocator.allocate(container, requested_mu)
