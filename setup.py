@@ -18,5 +18,5 @@ setup(
     ],
     packages=find_packages(),
     include_package_data=True,
-    requires=['Pyro4']
+    install_requires=['Pyro4']
 )
