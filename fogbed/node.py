@@ -5,21 +5,18 @@ from mininet.log import info
 
 from fogbed.resources import ResourceModel, NotEnoughResourcesAvailable
 
-DCDPID_BASE = 1000
+PROCESS_ID = 1000
 
 class VirtualInstance(object):
-    ''' Representa um ponto de presenca (PoP) onde e possivel adicionar 
-        e remover containers e computar recursos em tempo de execucao
-    '''
     COUNTER = 1
 
     def __init__(self, label:str, net: Containernet) -> None:
-        self.net                            = net
-        self.label                          = label
-        self.name                           = f'dc{VirtualInstance.COUNTER}'
-        self.containers:dict[str, Docker]   = {}
-        self.switch:Switch                  = None
-        self._resource_model:ResourceModel  = None
+        self.net                             = net
+        self.label                           = label
+        self.name                            = f'dc{VirtualInstance.COUNTER}'
+        self.containers: dict[str, Docker]   = {}
+        self.switch: Switch                  = None
+        self._resource_model: ResourceModel  = None
 
 
     def create(self):
@@ -110,6 +107,6 @@ class VirtualInstance(object):
 
 
     def _next_process_id(self):
-        global DCDPID_BASE
-        DCDPID_BASE += 1
-        return DCDPID_BASE
+        global PROCESS_ID
+        PROCESS_ID += 1
+        return PROCESS_ID
