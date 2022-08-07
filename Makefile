@@ -1,5 +1,4 @@
 install:
-	pip install Pyro4
 	python3 setup.py install
 	mkdir -p /usr/local/share/MaxiNet
 	cp -rv fogbed/maxinet/Frontend/examples /usr/local/share/MaxiNet/
@@ -14,5 +13,5 @@ clean:
 
 uninstall:
 	rm -rf /usr/local/lib/python3.8/dist-packages/fogbed-*/
-	rm -rf /usr/local/lib/python3.8/dist-packages/Pyro4*/
+	rm -rf /usr/local/lib/python3.8/dist-packages/Pyro4-*/
 	rm -rf /usr/local/share/MaxiNet
