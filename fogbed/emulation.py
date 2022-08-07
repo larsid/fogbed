@@ -8,7 +8,6 @@ MAX_MEM = 512
 NODES: Dict[str, VirtualInstance] = {}
 
 class EmulationCore:
-    '''Essa classe possibilita o acesso das variaveis globais do ambiente de emulacao'''
     def __init__(self, max_cpu:float, max_mem:int) -> None:
         global MAX_CPU, MAX_MEM
         MAX_CPU = max_cpu
