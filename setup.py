@@ -1,4 +1,16 @@
+import os
+import subprocess
 from setuptools import setup, find_packages
+
+def run_command(command: str):
+    args = command.split(' ')
+    subprocess.call(args)
+
+def install_maxinet():
+    run_command('git clone https://github.com/EsauM10/maxinet.git')
+    os.chdir('maxinet')
+    run_command('sudo python3 setup.py install')
+    
 
 
 setup(
@@ -19,3 +31,6 @@ setup(
     packages=find_packages(),
     include_package_data=True,
 )
+
+if(__name__=='__main__'):
+    install_maxinet()
