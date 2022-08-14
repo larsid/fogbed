@@ -9,10 +9,6 @@ Before installing Fogbed it is necessary to install some dependencies and Contai
 #### 1. Installing required dependencies
 
 ```
-sudo snap install cmake --classic
-```
-
-```
 sudo apt-get install autoconf screen build-essential sysstat uuid-runtime ansible
 ```
 
@@ -30,10 +26,6 @@ sudo ansible-playbook -i "localhost," -c local containernet/ansible/install.yml
 
 
 #### 3. Install Fogbed
-```
-cd ~
-```
-
 ```
 git clone https://github.com/EsauM10/fogbed.git
 ```
