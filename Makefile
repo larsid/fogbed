@@ -1,5 +1,9 @@
 install:
 	python3 setup.py install
+	rm -rf build
+	rm -rf dist
+	rm -rf fogbed.egg-info
+	rm -rf maxinet
 
 clean:
 	rm -rf build

@@ -10,7 +10,8 @@ def install_maxinet():
     run_command('git clone https://github.com/EsauM10/maxinet.git')
     os.chdir('maxinet')
     run_command('sudo python3 setup.py install')
-    
+    os.chdir('..')
+
 
 
 setup(
