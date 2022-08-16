@@ -11,6 +11,7 @@ def install_maxinet():
     os.chdir('maxinet')
     run_command('sudo python3 setup.py install')
     os.chdir('..')
+    run_command('sudo rm -rf maxinet')
     run_command('git clone https://github.com/noxrepo/pox.git')
 
 
