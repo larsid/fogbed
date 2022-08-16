@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from mininet.node import Docker
 
 
-DEFAULT_RESOURCES = dict(
+PREDEFINED_RESOURCES = dict(
     tiny   = {'cu': 0.5,  'mu': 32},
     small  = {'cu': 1.0,  'mu': 128},
     medium = {'cu': 4.0,  'mu': 256},
@@ -12,11 +12,11 @@ DEFAULT_RESOURCES = dict(
 
 
 class ResourceModel(ABC):
-    TINY   = DEFAULT_RESOURCES['tiny']
-    SMALL  = DEFAULT_RESOURCES['small']
-    MEDIUM = DEFAULT_RESOURCES['medium']
-    LARGE  = DEFAULT_RESOURCES['large']
-    XLARGE = DEFAULT_RESOURCES['xlarge']
+    TINY   = PREDEFINED_RESOURCES['tiny']
+    SMALL  = PREDEFINED_RESOURCES['small']
+    MEDIUM = PREDEFINED_RESOURCES['medium']
+    LARGE  = PREDEFINED_RESOURCES['large']
+    XLARGE = PREDEFINED_RESOURCES['xlarge']
 
     def __init__(self, max_cu: float, max_mu: int) -> None:
         self.max_cu = max_cu
