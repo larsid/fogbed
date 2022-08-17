@@ -1,5 +1,5 @@
 from mininet.net import Containernet
-from mininet.node import Controller, Link
+from mininet.node import Controller, Link, UserSwitch
 from mininet.cli import CLI
 
 from fogbed.emulation import EmulationCore
@@ -8,7 +8,7 @@ from fogbed.node import VirtualInstance
 
 class Fogbed(Containernet):
     def __init__(self, max_cpu=1.0, max_mem=512) -> None:
-        Containernet.__init__(self)
+        Containernet.__init__(self, switch=UserSwitch)
         self.addController('c0', controller=Controller)
         EmulationCore(max_cpu, max_mem)
 
