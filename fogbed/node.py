@@ -8,20 +8,16 @@ from fogbed.resources import ResourceModel, NotEnoughResourcesAvailable
 PROCESS_ID = 1000
 
 class VirtualInstance(object):
-    COUNTER = 1
+    COUNTER = 0
 
     def __init__(self, label:str, net: Containernet) -> None:
+        VirtualInstance.COUNTER             += 1
         self.net                             = net
         self.label                           = label
         self.name                            = f'dc{VirtualInstance.COUNTER}'
+        self.switch: Switch                  = self.net.addSwitch(self.name)
         self.containers: dict[str, Docker]   = {}
-        self.switch: Switch                  = None
         self._resource_model: ResourceModel  = None
-
-
-    def create(self):
-        VirtualInstance.COUNTER += 1
-        self.switch = self.net.addSwitch(self.name, pid=hex(self._next_process_id())[2:])
 
 
     def addDocker(self, name:str, **params) -> 'Docker | None':

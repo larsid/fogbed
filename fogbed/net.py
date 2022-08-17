@@ -19,7 +19,6 @@ class Fogbed(Containernet):
 
         datacenter = VirtualInstance(label, net=self)
         EmulationCore.register(datacenter)
-        datacenter.create()
         return datacenter
         
 
