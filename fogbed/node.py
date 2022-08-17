@@ -5,7 +5,6 @@ from mininet.log import info
 
 from fogbed.resources import ResourceModel, NotEnoughResourcesAvailable
 
-PROCESS_ID = 1000
 
 class VirtualInstance(object):
     COUNTER = 0
@@ -100,9 +99,3 @@ class VirtualInstance(object):
     def _verify_container_exists(self, name: str):
         if(name in self._all_containers_names()):
             raise Exception(f'Container {name} already exists')
-
-
-    def _next_process_id(self):
-        global PROCESS_ID
-        PROCESS_ID += 1
-        return PROCESS_ID
