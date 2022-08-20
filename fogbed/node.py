@@ -1,3 +1,4 @@
+from itertools import chain
 from typing import List, Optional
 
 from mininet.net import Containernet
@@ -101,3 +102,7 @@ class VirtualInstance(object):
     def _verify_container_exists(self, name: str):
         if(name in self._all_containers_names()):
             raise Exception(f'Container {name} already exists')
+
+    def __iter__(self):
+        for container in chain(self.containers.values()):
+            yield container
