@@ -5,7 +5,7 @@ CPU_PERIOD = 1000000
 MAX_CPU = 1.0
 MAX_MEM = 512
 
-NODES: Dict[str, VirtualInstance] = {}
+nodes: Dict[str, VirtualInstance] = {}
 
 class EmulationCore:
     def __init__(self, max_cpu:float, max_mem:int) -> None:
@@ -15,14 +15,14 @@ class EmulationCore:
 
     @staticmethod
     def register(datacenter: VirtualInstance):
-        NODES[datacenter.label] = datacenter
+        nodes[datacenter.label] = datacenter
     
     @staticmethod
     def virtual_instances() -> Dict[str, VirtualInstance]:
-        return NODES
+        return nodes
 
     @staticmethod
-    def cpu_period_in_microseconds() -> float:
+    def cpu_period_in_microseconds() -> int:
         return CPU_PERIOD
 
     @staticmethod
@@ -35,8 +35,8 @@ class EmulationCore:
 
     @staticmethod
     def get_all_compute_units() -> float:
-        return sum([dc.getComputeUnits() for dc in NODES.values()])
+        return sum([dc.compute_units for dc in nodes.values()])
 
     @staticmethod
     def get_all_memory_units() -> int:
-        return sum([dc.getMemoryUnits() for dc in NODES.values()])
+        return sum([dc.memory_units for dc in nodes.values()])

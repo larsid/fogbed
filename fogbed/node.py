@@ -46,12 +46,13 @@ class VirtualInstance(object):
     def assignResourceModel(self, resource_model: ResourceModel):
         self.resource_model = resource_model
     
-
-    def getComputeUnits(self) -> float:
+    @property
+    def compute_units(self) -> float:
         if(self.resource_model is None): return 0.0
         return self.resource_model.max_cu
 
-    def getMemoryUnits(self) -> int:
+    @property
+    def memory_units(self) -> int:
         if(self.resource_model is None): return 0
         return self.resource_model.max_mu
 
