@@ -1,5 +1,5 @@
 from typing import Dict
-from fogbed.node import VirtualInstance
+from fogbed.node.instance import VirtualInstance
 
 CPU_PERIOD = 1000000
 MAX_CPU = 1.0

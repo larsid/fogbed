@@ -1,5 +1,5 @@
 from fogbed.emulation import EmulationCore
-from fogbed.node import VirtualInstance
+from fogbed.node.instance import VirtualInstance
 
 from mininet.node import Docker
 from mininet.topo import Topo

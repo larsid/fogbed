@@ -3,7 +3,7 @@ from mininet.node import Controller, Link, UserSwitch
 from mininet.cli import CLI
 
 from fogbed.emulation import EmulationCore
-from fogbed.node import VirtualInstance
+from fogbed.node.instance import VirtualInstance
 
 
 class Fogbed(Containernet):
