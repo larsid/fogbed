@@ -1,4 +1,5 @@
-from typing import List
+from typing import List, Optional
+
 from mininet.net import Containernet
 from mininet.node import Switch, Docker
 from mininet.log import info
@@ -16,7 +17,7 @@ class VirtualInstance(object):
         self.name                            = f'dc{VirtualInstance.COUNTER}'
         self.switch: Switch                  = self.net.addSwitch(self.name)
         self.containers: dict[str, Docker]   = {}
-        self._resource_model: ResourceModel  = None
+        self.resource_model: Optional[ResourceModel] = None
 
 
     def addDocker(self, name:str, **params) -> 'Docker | None':
