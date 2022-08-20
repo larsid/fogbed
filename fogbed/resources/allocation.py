@@ -1,17 +1,18 @@
-from mininet.node import Docker
-
 from typing import Callable
+
 from fogbed.emulation import EmulationCore
+from fogbed.node.container import Container
 
 class CPUAllocator:
     def __init__(self, compute_single_cu: Callable[[], float]) -> None:
         self.compute_single_cu = compute_single_cu
 
 
-    def allocate(self, container: Docker, requested_cu: float):
+    def allocate(self, container: Container):
+        requested_cu = container.compute_units
         cpu_quota    = self.calculate_cpu_quota(requested_cu)
         cpu_period   = EmulationCore.cpu_period_in_microseconds()
-        container.updateCpuLimit(cpu_quota, cpu_period)    
+        container.update_cpu(cpu_quota, cpu_period)    
 
     def calculate_cpu_quota(self, requested_cu: float) -> int:
         single_cu      = self.compute_single_cu()
@@ -27,9 +28,10 @@ class MemoryAllocator:
     def __init__(self, compute_single_mu: Callable[[], float]) -> None:
         self.compute_single_mu = compute_single_mu
 
-    def allocate(self, container: Docker, requested_mu: int):
+    def allocate(self, container: Container):
+        requested_mu = container.memory_units
         memory_limit = self.calculate_memory_limit(requested_mu)
-        container.updateMemoryLimit(mem_limit=memory_limit)
+        container.update_memory(memory_limit)
 
     def calculate_memory_limit(self, requested_mu: int) -> int:
         single_mu      = self.compute_single_mu()

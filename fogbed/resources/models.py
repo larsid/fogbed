@@ -1,6 +1,5 @@
-from mininet.node import Docker
-
 from fogbed.emulation import EmulationCore
+from fogbed.node.container import Container
 from fogbed.resources import NotEnoughResourcesAvailable, ResourceModel
 from fogbed.resources.allocation import CPUAllocator, MemoryAllocator
 
@@ -16,34 +15,32 @@ class EdgeResourceModel(ResourceModel):
             compute_single_mu=self.calculate_memory_percentage)
 
 
-    def allocate_cpu(self, container: Docker):
-        requested_cu = self.get_compute_units(container)
+    def allocate_cpu(self, container: Container):
+        requested_cu = container.compute_units
         
         if(requested_cu + self.allocated_cu > self.max_cu):
             raise NotEnoughResourcesAvailable()
         
         self.allocated_cu += requested_cu
-        self.cpu_allocator.allocate(container, requested_cu)
+        self.cpu_allocator.allocate(container)
     
 
-    def free_cpu(self, container: Docker):
-        requested_cu = self.get_compute_units(container)
-        self.allocated_cu -= requested_cu
+    def free_cpu(self, container: Container):
+        self.allocated_cu -= container.compute_units
 
 
-    def allocate_memory(self, container: Docker):
-        requested_mu = self.get_memory_units(container)
+    def allocate_memory(self, container: Container):
+        requested_mu = container.memory_units
 
         if(requested_mu + self.allocated_mu > self.max_mu):
             raise NotEnoughResourcesAvailable()
 
         self.allocated_mu += requested_mu
-        self.memory_allocator.allocate(container, requested_mu)
+        self.memory_allocator.allocate(container)
 
 
-    def free_memory(self, container: Docker):
-        requested_mu = self.get_memory_units(container)
-        self.allocated_mu -= requested_mu
+    def free_memory(self, container: Container):
+        self.allocated_mu -= container.memory_units
 
     def calculate_cpu_percentage(self) -> float:
         return EmulationCore.cpu_percentage() / EmulationCore.get_all_compute_units()
@@ -60,23 +57,21 @@ class CloudResourceModel(EdgeResourceModel):
         super().__init__(max_cu, max_mu)
 
 
-    def allocate_cpu(self, container: Docker):
-        requested_cu = self.get_compute_units(container)
-        self.allocated_cu += requested_cu
+    def allocate_cpu(self, container: Container):
+        self.allocated_cu += container.compute_units
         self._update_cpu_for_all_containers()
 
-    def free_cpu(self, container: Docker):
+    def free_cpu(self, container: Container):
         super().free_cpu(container)
         self._update_cpu_for_all_containers()
 
 
-    def allocate_memory(self, container: Docker):
-        requested_mu = self.get_memory_units(container)
-        self.allocated_mu += requested_mu
+    def allocate_memory(self, container: Container):
+        self.allocated_mu += container.memory_units
         self._update_memory_for_all_containers()
 
 
-    def free_memory(self, container: Docker):
+    def free_memory(self, container: Container):
         super().free_memory(container)
         self._update_memory_for_all_containers()
 
@@ -99,10 +94,8 @@ class CloudResourceModel(EdgeResourceModel):
 
     def _update_cpu_for_all_containers(self):
         for container in self.allocated_containers:
-            requested_cu = self.get_compute_units(container)
-            self.cpu_allocator.allocate(container, requested_cu)
+            self.cpu_allocator.allocate(container)
     
     def _update_memory_for_all_containers(self):
         for container in self.allocated_containers:
-            requested_mu = self.get_memory_units(container)
-            self.memory_allocator.allocate(container, requested_mu)
+            self.memory_allocator.allocate(container)

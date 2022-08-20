@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from mininet.node import Docker
+
+from fogbed.node.container import Container
 
 
 PREDEFINED_RESOURCES = dict(
@@ -23,42 +24,35 @@ class ResourceModel(ABC):
         self.max_mu = max_mu
         self.allocated_cu = 0
         self.allocated_mu = 0
-        self.allocated_containers: list[Docker] = []
+        self.allocated_containers: list[Container] = []
 
 
-    def allocate(self, container: Docker):
+    def allocate(self, container: Container):
         self.allocated_containers.append(container)
         self.allocate_cpu(container)
         self.allocate_memory(container)
 
     @abstractmethod
-    def allocate_cpu(self, container: Docker):
+    def allocate_cpu(self, container: Container):
         pass
 
     @abstractmethod
-    def allocate_memory(self, container: Docker):
+    def allocate_memory(self, container: Container):
         pass
     
 
-    def free(self, container:Docker):
+    def free(self, container: Container):
         self.allocated_containers.remove(container)
         self.free_cpu(container)
         self.free_memory(container)
     
     @abstractmethod
-    def free_cpu(self, container: Docker):
+    def free_cpu(self, container: Container):
         pass
 
     @abstractmethod
-    def free_memory(self, container: Docker):
+    def free_memory(self, container: Container):
         pass
-
-
-    def get_compute_units(self, container: Docker) -> float:
-        return container.params['resources']['cu']
-    
-    def get_memory_units(self, container: Docker) -> int:
-        return container.params['resources']['mu']
     
 
     
