@@ -35,8 +35,8 @@ class VirtualInstance(object):
         
         container = self.containers[name]
 
-        if(self._resource_model is not None):
-            self._resource_model.free(container)
+        if(self.resource_model is not None):
+            self.resource_model.free(container)
         
         self.net.removeLink(node1=container, node2=self.switch)
         self.net.removeDocker(name)
@@ -44,20 +44,20 @@ class VirtualInstance(object):
 
 
     def assignResourceModel(self, resource_model: ResourceModel):
-        self._resource_model = resource_model
+        self.resource_model = resource_model
     
 
     def getComputeUnits(self) -> float:
-        if(self._resource_model is None): return 0.0
-        return self._resource_model.max_cu
+        if(self.resource_model is None): return 0.0
+        return self.resource_model.max_cu
 
     def getMemoryUnits(self) -> int:
-        if(self._resource_model is None): return 0
-        return self._resource_model.max_mu
+        if(self.resource_model is None): return 0
+        return self.resource_model.max_mu
 
     def __str__(self) -> str:
-        max_cu = self._resource_model.max_cu
-        max_mu = self._resource_model.max_mu
+        max_cu = self.resource_model.max_cu
+        max_mu = self.resource_model.max_mu
 
         status = f'{self.label}: max_cu={max_cu}, max_mu={max_mu}\n'
         for container in self.containers.values():
@@ -75,10 +75,10 @@ class VirtualInstance(object):
 
 
     def _update_container_resources(self, container: Docker) -> 'Docker | None':
-        if(self._resource_model is None): return
+        if(self.resource_model is None): return
         
         try:
-            self._resource_model.allocate(container)
+            self.resource_model.allocate(container)
         except NotEnoughResourcesAvailable:
             info(f'{container.name}: Allocation of container was blocked by resource model.\n\n')
             self.net.removeDocker(container.name)
