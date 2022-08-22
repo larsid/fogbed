@@ -7,6 +7,11 @@ clean:
 	rm -rf dist
 	rm -rf fogbed.egg-info
 
+update:
+	make uninstall
+	git pull
+	make install
+
 uninstall:
 	rm -rf pox/
 	rm -rf /usr/local/lib/python3.8/dist-packages/fogbed*
