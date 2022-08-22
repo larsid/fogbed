@@ -27,34 +27,34 @@ class VirtualInstance(object):
         if(name in self.topology.hosts()):
             raise Exception(f'Container {name} already exists.')
         
-        self.set_default_params(params)
-        self.create_container(name, **params)
+        container = Container(name, **params) 
+
+        self.set_default_params(container)
+        self.create_container(container)
     
     
-    def create_container(self, name: str, **params):
+    def create_container(self, container: Container):
         if(self.resource_model is None):
             return None
-        
-        container = Container(name, **params)
         
         try:
             self.resource_model.allocate(container)
         except NotEnoughResourcesAvailable:
-            info(f'{name}: Allocation of container was blocked by resource model.\n\n')
+            info(f'{container.name}: Allocation of container was blocked by resource model.\n\n')
         else:
-            self.containers[name] = container
-        
+            self.containers[container.name] = container
+
     
     def create_switch(self) -> str:
         VirtualInstance.COUNTER += 1
         return self.topology.addSwitch(f's{VirtualInstance.COUNTER}')
     
-    def set_default_params(self, container_params: dict):
-        if(container_params.get('dimage') is None):
-            container_params['dimage'] = 'ubuntu:trusty'
+    def set_default_params(self, container: Container):
+        if(container.params.get('dimage') is None):
+            container.params['dimage'] = 'ubuntu:trusty'
 
-        if(container_params.get('resources') is None):
-            container_params['resources'] = ResourceModel.TINY
+        if(container.resources is None):
+            container.params['resources'] = ResourceModel.TINY
     
 
     @property
@@ -72,6 +72,6 @@ class VirtualInstance(object):
         header = f'[{self.label}]\n'
         return header + '\n'.join(containers)
 
-    def __iter__( self ):
+    def __iter__(self):
         for container in chain(self.containers.values()):
             yield container
