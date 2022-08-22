@@ -1,6 +1,7 @@
 from fogbed.emulation import EmulationCore
+from fogbed.exceptions import NotEnoughResourcesAvailable
 from fogbed.node.container import Container
-from fogbed.resources import NotEnoughResourcesAvailable, ResourceModel
+from fogbed.resources import ResourceModel
 from fogbed.resources.allocation import CPUAllocator, MemoryAllocator
 
 

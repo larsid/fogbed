@@ -1,4 +1,5 @@
 from typing import List, Type
+from fogbed.exceptions import ContainerNotFound
 
 from fogbed.net import Fogbed
 from fogbed.topo import FogTopo
@@ -18,7 +19,7 @@ class FogbedExperiment:
     
     def get_node(self, name: str) -> Docker:
         if(not name in self.get_all_docker_names()):
-            raise Exception(f'Container {name} not found.')
+            raise ContainerNotFound(f'Container {name} not found.')
         return self.net[name]
 
     def start_cli(self):

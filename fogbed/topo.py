@@ -1,4 +1,5 @@
 from fogbed.emulation import EmulationCore
+from fogbed.exceptions import VirtualInstanceAlreadyExists
 from fogbed.node.instance import VirtualInstance
 
 from mininet.node import Docker
@@ -22,7 +23,7 @@ class FogTopo(Topo):
     
     def addVirtualInstance(self, name: str) -> VirtualInstance:
         if(name in EmulationCore.virtual_instances()):
-            raise Exception(f'Datacenter {name} already exists.')
+            raise VirtualInstanceAlreadyExists(f'Datacenter {name} already exists.')
         
         datacenter = VirtualInstance(name=name, topology=self)
         EmulationCore.register(datacenter)

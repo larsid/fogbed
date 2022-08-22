@@ -55,6 +55,3 @@ class ResourceModel(ABC):
         pass
     
 
-    
-class NotEnoughResourcesAvailable(BaseException):
-    pass
