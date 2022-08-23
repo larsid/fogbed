@@ -1,5 +1,5 @@
 from fogbed.emulation import EmulationCore
-from fogbed.experiment import FogbedExperiment
+from fogbed.experiment.local import FogbedExperiment
 from fogbed.resources import ResourceModel
 from fogbed.resources.models import CloudResourceModel, EdgeResourceModel
 from fogbed.topo import FogTopo
@@ -38,6 +38,7 @@ try:
     d1 = exp.get_node('d1')
     d6 = exp.get_node('d6')
     
+    print(d1.cmd('ifconfig'))
     print(d1.cmd(f'ping -c 5 {d6.IP()}'))
 
 except Exception as ex: 
