@@ -28,22 +28,20 @@ class VirtualInstance(object):
         if(name in self.topology.hosts()):
             raise ContainerAlreadyExists(f'Container {name} already exists.')
         
-        container = Container(name, **params) 
-
-        self.set_default_params(container)
-        self.create_container(container)
+        container = Container(name, **params)
+        try:
+            self.create_container(container)
+        except NotEnoughResourcesAvailable:
+            info(f'{name}: Allocation of container was blocked by resource model.\n\n')
     
     
     def create_container(self, container: Container):
         if(self.resource_model is None):
             raise ResourceModelNotFound('Assign a resource model to this virtual instance.')
         
-        try:
-            self.resource_model.allocate(container)
-        except NotEnoughResourcesAvailable:
-            info(f'{container.name}: Allocation of container was blocked by resource model.\n\n')
-        else:
-            self.containers[container.name] = container
+        self.set_default_params(container)
+        self.resource_model.allocate(container)
+        self.containers[container.name] = container
 
     
     def create_switch(self) -> str:
