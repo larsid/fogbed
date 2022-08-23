@@ -24,11 +24,9 @@ class ResourceModel(ABC):
         self.max_mu = max_mu
         self.allocated_cu = 0
         self.allocated_mu = 0
-        self.allocated_containers: list[Container] = []
 
 
     def allocate(self, container: Container):
-        self.allocated_containers.append(container)
         self.allocate_cpu(container)
         self.allocate_memory(container)
 
@@ -42,7 +40,6 @@ class ResourceModel(ABC):
     
 
     def free(self, container: Container):
-        self.allocated_containers.remove(container)
         self.free_cpu(container)
         self.free_memory(container)
     

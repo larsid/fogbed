@@ -56,14 +56,16 @@ class EdgeResourceModel(ResourceModel):
 class CloudResourceModel(EdgeResourceModel):
     def __init__(self, max_cu=32, max_mu=1024) -> None:
         super().__init__(max_cu, max_mu)
-
+        self.allocated_containers: list[Container] = []
 
     def allocate_cpu(self, container: Container):
+        self.allocated_containers.append(container)
         self.allocated_cu += container.compute_units
         self._update_cpu_for_all_containers()
 
     def free_cpu(self, container: Container):
         super().free_cpu(container)
+        self.allocated_containers.remove(container)
         self._update_cpu_for_all_containers()
 
 
