@@ -6,6 +6,7 @@ from fogbed.node.container import Container
 from fogbed.resources import ResourceModel
 
 from mininet.log import info
+from mininet.node import Docker
 from mininet.topo import Topo
 
 
@@ -55,6 +56,14 @@ class VirtualInstance(object):
         if(container.resources is None):
             container.params['resources'] = ResourceModel.TINY
     
+    def create_topology(self) -> Topo:
+        topology = Topo()
+        topology.addSwitch(self.switch)
+        
+        for container in self.containers.values():
+            topology.addHost(container.name, cls=Docker, **container.params)
+            topology.addLink(container.name, self.switch)
+        return topology
 
     @property
     def compute_units(self) -> float:
