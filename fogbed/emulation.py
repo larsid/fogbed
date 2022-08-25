@@ -1,4 +1,5 @@
-from typing import Dict
+from typing import Dict, List
+from fogbed.node.container import Container
 from fogbed.node.instance import VirtualInstance
 
 CPU_PERIOD = 1000000
@@ -40,3 +41,12 @@ class EmulationCore:
     @staticmethod
     def get_all_memory_units() -> int:
         return sum([dc.memory_units for dc in nodes.values()])
+    
+    @staticmethod
+    def get_all_containers() -> List[Container]:
+        return [
+            container
+            for datacenter in nodes.values()
+            for container in datacenter
+        ]
+        
