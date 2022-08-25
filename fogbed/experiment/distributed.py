@@ -38,6 +38,13 @@ class FogbedDistributedExperiment:
 
     def start(self):
         self.experiment.setup()
+        self.update_containers()
+
+    def update_containers(self):
+        for container in EmulationCore.get_all_containers():
+            node = self.get_node(container.name)
+            node.updateCpuLimit(container.cpu_quota, container.cpu_period)
+            node.updateMemoryLimit(container.mem_limit)
 
     def start_cli(self):
         self.experiment.CLI(locals(), globals())
