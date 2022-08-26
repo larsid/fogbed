@@ -34,6 +34,8 @@ class VirtualInstance(object):
             self.create_container(container)
         except NotEnoughResourcesAvailable:
             info(f'{name}: Allocation of container was blocked by resource model.\n\n')
+        else:
+            self.topology.addHost(name, cls=Docker, **container.params)
     
     
     def create_container(self, container: Container):

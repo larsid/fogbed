@@ -2,7 +2,6 @@ from fogbed.emulation import EmulationCore
 from fogbed.exceptions import VirtualInstanceAlreadyExists
 from fogbed.node.instance import VirtualInstance
 
-from mininet.node import Docker
 from mininet.topo import Topo
 
 
@@ -35,7 +34,6 @@ class FogTopo(Topo):
         
         for datacenter in datacenters.values():
             for container in datacenter:
-                self.addHost(container.name, cls=Docker, **container.params)
                 self.addLink(container.name, datacenter.switch)
     
 
