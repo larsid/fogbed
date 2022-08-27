@@ -7,6 +7,7 @@ from MaxiNet.Frontend.partitioner import Clustering
 from mininet.topo import Topo
 
 from fogbed.emulation import EmulationCore
+from fogbed.node.instance import VirtualInstance
 
 class FogbedDistributedExperiment:
     def __init__(self, topology: Topo) -> None:
@@ -38,10 +39,13 @@ class FogbedDistributedExperiment:
 
     def start(self):
         self.experiment.setup()
-        self.update_containers()
+        
+        for datacenter in EmulationCore.virtual_instances().values():
+            self.update_containers(datacenter)
 
-    def update_containers(self):
-        for container in EmulationCore.get_all_containers():
+
+    def update_containers(self, datacenter: VirtualInstance):
+        for container in datacenter:
             node = self.get_node(container.name)
             node.updateCpuLimit(container.cpu_quota, container.cpu_period)
             node.updateMemoryLimit(container.mem_limit)
