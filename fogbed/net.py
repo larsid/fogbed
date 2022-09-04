@@ -6,7 +6,7 @@ from fogbed.node.instance import VirtualInstance
 class Fogbed(Containernet):
     def __init__(self, **params):
         super().__init__(**params)
-    
+        self.is_running = False
     
     def addLink(self, node1, node2, **params) -> Link:
         assert node1 is not None
@@ -29,4 +29,9 @@ class Fogbed(Containernet):
 
 
     def start(self):
+        self.is_running = True
         super().start()
+
+    def stop(self):
+        self.is_running = False
+        super().stop()
