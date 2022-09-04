@@ -1,6 +1,6 @@
-from mininet.link import Link
 from mininet.net import Containernet
 from mininet.node import Host
+from mininet.link import Link
 
 from fogbed.node.instance import VirtualInstance
 
