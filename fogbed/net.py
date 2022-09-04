@@ -1,5 +1,6 @@
-from mininet.net import Containernet
 from mininet.link import Link
+from mininet.net import Containernet
+from mininet.node import Host
 
 from fogbed.node.instance import VirtualInstance
 
@@ -27,6 +28,8 @@ class Fogbed(Containernet):
 
         return Containernet.removeLink(self, node1, node2, **params)
 
+    def getHost(self, name: str) -> Host:
+        return self[name]
 
     def start(self):
         self.is_running = True
