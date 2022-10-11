@@ -1,4 +1,5 @@
 from typing import Dict, List
+from fogbed.exceptions import ContainerNotFound
 from fogbed.node.container import Container
 from fogbed.node.instance import VirtualInstance
 
@@ -49,4 +50,11 @@ class EmulationCore:
             for datacenter in nodes.values()
             for container in datacenter
         ]
+    
+    @staticmethod
+    def get_virtual_instance_by_container(container_name: str) -> VirtualInstance:
+        for datacenter in nodes.values():
+            if(container_name in datacenter.containers):
+                return datacenter
+        raise ContainerNotFound(f'Container {container_name} not found.')
         
