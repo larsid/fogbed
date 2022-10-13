@@ -12,14 +12,8 @@ class FogTopo(Topo):
         super().__init__()
 
 
-    def addLink(self, node1, node2, **params) -> int:
-        assert node1 is not None
-        assert node2 is not None
-        
-        if(isinstance(node1, VirtualInstance)): node1 = node1.switch
-        if(isinstance(node2, VirtualInstance)): node2 = node2.switch
-
-        return Topo.addLink(self, node1, node2, **params)
+    def addLink(self, node1: VirtualInstance, node2: VirtualInstance, **params) -> int:
+        return Topo.addLink(self, node1.switch, node2.switch, **params)
     
     
     def addVirtualInstance(self, name: str) -> VirtualInstance:
@@ -36,7 +30,7 @@ class FogTopo(Topo):
         
         for datacenter in datacenters.values():
             for container in datacenter:
-                self.addLink(container.name, datacenter.switch)
+                super().addLink(container.name, datacenter.switch)
     
 
     def get_topologies(self) -> List[Topo]:
