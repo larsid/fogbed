@@ -16,7 +16,7 @@ class EmulationCore:
         MAX_MEM = max_mem
 
     @staticmethod
-    def register(datacenter: VirtualInstance):
+    def add_virtual_instance(datacenter: VirtualInstance):
         nodes[datacenter.label] = datacenter
     
     @staticmethod

@@ -27,7 +27,7 @@ class FogTopo(Topo):
             raise VirtualInstanceAlreadyExists(f'Datacenter {name} already exists.')
         
         datacenter = VirtualInstance(name=name, topology=self)
-        EmulationCore.register(datacenter)
+        EmulationCore.add_virtual_instance(datacenter)
         return datacenter
     
     
