@@ -77,7 +77,7 @@ class VirtualInstance(object):
         if(self.resource_model is None): return 0
         return self.resource_model.max_mu
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         containers = [repr(container) for container in self.containers.values()]
         header = f'[{self.label}]\n'
         return header + '\n'.join(containers)
