@@ -26,7 +26,7 @@ class Fogbed(Containernet):
         if(isinstance(node1, VirtualInstance)): node1 = node1.switch
         if(isinstance(node2, VirtualInstance)): node2 = node2.switch
 
-        return Containernet.removeLink(self, node1, node2, **params)
+        super().removeLink(node1=node1, node2=node2, **params)
 
     def getHost(self, name: str) -> Host:
         return self[name]

@@ -6,6 +6,7 @@ from fogbed.net import Fogbed
 from fogbed.topo import FogTopo
 
 from mininet.cli import CLI
+from mininet.log import info
 from mininet.node import Controller, Docker, Switch, UserSwitch
 
 
@@ -25,8 +26,12 @@ class FogbedExperiment:
 
     def remove_node(self, name: str):            
         datacenter = EmulationCore.get_virtual_instance_by_container(name)
-        datacenter.containers.pop(name)
-        self.net.removeDocker(name)
+        datacenter.remove_container(name)
+
+        if(self.net.is_running):
+            info(f'*** Removing container\n{name}\n')
+            self.net.removeLink(name, datacenter.switch)
+            self.net.removeDocker(name)
 
     def start_cli(self):
         CLI(self.net)
