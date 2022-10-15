@@ -56,3 +56,7 @@ class Container:
         cpu_quota  = self.cpu_quota
         cpu_period = self.cpu_period
         return f'Container(name={self.name}, cpu_quota={cpu_quota}, cpu_period={cpu_period})'
+    
+    def __eq__(self, other: object) -> bool:
+        if(not isinstance(other, Container)): return False
+        return self.name == other.name
