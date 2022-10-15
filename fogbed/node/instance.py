@@ -77,11 +77,14 @@ class VirtualInstance(object):
         if(self.resource_model is None): return 0
         return self.resource_model.max_mu
 
+    def __repr__(self) -> str:
+        return f'VirtualInstance(name={self.label})'
+
     def __str__(self) -> str:
         containers = [repr(container) for container in self.containers.values()]
         header = f'[{self.label}]\n'
         return header + '\n'.join(containers)
-
+    
     def __iter__(self):
         for container in chain(self.containers.values()):
             yield container
