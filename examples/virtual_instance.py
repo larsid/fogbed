@@ -1,45 +1,42 @@
 from fogbed.emulation import EmulationCore
 from fogbed.experiment.local import FogbedExperiment
+from fogbed.node.container import Container
 from fogbed.resources import ResourceModel
 from fogbed.resources.models import CloudResourceModel, EdgeResourceModel
-from fogbed.topo import FogTopo
 
 from mininet.log import setLogLevel
 
 setLogLevel('info')
 
 EmulationCore(max_cpu=0.5, max_mem=512)
-topo = FogTopo()
+exp = FogbedExperiment()
 
-edge  = topo.addVirtualInstance('edge')
-cloud = topo.addVirtualInstance('cloud')
-topo.addLink(edge, cloud, delay='100ms', bw=1)
+edge = exp.add_virtual_instance('edge', EdgeResourceModel(max_cu=2, max_mu=256))
+cloud = exp.add_virtual_instance('cloud', CloudResourceModel(max_cu=2, max_mu=512))
 
-edge.assignResourceModel(EdgeResourceModel(max_cu=2, max_mu=256))
-cloud.assignResourceModel(CloudResourceModel(max_cu=2, max_mu=512))
+d1 = Container('d1', resources=ResourceModel.SMALL)
+d2 = Container('d2', resources=ResourceModel.SMALL)
+d3 = Container('d3', resources=ResourceModel.SMALL)
+d4 = Container('d4', resources=ResourceModel.SMALL)
+d5 = Container('d5', resources=ResourceModel.SMALL)
+d6 = Container('d6', resources=ResourceModel.SMALL)
 
-edge.addDocker('d1', resources=ResourceModel.SMALL)
-edge.addDocker('d2', resources=ResourceModel.SMALL)
-edge.addDocker('d3', resources=ResourceModel.SMALL)
+exp.add_docker(d1, edge)
+exp.add_docker(d2, edge)
+exp.add_docker(d3, edge)
 
-cloud.addDocker('d4', resources=ResourceModel.SMALL)
-cloud.addDocker('d5', resources=ResourceModel.SMALL)
-cloud.addDocker('d6', resources=ResourceModel.SMALL)
-cloud.addDocker('d7', resources=ResourceModel.SMALL)
+exp.add_docker(d4, cloud)
+exp.add_docker(d5, cloud)
+exp.add_docker(d6, cloud)
 
-print(f'{edge}\n')
-print(f'{cloud}\n')
-
-exp = FogbedExperiment(topo)
+exp.add_link(cloud, edge)
 
 try:
     exp.start()
     
-    d1 = exp.get_node('d1')
-    d6 = exp.get_node('d6')
-    
-    print(d1.cmd('ifconfig'))
-    print(d1.cmd(f'ping -c 5 {d6.IP()}'))
+    d7 = Container('d7', resources=ResourceModel.SMALL)
+    exp.add_docker(d7, cloud)
+    print(d1.cmd(f'ping -c 4 {d7.ip}'))
 
 except Exception as ex: 
     print(ex)
