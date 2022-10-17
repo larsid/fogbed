@@ -1,17 +1,12 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
+from mininet.node import Docker
 
 class Container:
     def __init__(self, name: str, **params) -> None:
         self.name   = name
         self.params = params
-    
-    def update_cpu(self, cpu_quota: int, cpu_period: int):
-        self.params['cpu_quota'] = cpu_quota
-        self.params['cpu_period'] = cpu_period
-
-    def update_memory(self, memory_limit: int):
-        self.params['mem_limit'] = memory_limit
+        self._docker: Optional[Docker] = None
 
     @property
     def cpu_period(self) -> int:
