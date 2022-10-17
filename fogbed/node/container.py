@@ -72,17 +72,6 @@ class Container:
     def ip(self) -> str:
         return self._docker.IP() if(self._docker is not None) else ''
 
-
-    @staticmethod
-    def from_dict(params: Dict[str, Any]):
-        required_params = ['name', 'dimage', 'cpu_period', 'cpu_quota', 'mem_limit']
-        
-        for param in required_params:
-            if(params.get(param) is None):
-                raise Exception(f'Missing param container.{param}')
-        
-        return Container(**params) 
-
     def __repr__(self) -> str:
         cpu_quota  = self.cpu_quota
         cpu_period = self.cpu_period
