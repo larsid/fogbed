@@ -1,11 +1,10 @@
 from itertools import chain
 from typing import Dict, Optional
 
-from fogbed.exceptions import ContainerAlreadyExists, ContainerNotFound, NotEnoughResourcesAvailable, ResourceModelNotFound
+from fogbed.exceptions import ContainerNotFound, ResourceModelNotFound
 from fogbed.node.container import Container
 from fogbed.resources import ResourceModel
 
-from mininet.log import info
 from mininet.node import Docker
 from mininet.topo import Topo
 
@@ -23,19 +22,6 @@ class VirtualInstance(object):
     
     def assignResourceModel(self, resource_model: ResourceModel):
         self.resource_model = resource_model
-    
-
-    def addDocker(self, name: str, **params):
-        if(name in self.topology.hosts()):
-            raise ContainerAlreadyExists(f'Container {name} already exists.')
-        
-        container = Container(name, **params)
-        try:
-            self.create_container(container)
-        except NotEnoughResourcesAvailable:
-            info(f'{name}: Allocation of container was blocked by resource model.\n\n')
-        else:
-            self.topology.addHost(name, cls=Docker, **container.params)
     
     
     def create_container(self, container: Container):
