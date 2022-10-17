@@ -12,10 +12,9 @@ from mininet.topo import Topo
 class VirtualInstance(object):
     COUNTER = 0
 
-    def __init__(self, name: str, topology: Topo) -> None:
+    def __init__(self, name: str) -> None:
         self.label    = name
-        self.topology = topology
-        self.switch   = self.create_switch()
+        self.switch   = self._create_switch()
         self.containers: Dict[str, Container] = {}
         self.resource_model: Optional[ResourceModel] = None
         
@@ -33,9 +32,19 @@ class VirtualInstance(object):
         self.containers[container.name] = container
 
     
-    def create_switch(self) -> str:
+    def _create_switch(self) -> str:
         VirtualInstance.COUNTER += 1
-        return self.topology.addSwitch(f's{VirtualInstance.COUNTER}')
+        return f's{VirtualInstance.COUNTER}'
+    
+
+    def create_topology(self) -> Topo:
+        topology = Topo()
+        topology.addSwitch(self.switch)
+        
+        for container in self.containers.values():
+            topology.addHost(container.name, cls=Docker, **container.params)
+            topology.addLink(container.name, self.switch)
+        return topology
     
 
     def remove_container(self, name: str):
@@ -54,15 +63,6 @@ class VirtualInstance(object):
 
         if(container.resources is None):
             container.params['resources'] = ResourceModel.TINY
-    
-    def create_topology(self) -> Topo:
-        topology = Topo()
-        topology.addSwitch(self.switch)
-        
-        for container in self.containers.values():
-            topology.addHost(container.name, cls=Docker, **container.params)
-            topology.addLink(container.name, self.switch)
-        return topology
 
     @property
     def compute_units(self) -> float:
