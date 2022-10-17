@@ -1,30 +1,73 @@
 from typing import List, Type
-from fogbed.emulation import EmulationCore
-from fogbed.exceptions import ContainerNotFound
 
+from fogbed.emulation import EmulationCore
+from fogbed.exceptions import ContainerAlreadyExists, ContainerNotFound, NotEnoughResourcesAvailable, VirtualInstanceAlreadyExists
+from fogbed.experiment import Experiment
 from fogbed.net import Fogbed
-from fogbed.topo import FogTopo
+from fogbed.node.container import Container
+from fogbed.node.instance import VirtualInstance
+from fogbed.resources import ResourceModel
 
 from mininet.cli import CLI
 from mininet.log import info
-from mininet.node import Controller, Docker, Switch, UserSwitch
+from mininet.node import Controller, Docker, OVSSwitch, Switch
+from mininet.topo import Topo
 
 
-class FogbedExperiment:
-    def __init__(self, topology: FogTopo, controller=Controller, switch: Type[Switch]=UserSwitch) -> None:
-        self.topology = topology
-        self.topology.create()
-        self.net = Fogbed(topo=topology, controller=controller, switch=switch)
+class FogbedExperiment(Experiment):
+    def __init__(self, controller=Controller, switch: Type[Switch]=OVSSwitch) -> None:
+        self.topology = Topo()
+        self.net = Fogbed(topo=self.topology, build=False, controller=controller, switch=switch)
     
-    def _get_all_docker_names(self) -> List[str]:
-        return [container.name for container in self.net.hosts]
-    
-    def get_node(self, name: str) -> Docker:
-        if(not name in self._get_all_docker_names()):
-            raise ContainerNotFound(f'Container {name} not found.')
-        return self.net[name]
 
-    def remove_node(self, name: str):            
+    def add_link(self, node1: VirtualInstance, node2: VirtualInstance, **params):
+        self.topology.addLink(node1.switch, node2.switch, **params)
+
+
+    def add_virtual_instance(self, name: str, resource_model: ResourceModel) -> VirtualInstance:
+        if(name in EmulationCore.virtual_instances()):
+            raise VirtualInstanceAlreadyExists(f'Datacenter {name} already exists.')
+        
+        datacenter = VirtualInstance(name=name, topology=self.topology)
+        datacenter.assignResourceModel(resource_model)
+        EmulationCore.add_virtual_instance(datacenter)
+        return datacenter
+    
+
+    def add_docker(self, container: Container, datacenter: VirtualInstance):
+        if(container in self.get_containers()):
+            raise ContainerAlreadyExists(f'Container {container.name} already exists.')
+        
+        try:
+            datacenter.create_container(container)
+        except NotEnoughResourcesAvailable:
+            info(f'{container.name}: Allocation of container was blocked by resource model.\n\n')
+        else:
+            self.topology.addHost(container.name, cls=Docker, **container.params)
+            self.topology.addLink(container.name, datacenter.switch)
+
+            if(self.net.is_running):
+                self.net.addDocker(container.name, **container.params)
+                self.net.addLink(container.name, datacenter.switch)
+                self.net.getHost(container.name).configDefault()
+                container.set_docker(self.net[container.name])
+
+
+    def get_docker(self, name: str) -> Container:
+        for container in self.get_containers():
+            if(name == container.name): return container
+        raise ContainerNotFound(f'Container {name} not found.')
+
+
+    def get_containers(self) -> List[Container]:
+        return EmulationCore.get_all_containers()
+
+
+    def get_virtual_instances(self) -> List[VirtualInstance]:
+        return list(EmulationCore.virtual_instances().values())
+
+
+    def remove_docker(self, name: str):            
         datacenter = EmulationCore.get_virtual_instance_by_container(name)
         datacenter.remove_container(name)
 
@@ -33,11 +76,14 @@ class FogbedExperiment:
             self.net.removeLink(name, datacenter.switch)
             self.net.removeDocker(name)
 
+
     def start_cli(self):
         CLI(self.net)
 
     def start(self):
         self.net.start()
+        for container in self.get_containers():
+            container.set_docker(self.net[container.name])
 
     def stop(self):
         self.net.stop()
