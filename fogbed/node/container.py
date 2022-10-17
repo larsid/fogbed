@@ -7,6 +7,37 @@ class Container:
         self.name   = name
         self.params = params
         self._docker: Optional[Docker] = None
+    
+    def cmd(self, command: str) -> str:
+        if(self._docker is None):
+            raise Exception(f'Docker container {self.name} was not started')
+        return self._docker.cmd(command)
+
+    def start(self):
+        if(self._docker is None):
+            raise Exception(f'Docker container {self.name} was not started')
+        self._docker.start()
+
+    def stop(self):
+        if(self._docker is None):
+            raise Exception(f'Docker container {self.name} was not started')
+        self._docker.stop()
+
+    def set_docker(self, docker: Docker):
+        self._docker = docker
+
+    def update_cpu(self, cpu_quota: int, cpu_period: int):
+        if(self._docker is not None):
+            self._docker.updateCpuLimit(cpu_quota, cpu_period)
+
+        self.params['cpu_quota'] = cpu_quota
+        self.params['cpu_period'] = cpu_period
+
+    def update_memory(self, memory_limit: int):
+        if(self._docker is not None):
+            self._docker.updateMemoryLimit(memory_limit)
+
+        self.params['mem_limit'] = memory_limit
 
     @property
     def cpu_period(self) -> int:
@@ -37,6 +68,11 @@ class Container:
         resources = self.resources
         return 0 if(resources is None) else resources['mu']
     
+    @property
+    def ip(self) -> str:
+        return self._docker.IP() if(self._docker is not None) else ''
+
+
     @staticmethod
     def from_dict(params: Dict[str, Any]):
         required_params = ['name', 'dimage', 'cpu_period', 'cpu_quota', 'mem_limit']
