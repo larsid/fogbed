@@ -6,6 +6,7 @@ from fogbed.experiment import Experiment
 from fogbed.net import Fogbed
 from fogbed.node.container import Container
 from fogbed.node.instance import VirtualInstance
+from fogbed.node.services.local_docker import LocalDocker
 from fogbed.resources import ResourceModel
 
 from mininet.cli import CLI
@@ -52,8 +53,8 @@ class FogbedExperiment(Experiment):
                 self.net.addLink(container.name, datacenter.switch)
                 docker = self.net.getDocker(container.name)
                 docker.configDefault()
-                container.set_docker(self.net[container.name])
-
+                container.set_docker(LocalDocker(docker))
+    
 
     def get_docker(self, name: str) -> Container:
         for container in self.get_containers():
@@ -85,7 +86,8 @@ class FogbedExperiment(Experiment):
     def start(self):
         self.net.start()
         for container in self.get_containers():
-            container.set_docker(self.net[container.name])
+            docker = self.net.getDocker(container.name)
+            container.set_docker(LocalDocker(docker))
 
     def stop(self):
         self.net.stop()

@@ -1,41 +1,41 @@
 from typing import Any, Dict, Optional
 
-from mininet.node import Docker
+from fogbed.node.services import DockerService
 
 class Container:
     def __init__(self, name: str, **params) -> None:
         self.name   = name
         self.params = params
-        self._docker: Optional[Docker] = None
+        self._service: Optional[DockerService] = None
     
     def cmd(self, command: str) -> str:
-        if(self._docker is None):
+        if(self._service is None):
             raise Exception(f'Docker container {self.name} was not started')
-        return self._docker.cmd(command)
+        return self._service.run_command(command)
 
     def start(self):
-        if(self._docker is None):
+        if(self._service is None):
             raise Exception(f'Docker container {self.name} was not started')
-        self._docker.start()
+        self._service.start()
 
     def stop(self):
-        if(self._docker is None):
+        if(self._service is None):
             raise Exception(f'Docker container {self.name} was not started')
-        self._docker.stop()
+        self._service.stop()
 
-    def set_docker(self, docker: Docker):
-        self._docker = docker
+    def set_docker(self, service: DockerService):
+        self._service = service
 
     def update_cpu(self, cpu_quota: int, cpu_period: int):
-        if(self._docker is not None):
-            self._docker.updateCpuLimit(cpu_quota, cpu_period)
+        if(self._service is not None):
+            self._service.update_cpu(cpu_quota, cpu_period)
 
         self.params['cpu_quota'] = cpu_quota
         self.params['cpu_period'] = cpu_period
 
     def update_memory(self, memory_limit: int):
-        if(self._docker is not None):
-            self._docker.updateMemoryLimit(memory_limit)
+        if(self._service is not None):
+            self._service.update_memory(memory_limit)
 
         self.params['mem_limit'] = memory_limit
 
@@ -70,7 +70,7 @@ class Container:
     
     @property
     def ip(self) -> str:
-        return self._docker.IP() if(self._docker is not None) else ''
+        return self._service.get_ip() if(self._service is not None) else ''
 
     def __repr__(self) -> str:
         cpu_quota  = self.cpu_quota
