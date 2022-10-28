@@ -13,8 +13,9 @@ class VirtualInstance(object):
     COUNTER = 0
 
     def __init__(self, name: str) -> None:
-        self.label    = name
-        self.switch   = self._create_switch()
+        self.label   = name
+        self.switch  = self._create_switch()
+        self._ip     = ''
         self.containers: Dict[str, Container] = {}
         self.resource_model: Optional[ResourceModel] = None
         
@@ -56,7 +57,12 @@ class VirtualInstance(object):
             self.resource_model.free(container)
         self.containers.pop(name)
     
+    def get_ip(self) -> str:
+        return self._ip
 
+    def set_ip(self, ip: str):
+        self._ip = ip
+        
     def _set_default_params(self, container: Container):
         if(container.params.get('dimage') is None):
             container.params['dimage'] = 'ubuntu:trusty'
