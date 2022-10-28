@@ -50,7 +50,8 @@ class FogbedExperiment(Experiment):
             if(self.net.is_running):
                 self.net.addDocker(container.name, **container.params)
                 self.net.addLink(container.name, datacenter.switch)
-                self.net.getHost(container.name).configDefault()
+                docker = self.net.getDocker(container.name)
+                docker.configDefault()
                 container.set_docker(self.net[container.name])
 
 
