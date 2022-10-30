@@ -38,4 +38,4 @@ class MemoryAllocator:
         memory_limit   = single_mu * requested_mu
 
         if(memory_limit < 4): memory_limit = 4
-        return int(memory_limit * 1024 * 1024)
+        return int(memory_limit) * 1024 * 1024
