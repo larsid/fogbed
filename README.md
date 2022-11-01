@@ -6,15 +6,11 @@ Fogbed is a framework and toolset integration for rapid prototyping of fog compo
 
 Before installing Fogbed it is necessary to install some dependencies and Containernet, as shown in the steps below:
 
-#### 1. Installing required dependencies
 
+#### 1. Install Containernet
 ```
-sudo apt-get install autoconf screen build-essential sysstat uuid-runtime ansible
+sudo apt-get install ansible
 ```
-
-
-
-#### 2. Install Containernet
 
 ```
 git clone https://github.com/containernet/containernet.git
@@ -25,7 +21,7 @@ sudo ansible-playbook -i "localhost," -c local containernet/ansible/install.yml
 ```
 
 
-#### 3. Install Fogbed
+#### 2. Install Fogbed
 ```
 sudo pip install -U git+https://github.com/EsauM10/fogbed.git
 ```
