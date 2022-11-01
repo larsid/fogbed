@@ -27,13 +27,5 @@ sudo ansible-playbook -i "localhost," -c local containernet/ansible/install.yml
 
 #### 3. Install Fogbed
 ```
-git clone https://github.com/EsauM10/fogbed.git
-```
-
-```
-cd fogbed
-```
-
-```
-sudo make install
+sudo pip install -U git+https://github.com/EsauM10/fogbed.git
 ```

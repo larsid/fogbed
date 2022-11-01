@@ -1,18 +1,4 @@
-import os
-import subprocess
 from setuptools import setup, find_packages
-
-def run_command(command: str):
-    args = command.split(' ')
-    subprocess.call(args)
-
-def install_maxinet():
-    run_command('git clone https://github.com/EsauM10/maxinet.git')
-    os.chdir('maxinet')
-    run_command('sudo python3 setup.py install')
-    os.chdir('..')
-    run_command('sudo rm -rf maxinet')
-    run_command('git clone https://github.com/noxrepo/pox.git')
 
 
 setup(
@@ -34,6 +20,3 @@ setup(
     include_package_data=True,
     zip_safe=False
 )
-
-if(__name__=='__main__'):
-    install_maxinet()
