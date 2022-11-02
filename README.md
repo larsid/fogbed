@@ -1,3 +1,4 @@
+![](https://img.shields.io/badge/python-3.8+-blue.svg)
 # Fogbed
 
 Fogbed is a framework and toolset integration for rapid prototyping of fog components in virtual-ized environments using a desktop approach. Its design meets the postulated requirements of low cost, flexible setup and compatibility with real world technologies. The components are based on Mininet network emulator with Docker container instances as fog virtual nodes.
@@ -20,8 +21,91 @@ git clone https://github.com/containernet/containernet.git
 sudo ansible-playbook -i "localhost," -c local containernet/ansible/install.yml
 ```
 
-
 #### 2. Install Fogbed
 ```
 sudo pip install -U git+https://github.com/EsauM10/fogbed.git
 ```
+
+## Get Started
+After having installed fogbed you can start using it running an example topology, copy the example below to a file and run with:
+```
+sudo python3 filename.py
+```
+
+### Local emulation
+```python
+from fogbed.emulation import EmulationCore
+from fogbed.experiment.local import FogbedExperiment
+from fogbed.node.container import Container
+from fogbed.resources import ResourceModel
+from fogbed.resources.models import CloudResourceModel, EdgeResourceModel
+
+from mininet.log import setLogLevel
+
+setLogLevel('info')
+
+EmulationCore(max_cpu=0.5, max_mem=512)
+exp = FogbedExperiment()
+
+edge = exp.add_virtual_instance('edge', EdgeResourceModel(max_cu=2, max_mu=256))
+cloud = exp.add_virtual_instance('cloud', CloudResourceModel(max_cu=2, max_mu=512))
+
+d1 = Container('d1', ip='10.0.0.1', dimage='ubuntu:trusty', resources=ResourceModel.SMALL)
+d2 = Container('d2', ip='10.0.0.2', dimage='ubuntu:trusty', resources=ResourceModel.SMALL)
+d3 = Container('d3', ip='10.0.0.3', dimage='ubuntu:trusty', resources=ResourceModel.SMALL)
+d4 = Container('d4', ip='10.0.0.4', dimage='ubuntu:trusty', resources=ResourceModel.SMALL)
+d5 = Container('d5', ip='10.0.0.5', dimage='ubuntu:trusty', resources=ResourceModel.SMALL)
+d6 = Container('d6', ip='10.0.0.6', dimage='ubuntu:trusty', resources=ResourceModel.SMALL)
+
+exp.add_docker(d1, edge)
+exp.add_docker(d2, edge)
+exp.add_docker(d3, edge)
+
+exp.add_docker(d4, cloud)
+exp.add_docker(d5, cloud)
+exp.add_docker(d6, cloud)
+
+exp.add_link(cloud, edge)
+
+try:
+    exp.start()
+    
+    print(d1.cmd('ifconfig'))
+    print(d1.cmd(f'ping -c 4 {d6.ip}'))
+    
+    exp.start_cli()
+except Exception as ex: 
+    print(ex)
+finally:
+    exp.stop()
+
+```
+Here we have the instantiation of a fog topology, used by fogbed, followed by the definition of 2 Virtual Instances. A `VirtualInstance` in the context of fogbed is a unit that can have one or more hosts linked together by a single switch. Each Virtual Instance has a resource model associated with it that defines how many resources that instance have so that they can be distributed among it’s containers.
+
+
+The resource model use is based on the proposed in [son-emu](https://github.com/sonata-nfv/son-emu), each resource model has a `max_cu` and `max_mu` value, representing the maximum computing and memory units the Virtual Instance that assigns it has.
+
+### Containers
+You can also create containers with custom resource restrictions like in [Containernet](https://github.com/containernet/containernet/wiki#method-containernetadddocker)
+
+```python
+d1 = Container('d1', ip='10.0.0.1', dimage='ubuntu:trusty', dcmd='bin/bash')
+d2 = Container('d2', ip='10.0.0.2', dimage='ubuntu:trusty', mac='00:00:00:00:00:02')
+d3 = Container('d3', ip='10.0.0.3', dimage='ubuntu:trusty', resources=ResourceModel.SMALL)
+```
+On Fogbed, each container determines how much `cu` and `mu` they have, representing how many parts of the total of it’s Virtual Instance is available to the container. These values are converted to real cpu time and memory limit.
+
+Example: if a container `c1` is assigned 4 computing units and container `c2` 2 computing units, and they are both in the same Virtual Instance, container `c1` has twice more cpu time than container `c2`.
+
+The `resources` field describe how much of the Virtual Instance resources that container should take. If it isn’t specified, the predefined `ResourceModel.SMALL` is chosen. Below is the list of the predefined resources:
+
+```python
+ResourceModel.TINY   => {'cu': 0.5,  'mu': 32}
+ResourceModel.SMALL  => {'cu': 1.0,  'mu': 128}
+ResourceModel.MEDIUM => {'cu': 4.0,  'mu': 256}
+ResourceModel.LARGE  => {'cu': 8.0,  'mu': 512}
+ResourceModel.XLARGE => {'cu': 16.0, 'mu': 1024}
+```
+If none of the predefined resources is suitable for your application, you can pass a custom one doing like `resources={'cu': 16.0, 'mu'=2048}`.
+
+
