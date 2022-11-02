@@ -16,6 +16,9 @@ setup(
         'Topic :: System :: Emulators'
         'Operating System :: Ubunbu OS'
     ],
+    install_requires = [
+        'clusternet @ https://github.com/EsauM10/clusternet/tarball/main#egg=clusternet'
+    ],
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False
