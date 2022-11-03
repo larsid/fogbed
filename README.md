@@ -106,6 +106,6 @@ ResourceModel.MEDIUM => {'cu': 4.0,  'mu': 256}
 ResourceModel.LARGE  => {'cu': 8.0,  'mu': 512}
 ResourceModel.XLARGE => {'cu': 16.0, 'mu': 1024}
 ```
-If none of the predefined resources is suitable for your application, you can pass a custom one doing like `resources={'cu': 16.0, 'mu'=2048}`.
+If none of the predefined resources is suitable for your application, you can pass a custom one like `resources={'cu': 16.0, 'mu'=2048}`.
 
 

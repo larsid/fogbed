@@ -13,10 +13,10 @@ class RemoteDocker(DockerService):
         return self.docker.cmd(command)
     
     def update_cpu(self, cpu_quota: int, cpu_period: int):
-        return self.docker.update_cpu(cpu_quota, cpu_period)
+        self.docker.update_cpu(cpu_quota, cpu_period)
     
     def update_memory(self, memory_in_bytes: int):
-        return self.docker.update_memory(memory_in_bytes)
+        self.docker.update_memory(memory_in_bytes)
     
     def start(self):
         pass
