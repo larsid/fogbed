@@ -70,7 +70,8 @@ class Container:
     
     @property
     def ip(self) -> str:
-        return self._service.get_ip() if(self._service is not None) else ''
+        ip = self.params.get('ip')
+        return '' if(ip is None) else ip
 
     def __repr__(self) -> str:
         cpu_quota  = self.cpu_quota
