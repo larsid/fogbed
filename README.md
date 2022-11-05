@@ -85,7 +85,7 @@ finally:
     exp.stop()
 
 ```
-Here we have the instantiation of a fog topology, used by fogbed, followed by the definition of 2 Virtual Instances. A `VirtualInstance` in the context of fogbed is a unit that can have one or more hosts linked together by a single switch. Each Virtual Instance has a resource model associated with it that defines how many resources that instance have so that they can be distributed among it’s containers.
+Here we have the instantiation of a fog topology, used by fogbed, followed by the definition of 3 Virtual Instances. A `VirtualInstance` in the context of fogbed is a unit that can have one or more hosts linked together by a single switch. Each Virtual Instance has a resource model associated with it that defines how many resources that instance have so that they can be distributed among it’s containers.
 
 
 The resource model use is based on the proposed in [son-emu](https://github.com/sonata-nfv/son-emu), each resource model has a `max_cu` and `max_mu` value, representing the maximum computing and memory units the Virtual Instance that assigns it has.
@@ -95,8 +95,8 @@ You can also create containers with custom resource restrictions like in [Contai
 
 ```python
 d1 = Container('d1', ip='10.0.0.1', dimage='ubuntu:trusty', dcmd='bin/bash')
-d2 = Container('d2', ip='10.0.0.2', dimage='ubuntu:trusty', mac='00:00:00:00:00:02')
-d3 = Container('d3', ip='10.0.0.3', dimage='ubuntu:trusty', resources=ResourceModel.SMALL)
+d2 = Container('d2', ip='10.0.0.2', dimage='ubuntu:focal', mac='00:00:00:00:00:02')
+d3 = Container('d3', ip='10.0.0.3', enviroment={'var1': 'value'})
 ```
 On Fogbed, each container determines how much `cu` and `mu` they have, representing how many parts of the total of it’s Virtual Instance is available to the container. These values are converted to real cpu time and memory limit.
 
@@ -114,7 +114,7 @@ ResourceModel.XLARGE => {'cu': 16.0, 'mu': 1024}
 If none of the predefined resources is suitable for your application, you can pass a custom one like:
 
 ```python
-d1 = Container('d1', ip='10.0.0.1', resources={'cu':2.0, 'mu': 128})
+d1 = Container('d1', ip='10.0.0.1', resources={'cu': 2.0, 'mu': 128})
 ```
 
 
