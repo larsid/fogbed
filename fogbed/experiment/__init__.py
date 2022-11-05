@@ -31,10 +31,6 @@ class Experiment(ABC):
         pass
 
     @abstractmethod
-    def start_cli(self):
-        pass
-
-    @abstractmethod
     def start(self):
         pass
     
