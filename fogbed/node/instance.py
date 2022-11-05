@@ -5,8 +5,6 @@ from fogbed.exceptions import ContainerNotFound, ResourceModelNotFound
 from fogbed.node.container import Container
 from fogbed.resources import ResourceModel
 
-from mininet.node import Docker
-from mininet.topo import Topo
 
 
 class VirtualInstance(object):
@@ -36,16 +34,6 @@ class VirtualInstance(object):
     def _create_switch(self) -> str:
         VirtualInstance.COUNTER += 1
         return f's{VirtualInstance.COUNTER}'
-    
-
-    def create_topology(self) -> Topo:
-        topology = Topo()
-        topology.addSwitch(self.switch)
-        
-        for container in self.containers.values():
-            topology.addHost(container.name, cls=Docker, **container.params)
-            topology.addLink(container.name, self.switch)
-        return topology
     
 
     def remove_container(self, name: str):
