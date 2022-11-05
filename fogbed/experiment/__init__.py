@@ -7,10 +7,6 @@ from fogbed.resources import ResourceModel
 
 class Experiment(ABC):
     @abstractmethod
-    def add_link(self, node1: VirtualInstance, node2: VirtualInstance, **params):
-        pass
-
-    @abstractmethod
     def add_virtual_instance(self, name: str, resource_model: ResourceModel) -> VirtualInstance:
         pass
     
