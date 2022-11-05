@@ -12,9 +12,9 @@ class Container:
         ip: Optional[str] = None, 
         **params
     ):
-        self.name   = name
-        self.ip     = self._get_ip(ip)
-        self.params = params
+        self.name    = name
+        self.ip      = self._get_ip(ip)
+        self._params = params
         self._service: Optional[DockerService] = None
     
 
@@ -40,14 +40,14 @@ class Container:
         if(self._service is not None):
             self._service.update_cpu(cpu_quota, cpu_period)
 
-        self.params['cpu_quota'] = cpu_quota
-        self.params['cpu_period'] = cpu_period
+        self._params['cpu_quota'] = cpu_quota
+        self._params['cpu_period'] = cpu_period
 
     def update_memory(self, memory_limit: int):
         if(self._service is not None):
             self._service.update_memory(memory_limit)
 
-        self.params['mem_limit'] = memory_limit
+        self._params['mem_limit'] = memory_limit
 
     def _get_ip(self, ip: Optional[str]) -> str:
         if(ip is None):
@@ -58,22 +58,22 @@ class Container:
 
     @property
     def cpu_period(self) -> int:
-        cpu_period = self.params.get('cpu_period')
+        cpu_period = self._params.get('cpu_period')
         return -1 if(cpu_period is None) else cpu_period
 
     @property
     def cpu_quota(self) -> int:
-        cpu_quota = self.params.get('cpu_quota')
+        cpu_quota = self._params.get('cpu_quota')
         return -1 if(cpu_quota is None) else cpu_quota
 
     @property
     def mem_limit(self) -> int:
-        mem_limit = self.params.get('mem_limit')
+        mem_limit = self._params.get('mem_limit')
         return -1 if(mem_limit is None) else mem_limit
 
     @property
     def resources(self) -> 'Dict[str, Any] | None':
-        return self.params.get('resources')
+        return self._params.get('resources')
     
     @property
     def compute_units(self) -> float:
@@ -84,6 +84,11 @@ class Container:
     def memory_units(self) -> int:
         resources = self.resources
         return 0 if(resources is None) else resources['mu']
+
+    @property
+    def params(self) -> Dict[str, Any]:
+        self._params['ip'] = self.ip
+        return self._params
 
     def __repr__(self) -> str:
         cpu_quota  = self.cpu_quota
