@@ -2,12 +2,22 @@ from typing import Any, Dict, Optional
 
 from fogbed.node.services import DockerService
 
+from mininet.util import ipAdd
+
 class Container:
-    def __init__(self, name: str, **params) -> None:
+    IP_COUNTER = 0
+
+    def __init__(self, 
+        name: str, 
+        ip: Optional[str] = None, 
+        **params
+    ):
         self.name   = name
+        self.ip     = self._get_ip(ip)
         self.params = params
         self._service: Optional[DockerService] = None
     
+
     def cmd(self, command: str) -> str:
         if(self._service is None):
             raise Exception(f'Docker container {self.name} was not started')
@@ -39,6 +49,13 @@ class Container:
 
         self.params['mem_limit'] = memory_limit
 
+    def _get_ip(self, ip: Optional[str]) -> str:
+        if(ip is None):
+            Container.IP_COUNTER += 1
+            return ipAdd(Container.IP_COUNTER)
+        
+        return ip
+
     @property
     def cpu_period(self) -> int:
         cpu_period = self.params.get('cpu_period')
@@ -67,11 +84,6 @@ class Container:
     def memory_units(self) -> int:
         resources = self.resources
         return 0 if(resources is None) else resources['mu']
-    
-    @property
-    def ip(self) -> str:
-        ip = self.params.get('ip')
-        return '' if(ip is None) else ip
 
     def __repr__(self) -> str:
         cpu_quota  = self.cpu_quota
