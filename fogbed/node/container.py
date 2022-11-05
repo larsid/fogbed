@@ -9,11 +9,13 @@ class Container:
 
     def __init__(self, 
         name: str, 
-        ip: Optional[str] = None, 
+        ip: Optional[str] = None,
+        dimage: str = 'ubuntu:trusty',
         **params
     ):
         self.name    = name
         self.ip      = self._get_ip(ip)
+        self.dimage  = dimage
         self._params = params
         self._service: Optional[DockerService] = None
     
@@ -88,6 +90,7 @@ class Container:
     @property
     def params(self) -> Dict[str, Any]:
         self._params['ip'] = self.ip
+        self._params['dimage'] = self.dimage
         return self._params
 
     def __repr__(self) -> str:

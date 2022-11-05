@@ -52,11 +52,8 @@ class VirtualInstance(object):
         self._ip = ip
         
     def _set_default_params(self, container: Container):
-        if(container.params.get('dimage') is None):
-            container.params['dimage'] = 'ubuntu:trusty'
-
         if(container.resources is None):
-            container.params['resources'] = ResourceModel.TINY
+            container._params['resources'] = ResourceModel.TINY
 
     @property
     def compute_units(self) -> float:
