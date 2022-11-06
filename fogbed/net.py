@@ -1,11 +1,12 @@
 from mininet.net import Containernet
 from mininet.node import Docker
+from mininet.link import TCLink
 
 from fogbed.node.instance import VirtualInstance
 
 class Fogbed(Containernet):
     def __init__(self, **params):
-        super().__init__(**params)
+        super().__init__(link=TCLink, **params)
         self.is_running = False
     
     def addLink(self, node1, node2, **params):
