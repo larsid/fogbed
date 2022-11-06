@@ -33,6 +33,7 @@ class FogWorker:
             raise Exception(f'Already exist a tunnel to worker with ip={destination_ip}')
         self.tunnels.append(destination_ip)
     
+
     def _create_topology(self):
         for datacenter in self.datacenters.values():
             self.net.add_switch(datacenter.switch)
@@ -43,19 +44,22 @@ class FogWorker:
                 service = RemoteDocker(container.name, self.net.url)
                 container.set_docker(service)
 
+
     def _get_valid_switchname(self) -> str:
         switches = list(self.datacenters.keys())
         switches.sort()
         last_switch_index = int(switches[-1][1:])
         return f's{last_switch_index + 1}'
     
-    def _create_links(self):
-        gateway = self._get_valid_switchname()
+
+    def _create_links_to_gateway(self, gateway: str):
         self.net.add_switch(gateway)
 
         for switch in self.datacenters:
             self.net.add_link(switch, gateway)
-        
+    
+
+    def _create_tunnels(self, gateway: str):
         for index, ip in enumerate(self.tunnels):
             command = get_tunnel_command(port=gateway, interface=f'gre{index+1}', ip=ip)
             self.net.run_command(gateway, command)
@@ -67,11 +71,14 @@ class FogWorker:
     def start(self, controller_ip: str, controller_port: int):
         if(not self.datacenters):
             raise Exception('Expect at least 1 VirtualInstance')
-        
+
         self.net.add_controller('c0', controller_ip, controller_port)
         self._create_topology()
-        self._create_links()
+        
+        gateway = self._get_valid_switchname()
+        self._create_links_to_gateway(gateway)
         self.net.start()
+        self._create_tunnels(gateway)
     
     def stop(self):
         self.net.stop()
