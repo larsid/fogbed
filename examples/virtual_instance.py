@@ -1,4 +1,4 @@
-from fogbed.emulation import EmulationCore
+from fogbed.emulation import Services
 from fogbed.experiment.local import FogbedExperiment
 from fogbed.node.container import Container
 from fogbed.resources import ResourceModel
@@ -8,7 +8,7 @@ from mininet.log import setLogLevel
 
 setLogLevel('info')
 
-EmulationCore(max_cpu=0.5, max_mem=512)
+Services(max_cpu=0.5, max_mem=512)
 exp = FogbedExperiment()
 
 edge = exp.add_virtual_instance('edge', EdgeResourceModel(max_cu=2, max_mu=256))

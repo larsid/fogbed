@@ -1,6 +1,6 @@
 from typing import Callable
 
-from fogbed.emulation import EmulationCore
+from fogbed.emulation import Services
 from fogbed.node.container import Container
 
 class CPUAllocator:
@@ -11,13 +11,13 @@ class CPUAllocator:
     def allocate(self, container: Container):
         requested_cu = container.compute_units
         cpu_quota    = self.calculate_cpu_quota(requested_cu)
-        cpu_period   = EmulationCore.cpu_period_in_microseconds()
+        cpu_period   = Services.cpu_period_in_microseconds()
         container.update_cpu(cpu_quota, cpu_period)    
 
     def calculate_cpu_quota(self, requested_cu: float) -> int:
         single_cu      = self.compute_single_cu()
         cpu_percentage = single_cu * requested_cu
-        cpu_period = EmulationCore.cpu_period_in_microseconds()
+        cpu_period = Services.cpu_period_in_microseconds()
         cpu_quota  = cpu_period * cpu_percentage
 
         if(cpu_quota < 1000): cpu_quota = 1000

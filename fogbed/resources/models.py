@@ -1,4 +1,4 @@
-from fogbed.emulation import EmulationCore
+from fogbed.emulation import Services
 from fogbed.exceptions import NotEnoughResourcesAvailable
 from fogbed.node.container import Container
 from fogbed.resources import ResourceModel
@@ -44,10 +44,10 @@ class EdgeResourceModel(ResourceModel):
         self.allocated_mu -= container.memory_units
 
     def calculate_cpu_percentage(self) -> float:
-        return EmulationCore.cpu_percentage() / EmulationCore.get_all_compute_units()
+        return Services.cpu_percentage() / Services.get_all_compute_units()
 
     def calculate_memory_percentage(self) -> float:
-        return EmulationCore.memory_in_megabytes() / EmulationCore.get_all_memory_units()
+        return Services.memory_in_megabytes() / Services.get_all_memory_units()
     
 
 
@@ -80,8 +80,8 @@ class CloudResourceModel(EdgeResourceModel):
 
     
     def calculate_cpu_percentage(self) -> float:
-        e_cpu = EmulationCore.cpu_percentage()
-        all_compute_units = EmulationCore.get_all_compute_units()
+        e_cpu = Services.cpu_percentage()
+        all_compute_units = Services.get_all_compute_units()
         cpu_op_factor = self._cpu_over_provisioning_factor()
         return (e_cpu / all_compute_units) * cpu_op_factor
 
