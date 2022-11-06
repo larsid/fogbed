@@ -65,3 +65,10 @@ class Services:
                 return container
         return None
     
+    @staticmethod
+    def get_container_by_name(name: str) -> 'Container | None':
+        for container in Services.get_all_containers():
+            if(container.name == name):
+                return container
+        return None
+    
