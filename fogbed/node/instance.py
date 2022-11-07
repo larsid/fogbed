@@ -11,9 +11,10 @@ class VirtualInstance(object):
     COUNTER = 0
 
     def __init__(self, name: str) -> None:
-        self.label   = name
-        self.switch  = self._create_switch()
-        self._ip     = ''
+        self.label      = name
+        self.switch     = self._create_switch()
+        self._ip        = ''
+        self._reachable = False
         self.containers: Dict[str, Container] = {}
         self.resource_model: Optional[ResourceModel] = None
         
@@ -50,10 +51,17 @@ class VirtualInstance(object):
 
     def set_ip(self, ip: str):
         self._ip = ip
+    
+    def set_reachable(self, reachable: bool):
+        self._reachable = reachable
         
     def _set_default_params(self, container: Container):
         if(container.resources is None):
             container._params['resources'] = ResourceModel.TINY
+
+    @property
+    def is_reachable(self) -> bool:
+        return self._reachable
 
     @property
     def compute_units(self) -> float:
