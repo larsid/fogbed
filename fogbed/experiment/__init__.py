@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Container, List
+from typing import List
 
+from fogbed.node.container import Container
 from fogbed.node.instance import VirtualInstance
 from fogbed.resources import ResourceModel
 
