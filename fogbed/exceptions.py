@@ -14,4 +14,6 @@ class VirtualInstanceAlreadyExists(Exception):
     pass
 
 class VirtualInstanceNotFound(Exception):
-    pass
+    def __init__(self, name: str) -> None:
+        super().__init__(f'Datacenter {name} not found.')
+    
