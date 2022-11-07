@@ -44,7 +44,7 @@ class FogbedDistributedExperiment(Experiment):
 
               
 
-    def add_link(self, worker1: FogWorker, worker2: FogWorker): 
+    def add_tunnel(self, worker1: FogWorker, worker2: FogWorker): 
         worker1.add_tunnel(worker2.ip)
         worker2.add_tunnel(worker1.ip)
         
