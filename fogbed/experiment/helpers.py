@@ -1,6 +1,5 @@
 from fogbed.emulation import Services
-from fogbed.exceptions import ContainerAlreadyExists, ContainerNotFound, VirtualInstanceAlreadyExists
-from fogbed.node.container import Container
+from fogbed.exceptions import ContainerAlreadyExists, VirtualInstanceAlreadyExists
 
 def verify_if_container_ip_exists(ip: str):
     if(Services.get_container_by_ip(ip) is not None):
