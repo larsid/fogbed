@@ -12,3 +12,6 @@ class ResourceModelNotFound(Exception):
 
 class VirtualInstanceAlreadyExists(Exception):
     pass
+
+class VirtualInstanceNotFound(Exception):
+    pass
