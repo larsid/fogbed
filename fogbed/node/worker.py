@@ -1,7 +1,8 @@
 from typing import Dict, List
 
 from clusternet.client.worker import RemoteWorker
-from fogbed.exceptions import VirtualInstanceAlreadyExists
+from fogbed.exceptions import VirtualInstanceAlreadyExists, VirtualInstanceNotFound
+from fogbed.experiment.link import Link
 from fogbed.node.instance import VirtualInstance
 from fogbed.node.services.remote_docker import RemoteDocker
 
@@ -15,15 +16,25 @@ class FogWorker:
         self.ip = ip
         self.datacenters: Dict[str, VirtualInstance] = {}
         self.tunnels: List[str] = []
+        self.links: List[Link] = []
         self.net = RemoteWorker(ip)
         
 
-    def add(self, datacenter: VirtualInstance):
+    def add(self, datacenter: VirtualInstance, reachable: bool = False):
         if(datacenter.switch in self.datacenters):
             raise VirtualInstanceAlreadyExists(f'Datacenter {datacenter.label} already exists.')
         
         datacenter.set_ip(self.ip)
+        datacenter.set_reachable(reachable)
         self.datacenters[datacenter.switch] = datacenter
+
+
+    def add_link(self, node1: VirtualInstance, node2: VirtualInstance, **params):
+        if(not node1.switch in self.datacenters):
+            raise VirtualInstanceNotFound(node1.label)
+        if(not node2.switch in self.datacenters):
+            raise VirtualInstanceNotFound(node2.label)
+        self.links.append(Link(node1.switch, node2.switch, **params))
 
 
     def add_tunnel(self, destination_ip: str):
@@ -44,6 +55,9 @@ class FogWorker:
                 service = RemoteDocker(container.name, self.net.url)
                 container.set_docker(service)
 
+        for link in self.links:
+            self.net.add_link(**link.to_dict)
+
 
     def _get_valid_switchname(self) -> str:
         switches = list(self.datacenters.keys())
@@ -55,8 +69,9 @@ class FogWorker:
     def _create_links_to_gateway(self, gateway: str):
         self.net.add_switch(gateway)
 
-        for switch in self.datacenters:
-            self.net.add_link(switch, gateway)
+        for datacenter in self.datacenters.values():
+            if(datacenter.is_reachable):
+                self.net.add_link(datacenter.switch, gateway)
     
 
     def _create_tunnels(self, gateway: str):
