@@ -1,4 +1,4 @@
-from typing import List, Type
+from typing import List, Optional, Type
 
 from fogbed.emulation import Services
 from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable
@@ -30,10 +30,9 @@ class FogbedExperiment(Experiment):
         self.topology.addLink(node1.switch, node2.switch, **params)
 
 
-    def add_virtual_instance(self, name: str, resource_model: ResourceModel) -> VirtualInstance:
+    def add_virtual_instance(self, name: str, resource_model: Optional[ResourceModel] = None) -> VirtualInstance:
         verify_if_datacenter_exists(name)
-        datacenter = VirtualInstance(name)
-        datacenter.assignResourceModel(resource_model)
+        datacenter = VirtualInstance(name, resource_model)
         Services.add_virtual_instance(datacenter)
         self.topology.addSwitch(datacenter.switch)
         return datacenter

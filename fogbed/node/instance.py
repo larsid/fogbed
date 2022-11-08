@@ -1,7 +1,7 @@
 from itertools import chain
 from typing import Dict, Optional
 
-from fogbed.exceptions import ContainerNotFound, ResourceModelNotFound
+from fogbed.exceptions import ContainerNotFound
 from fogbed.node.container import Container
 from fogbed.resources import ResourceModel
 
@@ -10,25 +10,23 @@ from fogbed.resources import ResourceModel
 class VirtualInstance(object):
     COUNTER = 0
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, 
+        name: str, 
+        resource_model: Optional[ResourceModel] = None
+    ):
         self.label      = name
         self.switch     = self._create_switch()
         self._ip        = ''
         self._reachable = False
         self.containers: Dict[str, Container] = {}
-        self.resource_model: Optional[ResourceModel] = None
+        self.resource_model: Optional[ResourceModel] = resource_model
         
-    
-    def assignResourceModel(self, resource_model: ResourceModel):
-        self.resource_model = resource_model
-    
     
     def create_container(self, container: Container):
-        if(self.resource_model is None):
-            raise ResourceModelNotFound('Assign a resource model to this virtual instance.')
-        
         self._set_default_params(container)
-        self.resource_model.allocate(container)
+
+        if(self.resource_model is not None):
+            self.resource_model.allocate(container)
         self.containers[container.name] = container
 
     
