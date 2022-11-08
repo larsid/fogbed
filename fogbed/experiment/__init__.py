@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 
 from fogbed.node.container import Container
 from fogbed.node.instance import VirtualInstance
@@ -8,7 +8,7 @@ from fogbed.resources import ResourceModel
 
 class Experiment(ABC):
     @abstractmethod
-    def add_virtual_instance(self, name: str, resource_model: ResourceModel) -> VirtualInstance:
+    def add_virtual_instance(self, name: str, resource_model: Optional[ResourceModel] = None) -> VirtualInstance:
         pass
     
     @abstractmethod

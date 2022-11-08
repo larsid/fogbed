@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from fogbed.emulation import Services
 from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable
@@ -58,10 +58,9 @@ class FogbedDistributedExperiment(Experiment):
         return worker
     
 
-    def add_virtual_instance(self, name: str, resource_model: ResourceModel) -> VirtualInstance:
+    def add_virtual_instance(self, name: str, resource_model: Optional[ResourceModel] = None) -> VirtualInstance:
         verify_if_datacenter_exists(name)
-        datacenter = VirtualInstance(name)
-        datacenter.assignResourceModel(resource_model)
+        datacenter = VirtualInstance(name, resource_model)
         Services.add_virtual_instance(datacenter)
         return datacenter
 
