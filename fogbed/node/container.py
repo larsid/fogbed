@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from fogbed.node.services import DockerService
 
@@ -10,13 +10,19 @@ class Container:
     def __init__(self, 
         name: str, 
         ip: Optional[str] = None,
+        dcmd: str = '/bin/bash',
         dimage: str = 'ubuntu:trusty',
+        enviroment: Dict[str, str] = {},
+        volumes: List[str] = [],
         **params
     ):
-        self.name    = name
-        self.ip      = self._get_ip(ip)
-        self.dimage  = dimage
-        self._params = params
+        self.name       = name
+        self.ip         = self._get_ip(ip)
+        self.dcmd       = dcmd
+        self.dimage     = dimage
+        self.enviroment = enviroment
+        self.volumes    = volumes
+        self._params    = params
         self._service: Optional[DockerService] = None
     
 
@@ -90,7 +96,10 @@ class Container:
     @property
     def params(self) -> Dict[str, Any]:
         self._params['ip'] = self.ip
+        self._params['dcmd'] = self.dcmd
         self._params['dimage'] = self.dimage
+        self._params['enviroment'] = self.enviroment
+        self._params['volumes'] = self.volumes
         return self._params
 
     def __repr__(self) -> str:
