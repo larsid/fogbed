@@ -12,7 +12,7 @@ class Container:
         ip: Optional[str] = None,
         dcmd: str = '/bin/bash',
         dimage: str = 'ubuntu:trusty',
-        enviroment: Dict[str, str] = {},
+        environment: Dict[str, str] = {},
         volumes: List[str] = [],
         **params
     ):
@@ -20,7 +20,7 @@ class Container:
         self.ip         = self._get_ip(ip)
         self.dcmd       = dcmd
         self.dimage     = dimage
-        self.enviroment = enviroment
+        self.environment = environment
         self.volumes    = volumes
         self._params    = params
         self._service: Optional[DockerService] = None
@@ -98,7 +98,7 @@ class Container:
         self._params['ip'] = self.ip
         self._params['dcmd'] = self.dcmd
         self._params['dimage'] = self.dimage
-        self._params['enviroment'] = self.enviroment
+        self._params['environment'] = self.environment
         self._params['volumes'] = self.volumes
         return self._params
 

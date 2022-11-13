@@ -96,9 +96,9 @@ You can also create containers with custom resource restrictions like in [Contai
 ```python
 from fogbed.node.container import Container
 
-d1 = Container('d1', ip='10.0.0.1', dimage='ubuntu:trusty', dcmd='bin/bash')
+d1 = Container('d1', ip='10.0.0.1', dimage='ubuntu:trusty', dcmd='/bin/bash')
 d2 = Container('d2', ip='10.0.0.2', dimage='ubuntu:focal', mac='00:00:00:00:00:02')
-d3 = Container('d3', ip='10.0.0.3', enviroment={'var1': 'value'})
+d3 = Container('d3', ip='10.0.0.3', environment={'var1': 'value'})
 ```
 On Fogbed, each container determines how much `cu` and `mu` they have, representing how many parts of the total of it’s Virtual Instance is available to the container. These values are converted to real cpu time and memory limit.
 
