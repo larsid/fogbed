@@ -27,10 +27,13 @@ sudo pip install -U git+https://github.com/EsauM10/fogbed.git
 ```
 
 ## Get Started
-After having installed fogbed you can start using it running an example topology, copy the example below to a file and run with:
+After having installed fogbed you can start an example topology, copy the example in `examples/sensors/sensors.py` and run with:
 ```
-sudo python3 filename.py
+sudo python3 sensors.py
 ```
+Then access the url `http://localhost:3000` on your browser to visualize a React application consuming a REST API what monitor some devices which send health random data.
+
+![monitor](https://user-images.githubusercontent.com/33939999/202031666-45889ae0-49ee-4a5e-a7a6-94f1705a8a08.jpeg)
 
 ### Local emulation
 ```python
