@@ -107,7 +107,7 @@ On Fogbed, each container determines how much `cu` and `mu` they have, represent
 
 Example: if a container `c1` is assigned 4 computing units and container `c2` 2 computing units, and they are both in the same Virtual Instance, container `c1` has twice more cpu time than container `c2`.
 
-The `resources` field describe how much of the Virtual Instance resources that container should take. If it isn’t specified, the predefined `ResourceModel.SMALL` is chosen. Below is the list of the predefined resources:
+The `resources` field describe how much of the Virtual Instance resources that container should take. If it isn’t specified, the predefined `Resources.SMALL` is chosen. Below is the list of the predefined resources:
 
 ```python
 Resources.TINY   => HardwareResources(cu=0.5,  mu=32)
