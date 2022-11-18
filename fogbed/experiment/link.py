@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 
 class Link:
-    def __init__(self, node1: str, node2: str, **params):
+    def __init__(self, node1: str, node2: str, **params: Any):
         self.node1  = node1
         self.node2  = node2
         self.params = params

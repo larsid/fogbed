@@ -1,3 +1,4 @@
+from typing import Any
 from mininet.net import Containernet
 from mininet.node import Docker
 from mininet.link import TCLink
@@ -9,7 +10,7 @@ class Fogbed(Containernet):
         super().__init__(link=TCLink, **params)
         self.is_running = False
     
-    def addLink(self, node1, node2, **params):
+    def addLink(self, node1, node2, **params: Any):
         assert node1 is not None
         assert node2 is not None
         
@@ -19,7 +20,7 @@ class Fogbed(Containernet):
         super().addLink(node1, node2, **params)
 
 
-    def removeLink(self, node1, node2, **params):
+    def removeLink(self, node1, node2, **params: Any):
         assert node1 is not None
         assert node2 is not None
         

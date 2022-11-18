@@ -14,7 +14,7 @@ class Container:
         dimage: str = 'ubuntu:trusty',
         environment: Dict[str, str] = {},
         volumes: List[str] = [],
-        **params
+        **params: Any
     ):
         self.name       = name
         self.ip         = self._get_ip(ip)

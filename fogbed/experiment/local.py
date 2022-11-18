@@ -1,4 +1,4 @@
-from typing import List, Optional, Type
+from typing import Any, List, Optional, Type
 
 from fogbed.emulation import Services
 from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable
@@ -26,7 +26,7 @@ class FogbedExperiment(Experiment):
         self.net = Fogbed(topo=self.topology, build=False, controller=controller, switch=switch)
     
 
-    def add_link(self, node1: VirtualInstance, node2: VirtualInstance, **params):
+    def add_link(self, node1: VirtualInstance, node2: VirtualInstance, **params: Any):
         self.topology.addLink(node1.switch, node2.switch, **params)
 
 

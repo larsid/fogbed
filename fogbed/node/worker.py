@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from clusternet.client.worker import RemoteWorker
 from fogbed.exceptions import VirtualInstanceAlreadyExists, VirtualInstanceNotFound
@@ -29,7 +29,7 @@ class FogWorker:
         self.datacenters[datacenter.switch] = datacenter
 
 
-    def add_link(self, node1: VirtualInstance, node2: VirtualInstance, **params):
+    def add_link(self, node1: VirtualInstance, node2: VirtualInstance, **params: Any):
         if(not node1.switch in self.datacenters):
             raise VirtualInstanceNotFound(node1.label)
         if(not node2.switch in self.datacenters):
