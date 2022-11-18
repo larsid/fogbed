@@ -1,7 +1,7 @@
 from typing import List
+
 from fogbed.experiment.local import FogbedExperiment
-from fogbed.node.container import Container
-from fogbed.node.instance import VirtualInstance
+from fogbed.node import Container, VirtualInstance
 
 from mininet.log import setLogLevel
 

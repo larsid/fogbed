@@ -1,6 +1,6 @@
 from fogbed.emulation import Services
 from fogbed.experiment.local import FogbedExperiment
-from fogbed.node.container import Container
+from fogbed.node import Container
 from fogbed.resources import ResourceModel
 from fogbed.resources.models import CloudResourceModel, EdgeResourceModel
 
