@@ -3,7 +3,7 @@ from typing import Dict, Optional
 
 from fogbed.exceptions import ContainerNotFound
 from fogbed.node.container import Container
-from fogbed.resources import ResourceModel
+from fogbed.resources.protocols import ResourceModel
 
 
 

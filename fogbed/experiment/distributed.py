@@ -12,7 +12,7 @@ from fogbed.node.instance import VirtualInstance
 from fogbed.node.container import Container
 from fogbed.node.services.remote_docker import RemoteDocker
 from fogbed.node.worker import FogWorker
-from fogbed.resources import ResourceModel
+from fogbed.resources.protocols import ResourceModel
 
 from mininet.log import info
 

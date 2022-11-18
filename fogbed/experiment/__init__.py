@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from fogbed.node.container import Container
 from fogbed.node.instance import VirtualInstance
-from fogbed.resources import ResourceModel
+from fogbed.resources.protocols import ResourceModel
 
 
 class Experiment(ABC):

@@ -9,10 +9,9 @@ from fogbed.experiment.helpers import (
     verify_if_datacenter_exists
 )
 from fogbed.net import Fogbed
-from fogbed.node.container import Container
-from fogbed.node.instance import VirtualInstance
+from fogbed.node import Container, VirtualInstance
 from fogbed.node.services.local_docker import LocalDocker
-from fogbed.resources import ResourceModel
+from fogbed.resources.protocols import ResourceModel
 
 from mininet.cli import CLI
 from mininet.log import info

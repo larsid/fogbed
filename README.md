@@ -39,8 +39,8 @@ Then access the url `http://localhost:3000` on your browser to visualize a React
 ```python
 from fogbed.emulation import Services
 from fogbed.experiment.local import FogbedExperiment
-from fogbed.node.container import Container
-from fogbed.resources import ResourceModel
+from fogbed.node import Container
+from fogbed.resources.protocols import ResourceModel
 from fogbed.resources.models import CloudResourceModel, EdgeResourceModel, FogResourceModel
 
 from mininet.log import setLogLevel
@@ -97,7 +97,7 @@ The resource model use is based on the proposed in [son-emu](https://github.com/
 You can also create containers with custom resource restrictions like in [Containernet](https://github.com/containernet/containernet/wiki#method-containernetadddocker)
 
 ```python
-from fogbed.node.container import Container
+from fogbed.node import Container
 
 d1 = Container('d1', ip='10.0.0.1', dimage='ubuntu:trusty', dcmd='/bin/bash')
 d2 = Container('d2', ip='10.0.0.2', dimage='ubuntu:focal', mac='00:00:00:00:00:02')
