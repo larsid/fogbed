@@ -1,6 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 from fogbed.node.services import DockerService
+from fogbed.resources.flavors import HardwareResources, Resources
 
 from mininet.util import ipAdd
 
@@ -14,6 +15,7 @@ class Container:
         dimage: str = 'ubuntu:trusty',
         environment: Dict[str, str] = {},
         volumes: List[str] = [],
+        resources: HardwareResources = Resources.SMALL,
         **params: Any
     ):
         self.name       = name
@@ -22,6 +24,7 @@ class Container:
         self.dimage     = dimage
         self.environment = environment
         self.volumes    = volumes
+        self.resources  = resources
         self._params    = params
         self._service: Optional[DockerService] = None
     
@@ -78,20 +81,14 @@ class Container:
     def mem_limit(self) -> int:
         mem_limit = self._params.get('mem_limit')
         return -1 if(mem_limit is None) else mem_limit
-
-    @property
-    def resources(self) -> 'Dict[str, Any] | None':
-        return self._params.get('resources')
     
     @property
     def compute_units(self) -> float:
-        resources = self.resources
-        return 0.0 if(resources is None) else resources['cu']
+        return self.resources.compute_units
     
     @property
     def memory_units(self) -> int:
-        resources = self.resources
-        return 0 if(resources is None) else resources['mu']
+        return self.resources.memory_units
 
     @property
     def params(self) -> Dict[str, Any]:

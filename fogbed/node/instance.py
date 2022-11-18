@@ -23,8 +23,6 @@ class VirtualInstance(object):
         
     
     def create_container(self, container: Container):
-        self._set_default_params(container)
-
         if(self.resource_model is not None):
             self.resource_model.allocate(container)
         self.containers[container.name] = container
@@ -52,10 +50,7 @@ class VirtualInstance(object):
     
     def set_reachable(self, reachable: bool):
         self._reachable = reachable
-        
-    def _set_default_params(self, container: Container):
-        if(container.resources is None):
-            container._params['resources'] = ResourceModel.TINY
+
 
     @property
     def is_reachable(self) -> bool:

@@ -1,7 +1,7 @@
 from fogbed.emulation import Services
 from fogbed.experiment.local import FogbedExperiment
 from fogbed.node import Container
-from fogbed.resources.protocols import ResourceModel
+from fogbed.resources import Resources
 from fogbed.resources.models import CloudResourceModel, EdgeResourceModel
 
 from mininet.log import setLogLevel
@@ -14,12 +14,12 @@ exp = FogbedExperiment()
 edge = exp.add_virtual_instance('edge', EdgeResourceModel(max_cu=2, max_mu=256))
 cloud = exp.add_virtual_instance('cloud', CloudResourceModel(max_cu=2, max_mu=512))
 
-d1 = Container('d1', resources=ResourceModel.SMALL)
-d2 = Container('d2', resources=ResourceModel.SMALL)
-d3 = Container('d3', resources=ResourceModel.SMALL)
-d4 = Container('d4', resources=ResourceModel.SMALL)
-d5 = Container('d5', resources=ResourceModel.SMALL)
-d6 = Container('d6', resources=ResourceModel.SMALL)
+d1 = Container('d1', resources=Resources.SMALL)
+d2 = Container('d2', resources=Resources.SMALL)
+d3 = Container('d3', resources=Resources.SMALL)
+d4 = Container('d4', resources=Resources.SMALL)
+d5 = Container('d5', resources=Resources.SMALL)
+d6 = Container('d6', resources=Resources.SMALL)
 
 exp.add_docker(d1, edge)
 exp.add_docker(d2, edge)
@@ -34,7 +34,7 @@ exp.add_link(cloud, edge)
 try:
     exp.start()
     
-    d7 = Container('d7', resources=ResourceModel.SMALL)
+    d7 = Container('d7', resources=Resources.SMALL)
     exp.add_docker(d7, cloud)
     print(d1.cmd(f'ping -c 4 {d7.ip}'))
 
