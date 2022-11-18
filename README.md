@@ -40,7 +40,7 @@ Then access the url `http://localhost:3000` on your browser to visualize a React
 from fogbed.emulation import Services
 from fogbed.experiment.local import FogbedExperiment
 from fogbed.node import Container
-from fogbed.resources.protocols import ResourceModel
+from fogbed.resources import Resources
 from fogbed.resources.models import CloudResourceModel, EdgeResourceModel, FogResourceModel
 
 from mininet.log import setLogLevel
@@ -54,13 +54,13 @@ cloud = exp.add_virtual_instance('cloud', CloudResourceModel(max_cu=8, max_mu=10
 fog   = exp.add_virtual_instance('fog',   FogResourceModel(max_cu=4, max_mu=512))
 edge  = exp.add_virtual_instance('edge',  EdgeResourceModel(max_cu=2, max_mu=256))
 
-d1 = Container('d1', ip='10.0.0.1', dimage='ubuntu:trusty', resources=ResourceModel.SMALL)
-d2 = Container('d2', ip='10.0.0.2', dimage='ubuntu:trusty', resources=ResourceModel.SMALL)
-d3 = Container('d3', ip='10.0.0.3', dimage='ubuntu:trusty', resources=ResourceModel.SMALL)
-d4 = Container('d4', ip='10.0.0.4', dimage='ubuntu:trusty', resources=ResourceModel.SMALL)
-d5 = Container('d5', ip='10.0.0.5', dimage='ubuntu:trusty', resources=ResourceModel.SMALL)
-d6 = Container('d6', ip='10.0.0.6', dimage='ubuntu:trusty', resources=ResourceModel.SMALL)
-d7 = Container('d7', ip='10.0.0.7', dimage='ubuntu:trusty', resources=ResourceModel.SMALL)
+d1 = Container('d1', ip='10.0.0.1', dimage='ubuntu:trusty', resources=Resources.SMALL)
+d2 = Container('d2', ip='10.0.0.2', dimage='ubuntu:trusty', resources=Resources.SMALL)
+d3 = Container('d3', ip='10.0.0.3', dimage='ubuntu:trusty', resources=Resources.SMALL)
+d4 = Container('d4', ip='10.0.0.4', dimage='ubuntu:trusty', resources=Resources.SMALL)
+d5 = Container('d5', ip='10.0.0.5', dimage='ubuntu:trusty', resources=Resources.SMALL)
+d6 = Container('d6', ip='10.0.0.6', dimage='ubuntu:trusty', resources=Resources.SMALL)
+d7 = Container('d7', ip='10.0.0.7', dimage='ubuntu:trusty', resources=Resources.SMALL)
 
 exp.add_docker(d1, cloud)
 
@@ -110,16 +110,18 @@ Example: if a container `c1` is assigned 4 computing units and container `c2` 2 
 The `resources` field describe how much of the Virtual Instance resources that container should take. If it isn’t specified, the predefined `ResourceModel.SMALL` is chosen. Below is the list of the predefined resources:
 
 ```python
-ResourceModel.TINY   => {'cu': 0.5,  'mu': 32}
-ResourceModel.SMALL  => {'cu': 1.0,  'mu': 128}
-ResourceModel.MEDIUM => {'cu': 4.0,  'mu': 256}
-ResourceModel.LARGE  => {'cu': 8.0,  'mu': 512}
-ResourceModel.XLARGE => {'cu': 16.0, 'mu': 1024}
+Resources.TINY   => HardwareResources(cu=0.5,  mu=32)
+Resources.SMALL  => HardwareResources(cu=1.0,  mu=128)
+Resources.MEDIUM => HardwareResources(cu=4.0,  mu=256)
+Resources.LARGE  => HardwareResources(cu=8.0,  mu=512)
+Resources.XLARGE => HardwareResources(cu=16.0, mu=1024)
 ```
 If none of the predefined resources is suitable for your application, you can pass a custom one like:
 
 ```python
-d1 = Container('d1', ip='10.0.0.1', resources={'cu': 2.0, 'mu': 128})
+from fogbed.resources.flavors import HardwareResources
+
+d1 = Container('d1', ip='10.0.0.1', resources=HardwareResources(cu=2.0, mu=128))
 ```
 
 
