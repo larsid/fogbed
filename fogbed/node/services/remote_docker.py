@@ -19,7 +19,7 @@ class RemoteDocker(DockerService):
         self.docker.update_memory(memory_in_bytes)
     
     def start(self):
-        pass
+        self.docker.start()
     
     def stop(self):
         pass
