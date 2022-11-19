@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from fogbed.emulation import Services
 from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable
@@ -44,7 +44,7 @@ class FogbedDistributedExperiment(Experiment):
 
               
 
-    def add_tunnel(self, worker1: FogWorker, worker2: FogWorker): 
+    def add_tunnel(self, worker1: FogWorker, worker2: FogWorker, **params: Any):
         worker1.add_tunnel(worker2.ip)
         worker2.add_tunnel(worker1.ip)
         
