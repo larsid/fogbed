@@ -22,4 +22,4 @@ class RemoteDocker(DockerService):
         self.docker.start()
     
     def stop(self):
-        pass
+        self.docker.stop()
