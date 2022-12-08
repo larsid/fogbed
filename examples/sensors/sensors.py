@@ -1,9 +1,8 @@
 from typing import List
 
-from fogbed.experiment.local import FogbedExperiment
-from fogbed.node import Container, VirtualInstance
-
-from mininet.log import setLogLevel
+from fogbed import (
+    FogbedExperiment, Container, VirtualInstance, setLogLevel
+)
 
 setLogLevel('info')
 

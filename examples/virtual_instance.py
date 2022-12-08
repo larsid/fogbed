@@ -1,10 +1,9 @@
-from fogbed.emulation import Services
-from fogbed.experiment.local import FogbedExperiment
-from fogbed.node import Container
-from fogbed.resources import Resources
-from fogbed.resources.models import CloudResourceModel, EdgeResourceModel
-
-from mininet.log import setLogLevel
+from fogbed import (
+    FogbedExperiment, 
+    Container, Resources, Services, 
+    CloudResourceModel, EdgeResourceModel,
+    setLogLevel
+)
 
 setLogLevel('info')
 
