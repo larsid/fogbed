@@ -10,7 +10,7 @@ from fogbed.node.services.remote_docker import RemoteDocker
 def get_tunnel_command(port: str, interface: str, ip: str) -> str:
     return f'ovs-vsctl add-port {port} {port}-{interface} -- set interface {port}-{interface} type=gre options:remote_ip={ip}'
 
-class FogWorker:
+class Worker:
     def __init__(self, ip: str) -> None:
         # Validate IP
         self.ip = ip

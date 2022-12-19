@@ -11,7 +11,7 @@ from fogbed.experiment.helpers import (
 from fogbed.node.instance import VirtualInstance
 from fogbed.node.container import Container
 from fogbed.node.services.remote_docker import RemoteDocker
-from fogbed.node.worker import FogWorker
+from fogbed.node.worker import Worker
 from fogbed.resources.protocols import ResourceModel
 
 from mininet.log import info
@@ -20,7 +20,7 @@ class FogbedDistributedExperiment(Experiment):
     def __init__(self, controller_ip: str, controller_port: int) -> None:
         self.controller_ip   = controller_ip
         self.controller_port = controller_port
-        self.workers: Dict[str, FogWorker] = {}
+        self.workers: Dict[str, Worker] = {}
         self.is_running = False
 
 
@@ -44,16 +44,16 @@ class FogbedDistributedExperiment(Experiment):
 
               
 
-    def add_tunnel(self, worker1: FogWorker, worker2: FogWorker, **params: Any):
+    def add_tunnel(self, worker1: Worker, worker2: Worker, **params: Any):
         worker1.add_tunnel(worker2.ip)
         worker2.add_tunnel(worker1.ip)
         
 
-    def add_worker(self, ip: str) -> FogWorker:
+    def add_worker(self, ip: str) -> Worker:
         if(ip in self.workers):
             raise Exception(f'Already exist a worker with ip={ip}')
 
-        worker = FogWorker(ip=ip)
+        worker = Worker(ip=ip)
         self.workers[worker.ip] = worker
         return worker
     
@@ -80,7 +80,7 @@ class FogbedDistributedExperiment(Experiment):
     def get_virtual_instances(self) -> List[VirtualInstance]:
         return list(Services.virtual_instances().values())
 
-    def _get_worker_by_datacenter(self, datacenter: VirtualInstance) -> FogWorker:
+    def _get_worker_by_datacenter(self, datacenter: VirtualInstance) -> Worker:
         return self.workers[datacenter.get_ip()]
 
     def remove_docker(self, name: str):

@@ -1,3 +1,3 @@
 from fogbed.node.container import Container
 from fogbed.node.instance import VirtualInstance
-from fogbed.node.worker import FogWorker
+from fogbed.node.worker import Worker
