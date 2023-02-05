@@ -14,18 +14,22 @@ class Container:
         dcmd: str = '/bin/bash',
         dimage: str = 'ubuntu:trusty',
         environment: Dict[str, str] = {},
+        ports: List[int] = [],
+        port_bindings: Dict[int, int] = {},
         volumes: List[str] = [],
         resources: HardwareResources = Resources.SMALL,
         **params: Any
     ):
-        self.name       = name
-        self.ip         = self._get_ip(ip)
-        self.dcmd       = dcmd
-        self.dimage     = dimage
+        self.name        = name
+        self.ip          = self._get_ip(ip)
+        self.dcmd        = dcmd
+        self.dimage      = dimage
         self.environment = environment
-        self.volumes    = volumes
-        self.resources  = resources
-        self._params    = params
+        self.ports       = ports
+        self.bindings    = port_bindings
+        self.volumes     = volumes
+        self.resources   = resources
+        self._params     = params
         self._service: Optional[DockerService] = None
     
 
@@ -96,7 +100,9 @@ class Container:
         self._params['dcmd'] = self.dcmd
         self._params['dimage'] = self.dimage
         self._params['environment'] = self.environment
-        self._params['volumes'] = self.volumes
+        self._params['ports'] = self.ports
+        self._params['port_bindings'] = self.bindings
+        self._params['volumes'] = self.volumes        
         return self._params
 
     def __repr__(self) -> str:
