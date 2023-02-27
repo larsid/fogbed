@@ -4,6 +4,8 @@ from fogbed.emulation import Services
 from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable
 from fogbed.experiment import Experiment
 from fogbed.experiment.helpers import (
+    get_ip_address,
+    start_openflow_controller,
     verify_if_container_ip_exists, 
     verify_if_container_name_exists,
     verify_if_datacenter_exists
@@ -17,7 +19,10 @@ from fogbed.resources.protocols import ResourceModel
 from mininet.log import info
 
 class FogbedDistributedExperiment(Experiment):
-    def __init__(self, controller_ip: str, controller_port: int) -> None:
+    def __init__(self, 
+        controller_ip: Optional[str] = None, 
+        controller_port: int = 6633
+    ):
         self.controller_ip   = controller_ip
         self.controller_port = controller_port
         self.workers: Dict[str, Worker] = {}
@@ -94,10 +99,15 @@ class FogbedDistributedExperiment(Experiment):
 
 
     def start(self):
+        if(self.controller_ip is None):
+            self.controller_ip = get_ip_address()
+            start_openflow_controller(self.controller_ip, self.controller_port)
+
         for worker in self.workers.values():
             worker.start(self.controller_ip, self.controller_port)
         self.is_running = True
 
+    
     def stop(self):
         for worker in self.workers.values():
             if(worker.is_running):

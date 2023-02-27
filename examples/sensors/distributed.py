@@ -4,7 +4,7 @@ from fogbed import (
     VirtualInstance, Container, Worker
 )
 
-exp = FogbedDistributedExperiment(controller_ip='192.168.0.152', controller_port=6633)
+exp = FogbedDistributedExperiment()
 
 def create_devices(number: int) -> List[VirtualInstance]:
     return [exp.add_virtual_instance(f'edge{i+1}') for i in range(number)]
