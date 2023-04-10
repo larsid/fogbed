@@ -20,7 +20,13 @@ from mininet.topo import Topo
 
 
 class FogbedExperiment(Experiment):
-    def __init__(self, controller=Controller, switch: Type[Switch]=OVSSwitch) -> None:
+    def __init__(self, 
+        controller=Controller, 
+        switch: Type[Switch]=OVSSwitch,
+        max_cpu: float = 1.0,
+        max_memory: int = 512
+    ):
+        Services(max_cpu, max_memory)
         self.topology = Topo()
         self.net = Fogbed(topo=self.topology, build=False, controller=controller, switch=switch)
     

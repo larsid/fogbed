@@ -77,15 +77,14 @@ d3 = Container('d3', ip='10.0.0.3', environment={'var1': 'value'})
 Here we have the instantiation of a fog topology, used by fogbed, followed by the definition of 3 Virtual Instances. A `VirtualInstance` in the context of fogbed is a unit that can have one or more containers linked together by a single switch. Each Virtual Instance has a resource model associated with it that defines how many resources that instance have so that they can be distributed among it’s containers.
 ```python
 from fogbed import (
-    FogbedExperiment, Container, Resources, Services,
+    FogbedExperiment, Container, Resources,
     CloudResourceModel, EdgeResourceModel, FogResourceModel,
     setLogLevel
 )
 
 setLogLevel('info')
 
-Services(max_cpu=0.5, max_mem=512)
-exp = FogbedExperiment()
+exp = FogbedExperiment(max_cpu=0.5, max_memory=512)
 
 cloud = exp.add_virtual_instance('cloud', CloudResourceModel(max_cu=8, max_mu=1024))
 fog   = exp.add_virtual_instance('fog',   FogResourceModel(max_cu=4, max_mu=512))

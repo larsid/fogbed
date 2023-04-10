@@ -1,14 +1,13 @@
 from fogbed import (
     FogbedExperiment, 
-    Container, Resources, Services, 
+    Container, Resources, 
     CloudResourceModel, EdgeResourceModel,
     setLogLevel
 )
 
 setLogLevel('info')
 
-Services(max_cpu=0.5, max_mem=512)
-exp = FogbedExperiment()
+exp = FogbedExperiment(max_cpu=0.5, max_memory=512)
 
 edge = exp.add_virtual_instance('edge', EdgeResourceModel(max_cu=2, max_mu=256))
 cloud = exp.add_virtual_instance('cloud', CloudResourceModel(max_cu=2, max_mu=512))

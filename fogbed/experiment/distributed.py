@@ -21,8 +21,11 @@ from mininet.log import info
 class FogbedDistributedExperiment(Experiment):
     def __init__(self, 
         controller_ip: Optional[str] = None, 
-        controller_port: int = 6633
+        controller_port: int = 6633,
+        max_cpu: float = 1.0,
+        max_memory: int = 512
     ):
+        Services(max_cpu, max_memory)
         self.controller_ip   = controller_ip
         self.controller_port = controller_port
         self.workers: Dict[str, Worker] = {}
