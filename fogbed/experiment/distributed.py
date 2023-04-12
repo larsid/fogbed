@@ -113,6 +113,5 @@ class FogbedDistributedExperiment(Experiment):
     
     def stop(self):
         for worker in self.workers.values():
-            if(worker.is_running):
-                worker.stop()
+            worker.stop()
         self.is_running = False

@@ -62,10 +62,9 @@ class Worker:
 
 
     def _get_valid_switchname(self) -> str:
-        switches = list(self.datacenters.keys())
-        switches.sort()
-        last_switch_index = int(switches[-1][1:])
-        return f's{last_switch_index + 1}'
+        switch_indexes = [int(name[1:]) for name in self.datacenters.keys()]
+        switch_indexes.sort()
+        return f's{switch_indexes.pop() + 1}'
     
 
     def _create_links_to_gateway(self, gateway: str):
