@@ -13,13 +13,12 @@ def get_tunnel_command(port: str, interface: str, ip: str) -> str:
     return f'ovs-vsctl add-port {port} {port}-{interface} -- set interface {port}-{interface} type=gre options:remote_ip={resolved_ip}'
 
 class Worker:
-    def __init__(self, ip: str) -> None:
-        # Validate IP
+    def __init__(self, ip: str, port: int) -> None:
         self.ip = ip
         self.datacenters: Dict[str, VirtualInstance] = {}
         self.tunnels: List[str] = []
         self.links: List[Link] = []
-        self.net = RemoteWorker(ip)
+        self.net = RemoteWorker(ip, port)
         
 
     def add(self, datacenter: VirtualInstance, reachable: bool = False):

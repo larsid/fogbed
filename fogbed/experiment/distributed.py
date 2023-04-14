@@ -57,11 +57,11 @@ class FogbedDistributedExperiment(Experiment):
         worker2.add_tunnel(worker1.ip)
         
 
-    def add_worker(self, ip: str) -> Worker:
+    def add_worker(self, ip: str, port: int = 5000) -> Worker:
         if(ip in self.workers):
             raise Exception(f'Already exist a worker with ip={ip}')
 
-        worker = Worker(ip=ip)
+        worker = Worker(ip, port)
         self.workers[worker.ip] = worker
         return worker
     
