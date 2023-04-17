@@ -15,13 +15,24 @@ def verify_if_datacenter_exists(name: str):
     if(name in Services.virtual_instances()):
         raise VirtualInstanceAlreadyExists(f'Datacenter {name} already exists.')
 
+def controller_is_running(ip: str, port: int) -> bool:
+    command = f'echo A | telnet -e A {ip} {port}'.split(' ')
+    output  = subprocess.check_output(command, text=True)
+
+    if('Connection refused' in output):    
+        return False
+    return True
+
 def get_ip_address() -> str:
     output = subprocess.check_output(['hostname', '--all-ip-addresses'], text=True)
     return output.split(' ')[0]
 
 def start_openflow_controller(ip: str, port: int):
     hostname = socket.gethostname()
-    code = subprocess.call(['controller', '-D', f'ptcp:{port}'])
+    if(controller_is_running(ip, port)):
+        print(f'[{hostname}]: Using already started controller on: {ip}:{port}')
+        return
 
+    code = subprocess.call(['controller', '-D', f'ptcp:{port}'])
     if(code == 0):
         print(f'[{hostname}]: OpenFlow controller listening on: {ip}:{port}')
