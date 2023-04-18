@@ -1,16 +1,12 @@
-import socket
 from typing import Any, Dict, List
 
 from clusternet.client.worker import RemoteWorker
 from fogbed.exceptions import VirtualInstanceAlreadyExists, VirtualInstanceNotFound
 from fogbed.experiment.link import Link
+from fogbed.helpers import get_tunnel_command, resolve_ip
 from fogbed.node.instance import VirtualInstance
 from fogbed.node.services.remote_docker import RemoteDocker
 
-
-def get_tunnel_command(port: str, interface: str, ip: str) -> str:
-    resolved_ip = socket.gethostbyname(ip)
-    return f'ovs-vsctl add-port {port} {port}-{interface} -- set interface {port}-{interface} type=gre options:remote_ip={resolved_ip}'
 
 class Worker:
     def __init__(self, ip: str, port: int) -> None:
@@ -76,7 +72,7 @@ class Worker:
 
     def _create_tunnels(self, gateway: str):
         for index, ip in enumerate(self.tunnels):
-            command = get_tunnel_command(port=gateway, interface=f'gre{index+1}', ip=ip)
+            command = get_tunnel_command(port=gateway, interface=f'gre{index+1}', ip=resolve_ip(ip))
             self.net.run_command(gateway, command)
 
     @property
@@ -87,7 +83,7 @@ class Worker:
         if(not self.datacenters):
             raise Exception('Expect at least 1 VirtualInstance')
 
-        self.net.add_controller('c0', controller_ip, controller_port)
+        self.net.add_controller('c0', resolve_ip(controller_ip), controller_port)
         self._create_topology()
         
         gateway = self._get_valid_switchname()
