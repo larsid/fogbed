@@ -3,7 +3,7 @@ from typing import Any, List, Optional, Type
 from fogbed.emulation import Services
 from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable
 from fogbed.experiment import Experiment
-from fogbed.experiment.helpers import (
+from fogbed.helpers import (
     verify_if_container_ip_exists,
     verify_if_container_name_exists,
     verify_if_datacenter_exists

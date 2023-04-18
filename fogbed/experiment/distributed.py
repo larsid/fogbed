@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 from fogbed.emulation import Services
 from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable
 from fogbed.experiment import Experiment
-from fogbed.experiment.helpers import (
+from fogbed.helpers import (
     get_ip_address,
     start_openflow_controller,
     verify_if_container_ip_exists, 
