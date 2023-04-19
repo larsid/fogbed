@@ -81,7 +81,7 @@ class Worker:
 
     def start(self, controller_ip: str, controller_port: int):
         if(not self.datacenters):
-            raise Exception('Expect at least 1 VirtualInstance')
+            raise Exception(f'[{self.ip}]: Expecting at least 1 VirtualInstance')
 
         self.net.add_controller('c0', resolve_ip(controller_ip), controller_port)
         self._create_topology()

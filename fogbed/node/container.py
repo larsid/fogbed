@@ -35,17 +35,17 @@ class Container:
 
     def cmd(self, command: str) -> str:
         if(self._service is None):
-            raise Exception(f'Docker container {self.name} was not started')
+            raise Exception(f'Container {self.name} was not started')
         return self._service.run_command(command)
 
     def start(self):
         if(self._service is None):
-            raise Exception(f'Docker container {self.name} was not started')
+            raise Exception(f'Container {self.name} was not started')
         self._service.start()
 
     def stop(self):
         if(self._service is None):
-            raise Exception(f'Docker container {self.name} was not started')
+            raise Exception(f'Container {self.name} was not started')
         self._service.stop()
 
     def set_docker(self, service: DockerService):

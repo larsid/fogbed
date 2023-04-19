@@ -35,7 +35,7 @@ class VirtualInstance(object):
 
     def remove_container(self, name: str):
         if(not name in self.containers):
-            ContainerNotFound(f'Container {name} not found.')
+            ContainerNotFound(f'[{self.label}]: Container {name} not found.')
         
         container = self.containers[name]
         if(self.resource_model is not None):
