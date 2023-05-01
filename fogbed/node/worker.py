@@ -93,3 +93,7 @@ class Worker:
     
     def stop(self):
         self.net.stop()
+
+    def __eq__(self, other: object) -> bool:
+        if(not isinstance(other, Worker)): return False
+        return self.ip == other.ip
