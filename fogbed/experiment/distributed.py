@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional
 from fogbed.emulation import Services
 from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable
 from fogbed.experiment import Experiment
+from fogbed.experiment.link import Controller
 from fogbed.helpers import (
     get_ip_address,
     start_openflow_controller,
@@ -57,11 +58,11 @@ class FogbedDistributedExperiment(Experiment):
         worker2.add_tunnel(worker1.ip)
         
 
-    def add_worker(self, ip: str, port: int = 5000) -> Worker:
+    def add_worker(self, ip: str, port: int = 5000, controller: Optional[Controller] = None) -> Worker:
         if(ip in self.workers):
             raise Exception(f'Already exist a worker with ip={ip}')
 
-        worker = Worker(ip, port)
+        worker = Worker(ip, port, controller)
         self.workers[worker.ip] = worker
         return worker
     

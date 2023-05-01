@@ -1,5 +1,16 @@
 from typing import Any, Dict
 
+from fogbed.helpers import resolve_ip
+
+
+class Controller:
+    def __init__(self, ip: str, port: int) -> None:
+        self.ip = resolve_ip(ip)
+        self.port = port
+    
+    def __str__(self) -> str:
+        return f'Controller(ip={self.ip}, port={self.port})'
+
 
 class Link:
     def __init__(self, node1: str, node2: str, **params: Any):

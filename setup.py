@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="fogbed",
-    version="1.4.1",
+    version="1.5.1",
     description='Containernet fork that add Fogbed support.',
     long_description='Containernet fork that add Fogbed support.',
     keywords=['networking', 'emulator', 'protocol', 'Internet', 'OpenFlow', 'SDN', 'fog'],
