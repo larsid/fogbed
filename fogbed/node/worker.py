@@ -77,7 +77,8 @@ class Worker:
 
     def _create_tunnels(self, gateway: str):
         for index, ip in enumerate(self.tunnels):
-            command = get_tunnel_command(port=gateway, interface=f'gre{index+1}', ip=resolve_ip(ip))
+            interface = f'{gateway}-gre{index+1}'
+            command = get_tunnel_command(port=gateway, interface=interface, ip=resolve_ip(ip))
             self.net.run_command(gateway, command)
 
     @property

@@ -19,7 +19,7 @@ def resolve_ip(ip: str) -> str:
     return socket.gethostbyname(ip)
 
 def get_tunnel_command(port: str, interface: str, ip: str) -> str:
-    return f'ovs-vsctl add-port {port} {port}-{interface} -- set interface {port}-{interface} type=gre options:remote_ip={ip}'
+    return f'ovs-vsctl add-port {port} {interface} -- set interface {interface} type=gre options:remote_ip={ip} options:df_default=false'
 
 def get_ip_address() -> str:
     output = subprocess.check_output(['hostname', '--all-ip-addresses'], text=True)
