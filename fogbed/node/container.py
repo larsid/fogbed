@@ -13,7 +13,7 @@ class Container:
         ip: Optional[str] = None,
         dcmd: str = '/bin/bash',
         dimage: str = 'ubuntu:trusty',
-        environment: Dict[str, str] = {},
+        environment: Dict[str, Any] = {},
         ports: List[int] = [],
         port_bindings: Dict[int, int] = {},
         volumes: List[str] = [],
