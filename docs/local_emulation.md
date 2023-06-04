@@ -70,45 +70,59 @@ finally:
 ```
 
 ## Helper methods
-`FogbedExperiment.add_docker`<i>(container: Container, datacenter: VirtualInstance)
+<b>`add_docker`</b>
+<i>(container: Container, datacenter: VirtualInstance)
 
 * Adds a container to a virtual instance.
 </i>
 
-`FogbedExperiment.add_link`<i>(node1: VirtualInstance, node2: VirtualInstance, **params: Any)
+
+<b>`add_link`</b>
+<i>(node1: VirtualInstance, node2: VirtualInstance, **params: Any)
 
 * Adds a link between two virtual instances.
 </i> 
 
-`add_virtual_instance`<i>(name: str, resource_model: Optional[ResourceModel] = None) -> VirtualInstance
+
+<b>`add_virtual_instance`</b>
+<i>(name: str, resource_model: Optional[ResourceModel] = None) -> VirtualInstance
 
 * Creates a virtual instance.
 * Raises a `VirtualInstanceAlreadyExists` exception if name already exists.
 </i>
 
-`FogbedExperiment.get_containers`<i>() -> List[Container]
+
+<b>`get_containers`</b>
+<i>() -> List[Container]
 
 * Returns all containers of the emulation.
 </i>
 
-`FogbedExperiment.get_docker`<i>(name: str) -> Container
+
+<b>`get_docker`</b>
+<i>(name: str) -> Container
 
 * Returns a container by name. 
 * Raises a `ContainerNotFound` exception if name doesn't exist.
 </i>
 
-`FogbedExperiment.get_virtual_instances`<i>() -> List[VirtualInstance]
+
+<b>`get_virtual_instances`</b>
+<i>() -> List[VirtualInstance]
 
 * Returns all virtual instances of the emulation.
 </i>
 
-`FogbedExperiment.remove_docker`<i>(name: str)
+
+<b>`remove_docker`</b>
+<i>(name: str)
 
 * Removes a container by name. 
 * Raises a `ContainerNotFound` exception if name doesn't exist.
 </i>
 
-`FogbedExperiment.start_cli`<i>()
+<b>`start_cli`</b>
+<i>()
 
 * Starts the Containernet Command Line Interface
 </i>
