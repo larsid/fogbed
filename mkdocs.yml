@@ -1,0 +1,60 @@
+site_name: Fogbed
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - toc.integrate
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.annotation
+    - content.code.copy
+  language: en
+
+repo_name: larsid/fogbed
+repo_url: https://github.com/larsid/fogbed/
+edit_uri: ""
+
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/EsauM10
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/esau-mascarenhas/
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - admonition
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.mark
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+
+copyright: |
+  &copy; 2023 <a href="https://github.com/larsid/fogbed/"  target="_blank" rel="noopener">Fogbed</a>
+
+nav:
+  - Introduction: 'index.md'
+  
+  - Usage:
+    - QuickStart: 'quickstart.md'
+
+  - Emulation:
+    - Containers: 'containers.md'
+    - Resource Models: 'resource_models.md'
+    - Local Emulation: 'local_emulation.md'
+    - Distributed Emulation: 'distributed_emulation.md'
+  
+  - Examples: 
+    - Sensors: 'examples.md'
+   
