@@ -23,6 +23,9 @@ extra:
     - icon: fontawesome/brands/linkedin
       link: https://www.linkedin.com/in/esau-mascarenhas/
 
+copyright: |
+  &copy; 2023 <a href="https://github.com/larsid/fogbed/"  target="_blank" rel="noopener">Fogbed</a>
+
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
@@ -39,9 +42,6 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
-
-copyright: |
-  &copy; 2023 <a href="https://github.com/larsid/fogbed/"  target="_blank" rel="noopener">Fogbed</a>
 
 nav:
   - Introduction: 'index.md'

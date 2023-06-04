@@ -57,7 +57,7 @@ from fogbed import Container, HardwareResources, Resources
 d1 = Container('d1', resources=Resources.MEDIUM)
 d2 = Container('d2', resources=HardwareResources(cu=2.0, mu=128))
 ```
-See all available <a href="/resource_models/#predefined-resources">Resources</a>.
+See all available <a href="https://larsid.github.io/fogbed/resource_models/#predefined-resources">Resources</a>.
 
 ## Running Commands
 After an experiment starts, you can interact with a container through the `cmd` method.

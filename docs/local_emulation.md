@@ -68,3 +68,47 @@ except Exception as ex:
 finally:
     exp.stop()
 ```
+
+## Helper methods
+`FogbedExperiment.add_docker`<i>(container: Container, datacenter: VirtualInstance)
+
+* Adds a container to a virtual instance.
+</i>
+
+`FogbedExperiment.add_link`<i>(node1: VirtualInstance, node2: VirtualInstance, **params: Any)
+
+* Adds a link between two virtual instances.
+</i> 
+
+`add_virtual_instance`<i>(name: str, resource_model: Optional[ResourceModel] = None) -> VirtualInstance
+
+* Creates a virtual instance.
+* Raises a `VirtualInstanceAlreadyExists` exception if name already exists.
+</i>
+
+`FogbedExperiment.get_containers`<i>() -> List[Container]
+
+* Returns all containers of the emulation.
+</i>
+
+`FogbedExperiment.get_docker`<i>(name: str) -> Container
+
+* Returns a container by name. 
+* Raises a `ContainerNotFound` exception if name doesn't exist.
+</i>
+
+`FogbedExperiment.get_virtual_instances`<i>() -> List[VirtualInstance]
+
+* Returns all virtual instances of the emulation.
+</i>
+
+`FogbedExperiment.remove_docker`<i>(name: str)
+
+* Removes a container by name. 
+* Raises a `ContainerNotFound` exception if name doesn't exist.
+</i>
+
+`FogbedExperiment.start_cli`<i>()
+
+* Starts the Containernet Command Line Interface
+</i>
