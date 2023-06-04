@@ -5,6 +5,13 @@ resources: HardwareResources = Resources.SMALL,
 **params: Any)
 </i>
 
+## Containers IP
+By default containers IP are created using the net `10.0.0.x`. You can provide custom IPs 
+setting the `ip` param for all containers of the emulation.
+```py
+d1 = Container('d1', ip='250.10.0.1')
+d2 = Container('d2', ip='182.1.0.12')
+```
 
 ## Environment Variables
 ```py
@@ -47,9 +54,10 @@ To limit containers CPU and memory set the `resources` param on constructor:
 ```py
 from fogbed import Container, HardwareResources, Resources
 
-c1 = Container('c1', resources=Resources.MEDIUM)
-c2 = Container('c2', resources=HardwareResources(cu=2.0, mu=128))
+d1 = Container('d1', resources=Resources.MEDIUM)
+d2 = Container('d2', resources=HardwareResources(cu=2.0, mu=128))
 ```
+See all available <a href="/resource_models/#predefined-resources">Resources</a>.
 
 ## Running Commands
 After an experiment starts, you can interact with a container through the `cmd` method.
@@ -82,3 +90,4 @@ from fogbed import Container
 
 d1 = Container(name='d1', dimage='TAG:latest')
 ```
+For a complete reference about container requirements visit the <a href="https://github.com/containernet/containernet/wiki" target="_blank">Containernet Wiki.</a>

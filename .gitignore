@@ -1,6 +1,7 @@
 __pycache__/
 .pytest_cache/
 tests/
+venv
 
 main.py
 stats.txt

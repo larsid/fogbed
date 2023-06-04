@@ -30,7 +30,6 @@ try:
     print(d1.cmd('ifconfig'))
     print(d1.cmd(f'ping -c 4 {d3.ip}'))
     
-    exp.start_cli()
 except Exception as ex: 
     print(ex)
 finally:
@@ -38,7 +37,24 @@ finally:
 ```
 and then run it with:
 ```
-sudo python3 example.py
+sudo python3 topology.py
 ```
 
+Here we have the instantiation of a fog topology followed by the definition of 3 Virtual Instances. A `VirtualInstance` in the context of fogbed is a unit that can have one or more containers linked together by a single switch.
+
 In this example we are checking the command `ifconfig` inside the host `d1` that is inside the Virtual Instance `cloud`, and running the ping command to test the reachability between `d1` and `d3`.
+
+```py
+>>> print(d1.cmd(f'ping -c 4 {d3.ip}'))
+'''
+PING 10.0.0.3 (10.0.0.3) 56(84) bytes of data.
+64 bytes from 10.0.0.3: icmp_seq=1 ttl=64 time=16.1 ms
+64 bytes from 10.0.0.3: icmp_seq=2 ttl=64 time=0.414 ms
+64 bytes from 10.0.0.3: icmp_seq=3 ttl=64 time=0.050 ms
+64 bytes from 10.0.0.3: icmp_seq=4 ttl=64 time=0.074 ms
+
+--- 10.0.0.3 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3051ms
+rtt min/avg/max/mdev = 0.050/4.161/16.108/6.899 ms
+'''
+```
