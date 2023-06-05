@@ -45,7 +45,6 @@ from fogbed import Container
 
 d1 = Container(
     name='d1', 
-    ports=[80],
     port_bindings={80: 3000}
 )
 ```
