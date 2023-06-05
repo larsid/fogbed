@@ -47,7 +47,7 @@ cloud = exp.add_virtual_instance('cloud', resource_model=CloudResourceModel(max_
 edge  = exp.add_virtual_instance('edge', resource_model=EdgeResourceModel(max_cu=2.0, max_mu=256))
 ```
 
-* `resource_model` - If defined, Fogbed enable the limiting resources feature on containers.
+* `resource_model` - If defined, Fogbed enables the limiting resources feature on containers.
 
 
 ## Adding or removing containers in runtime

@@ -56,6 +56,8 @@ Subsequently, the workers are connected using the `add_tunnel` method.
     Make sure the machines are connected and that the IP addresses and ports 
     are configured according to the experiment script.
 
+    For the worker `ip` parameter, you can provide an IP address or hostname, and Fogbed will automatically resolve it.
+
 To run that example, start a service in each worker with:
 ```
 sudo RunWorker -p=5000
@@ -64,3 +66,22 @@ copy and save the code to a file and run it with:
 ```
 python3 topology.py
 ```
+
+## Setting Controller Address
+By default, Fogbed runs an OpenFlow Controller on the machine that executes the experiment. You can manually set a controller and pass the address to the experiment.
+```py
+
+from fogbed import (
+    FogbedDistributedExperiment
+)
+
+exp = FogbedDistributedExperiment(
+    controller_ip='192.168.0.150',
+    controller_port=6633
+)
+```
+!!! tip
+    For the `controller_ip` parameter, you can provide an IP address or hostname, and Fogbed will automatically resolve it.
+
+To start a controller, run the command `controller -v ptcp:6633` on the target machine. You can also use other controllers, such as the <a href="https://github.com/noxrepo/pox">POX Controller</a>.
+

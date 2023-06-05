@@ -60,6 +60,10 @@ d2 = Container('d2', resources=HardwareResources(cu=2.0, mu=128))
 ```
 See all available <a href="https://larsid.github.io/fogbed/resource_models/#predefined-resources">Resources</a>.
 
+!!! note
+    To enable the limiting resources feature on containers see 
+    <a href="https://larsid.github.io/fogbed/local_emulation/#setting-a-resource-model">Setting a Resource Model.</a>
+
 ## Running Commands
 After an experiment starts, you can interact with a container through the `cmd` method.
 ```py
@@ -73,7 +77,7 @@ print(d1.cmd('cat /tmp/data/keys.json'))
 
 
 ## Building Images
-To run an container image within Fogbed, first its necessary to install some packages:
+To run an container image within Fogbed, first it's necessary to install some packages:
 ```
 FROM ubuntu:latest
 
