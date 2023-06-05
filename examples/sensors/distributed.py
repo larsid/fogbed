@@ -37,7 +37,6 @@ if(__name__=='__main__'):
         name='server', 
         dimage='esaum/covid-api:latest',
         dcmd='python3 app.py',
-        ports=[8000],
         port_bindings={8000: 8000},
     )
     react_app = Container(
@@ -45,7 +44,6 @@ if(__name__=='__main__'):
         dcmd='npm start',
         dimage='esaum/covid-monitor:latest',
         environment={'REACT_APP_API_URL': f'http://localhost:8000'},
-        ports=[3000],
         port_bindings={3000: 3000},
     )
 

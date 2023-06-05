@@ -14,7 +14,6 @@ class Container:
         dcmd: str = '/bin/bash',
         dimage: str = 'ubuntu:trusty',
         environment: Dict[str, Any] = {},
-        ports: List[int] = [],
         port_bindings: Dict[int, int] = {},
         volumes: List[str] = [],
         resources: HardwareResources = Resources.SMALL,
@@ -25,8 +24,8 @@ class Container:
         self.dcmd        = dcmd
         self.dimage      = dimage
         self.environment = environment
-        self.ports       = ports
         self.bindings    = port_bindings
+        self.ports       = list(port_bindings.keys())
         self.volumes     = volumes
         self.resources   = resources
         self._params     = params
