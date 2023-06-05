@@ -2,6 +2,9 @@ class HardwareResources:
     def __init__(self, cu: float, mu: int) -> None:
         self.compute_units = cu
         self.memory_units  = mu
+    
+    def __str__(self) -> str:
+        return f'HardwareResources(cu={self.compute_units}, mu={self.memory_units})'
 
 
 class Resources:
