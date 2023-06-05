@@ -1,4 +1,4 @@
-You can create custom topologies and run locally with Containernet through from `FogbedExperiment` class.
+You can create custom topologies and run locally with Containernet using the `FogbedExperiment` class.
 ```py
 from fogbed import Container, FogbedExperiment
 
@@ -70,6 +70,8 @@ finally:
 ```
 
 ## Helper methods
+The `FogbedExperiment` class offers some helper methods like:
+
 <b>`add_docker`</b>
 <i>(container: Container, datacenter: VirtualInstance)
 
