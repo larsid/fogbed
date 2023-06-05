@@ -68,4 +68,5 @@ nav:
   
   - Examples: 
     - Sensors: 'examples.md'
+    - FogLedger: https://github.com/larsid/FogLedger
    
