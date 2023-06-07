@@ -23,10 +23,10 @@ class Container:
         self.ip          = self._get_ip(ip)
         self.dcmd        = dcmd
         self.dimage      = dimage
-        self.environment = environment
-        self.bindings    = port_bindings
-        self.ports       = list(port_bindings.keys())
-        self.volumes     = volumes
+        self.environment = environment.copy()
+        self.bindings    = port_bindings.copy()
+        self.ports       = list(self.bindings.keys())
+        self.volumes     = volumes.copy()
         self.resources   = resources
         self._params     = params
         self._service: Optional[DockerService] = None
