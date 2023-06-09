@@ -78,7 +78,7 @@ print(d1.cmd('cat /tmp/data/keys.json'))
 ## Building Images
 To run an container image within Fogbed, first it's necessary to install some packages:
 ```
-FROM ubuntu:latest
+FROM ubuntu:focal
 
 RUN apt-get update \
     && apt-get install -y \

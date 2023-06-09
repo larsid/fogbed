@@ -68,7 +68,7 @@ python3 topology.py
 ```
 
 ## Setting Controller Address
-By default, Fogbed runs an OpenFlow Controller on the machine that executes the experiment. You can manually set a controller and pass the address to the experiment.
+By default, Fogbed runs an OpenFlow Controller on the machine that executes the experiment. You can manually run a controller and pass the address to the experiment.
 ```py
 
 from fogbed import (
