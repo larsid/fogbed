@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 from fogbed.emulation import Services
-from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable
+from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable, WorkerAlreadyExists
 from fogbed.experiment import Experiment
 from fogbed.experiment.link import Controller
 from fogbed.helpers import (
@@ -60,7 +60,7 @@ class FogbedDistributedExperiment(Experiment):
 
     def add_worker(self, ip: str, port: int = 5000, controller: Optional[Controller] = None) -> Worker:
         if(ip in self.workers):
-            raise Exception(f'Already exist a worker with ip={ip}')
+            raise WorkerAlreadyExists(ip)
 
         worker = Worker(ip, port, controller)
         self.workers[worker.ip] = worker

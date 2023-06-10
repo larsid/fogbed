@@ -85,3 +85,93 @@ exp = FogbedDistributedExperiment(
 
 To start a controller, run the command `controller -v ptcp:6633` on the target machine. You can also use other controllers, such as the <a href="https://github.com/noxrepo/pox">POX Controller</a>.
 
+
+## Limiting CPU and Memory
+To limit CPU and memory within the workers, use the `FogbedDistributedExperiment` class to set the `max_cpu` and `max_memory` parameters based on the number of workers in the topology.
+```py
+from fogbed import FogbedDistributedExperiment
+
+workers = 3
+exp     = FogbedDistributedExperiment(max_cpu=workers * 0.5, max_memory=workers * 512)
+```
+
+* `max_cpu` - sets the maximum percentage of CPU usage that can be consumed by the emulation.
+* `max_memory` - defines the maximum amount of memory in megabytes that the emulation can utilize.
+
+
+## Helper methods
+The `FogbedDistributedExperiment` class offers some helper methods like:
+
+<b>`add_docker`</b>
+<i>(container: Container, datacenter: VirtualInstance)
+
+* Adds a container to a virtual instance.
+* Raises a `ContainerAlreadyExists` exception if name or ip already exists.
+</i>
+
+
+<b>`add_tunnel`</b>
+<i>(worker1: Worker, worker2: Worker, **params: Any)
+
+* Adds a tunnel between two workers.
+</i>
+
+
+<b>`add_virtual_instance`</b>
+<i>(name: str, resource_model: Optional[ResourceModel] = None) -> VirtualInstance
+
+* Creates a virtual instance.
+* Raises a `VirtualInstanceAlreadyExists` exception if name already exists.
+</i>
+
+
+<b>`add_worker`</b>
+<i>(ip: str, port: int = 5000, controller: Optional[Controller] = None) -> Worker
+
+* Creates a worker.
+* Raises a `WorkerAlreadyExists` exception if ip already exists.
+</i>
+
+
+<b>`get_containers`</b>
+<i>() -> List[Container]
+
+* Returns all containers of the emulation.
+</i>
+
+
+<b>`get_docker`</b>
+<i>(name: str) -> Container
+
+* Returns a container by name. 
+* Raises a `ContainerNotFound` exception if name doesn't exist.
+</i>
+
+
+<b>`get_virtual_instances`</b>
+<i>() -> List[VirtualInstance]
+
+* Returns all virtual instances of the emulation.
+</i>
+
+
+<b>`remove_docker`</b>
+<i>(name: str)
+
+* Removes a container by name. 
+* Raises a `ContainerNotFound` exception if name doesn't exist.
+</i>
+
+
+<b>`start`</b>
+<i>()
+
+* Starts the experiment. 
+</i>
+
+
+<b>`stop`</b>
+<i>()
+
+* Stops the experiment. 
+</i>

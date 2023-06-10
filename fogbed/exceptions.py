@@ -16,4 +16,7 @@ class VirtualInstanceAlreadyExists(Exception):
 class VirtualInstanceNotFound(Exception):
     def __init__(self, name: str) -> None:
         super().__init__(f'Datacenter {name} not found.')
-    
+
+class WorkerAlreadyExists(Exception):
+    def __init__(self, ip: str) -> None:
+        super().__init__(f'Already exist a worker with ip={ip}')

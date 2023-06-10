@@ -75,7 +75,8 @@ The `FogbedExperiment` class offers some helper methods like:
 <b>`add_docker`</b>
 <i>(container: Container, datacenter: VirtualInstance)
 
-* Adds a container to a virtual instance.
+* Adds a container to a virtual instance.´
+* Raises a `ContainerAlreadyExists` exception if name or ip already exists.
 </i>
 
 
@@ -123,8 +124,23 @@ The `FogbedExperiment` class offers some helper methods like:
 * Raises a `ContainerNotFound` exception if name doesn't exist.
 </i>
 
+
 <b>`start_cli`</b>
 <i>()
 
-* Starts the Containernet Command Line Interface
+* Starts the Containernet Command Line Interface.
+</i>
+
+
+<b>`start`</b>
+<i>()
+
+* Starts the experiment. 
+</i>
+
+
+<b>`stop`</b>
+<i>()
+
+* Stops the experiment. 
 </i>
