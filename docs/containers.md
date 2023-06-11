@@ -77,8 +77,8 @@ After an experiment starts, you can interact with a container through the `cmd` 
 
 key = '0x63746963616c2062797'
 print(d1.cmd('ls'))
-d1.cmd(f'echo >> {key} /tmp/data/keys.json')
-print(d1.cmd('cat /tmp/data/keys.json'))
+d1.cmd(f'echo {key} >> /tmp/data/key.pub')
+print(d1.cmd('cat /tmp/data/key.pub'))
 ```
 
 

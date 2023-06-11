@@ -25,7 +25,30 @@ d3: Allocation of container was blocked by resource model.
 
 ## CloudResourceModel and FogResourceModel
 The Fog and Cloud resource models are identical, employing an over-provisioning strategy. If a container requests `HardwareResources`, and all of the resources of the `VirtualInstance` have already been allocated to other containers, the new container starts regardless. Subsequently, the CPU time and memory limit for each container is recalculated.
+```py
+from fogbed import (
+    FogbedExperiment, Container, Resources, CloudResourceModel
+)
+exp  = FogbedExperiment()
 
+cloud_model = CloudResourceModel(max_cu=2, max_mu=256)
+cloud = exp.add_virtual_instance('cloud',  cloud_model)
+
+exp.add_docker(Container('d1', resources=Resources.TINY),   datacenter=cloud)
+exp.add_docker(Container('d2', resources=Resources.SMALL),  datacenter=cloud)
+exp.add_docker(Container('d3', resources=Resources.SMALL),  datacenter=cloud)
+exp.add_docker(Container('d4', resources=Resources.MEDIUM), datacenter=cloud)
+
+print(cloud)
+```
+
+```
+[cloud]
+Container(name=d1, cpu_quota=76923,  cpu_period=1000000)
+Container(name=d2, cpu_quota=153846, cpu_period=1000000)
+Container(name=d3, cpu_quota=153846, cpu_period=1000000)
+Container(name=d4, cpu_quota=615384, cpu_period=1000000)
+```
 
 ## Predefined Resources
 Below is the list of the predefined `HardwareResources`:
