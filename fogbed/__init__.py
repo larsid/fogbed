@@ -1,4 +1,4 @@
-from fogbed.emulation import Services
+from fogbed.experiment import Experiment
 from fogbed.experiment.link import Controller
 from fogbed.experiment.local import FogbedExperiment
 from fogbed.experiment.distributed import FogbedDistributedExperiment
