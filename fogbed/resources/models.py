@@ -6,7 +6,7 @@ from fogbed.resources.allocation import CPUAllocator, MemoryAllocator
 
 
 class EdgeResourceModel(ResourceModel):
-    def __init__(self, max_cu=16, max_mu=512) -> None:
+    def __init__(self, max_cu: float=16, max_mu: int=512) -> None:
         super().__init__(max_cu, max_mu)
 
         self.cpu_allocator = CPUAllocator(
@@ -54,7 +54,7 @@ class EdgeResourceModel(ResourceModel):
 
 # ================================================================================== #
 class CloudResourceModel(EdgeResourceModel):
-    def __init__(self, max_cu=32, max_mu=1024) -> None:
+    def __init__(self, max_cu: float=32, max_mu: int=1024) -> None:
         super().__init__(max_cu, max_mu)
         self.allocated_containers: list[Container] = []
 
@@ -105,5 +105,5 @@ class CloudResourceModel(EdgeResourceModel):
 
 
 class FogResourceModel(CloudResourceModel):
-    def __init__(self, max_cu=32, max_mu=1024) -> None:
+    def __init__(self, max_cu: float=32, max_mu: int=1024) -> None:
         super().__init__(max_cu, max_mu)
