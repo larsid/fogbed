@@ -110,6 +110,14 @@ The `FogbedExperiment` class offers some helper methods like:
 </i>
 
 
+<b>`get_virtual_instance`</b>
+<i>(name: str) -> VirtualInstance
+
+* Returns a virtual instances by name.
+* Raises a `VirtualInstanceNotFound` exception if name doesn't exist.
+</i>
+
+
 <b>`get_virtual_instances`</b>
 <i>() -> List[VirtualInstance]
 
