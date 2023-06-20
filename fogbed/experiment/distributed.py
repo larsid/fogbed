@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 from fogbed.emulation import Services
-from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable, WorkerAlreadyExists
+from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable, VirtualInstanceNotFound, WorkerAlreadyExists
 from fogbed.experiment import Experiment
 from fogbed.experiment.link import Controller
 from fogbed.helpers import (
@@ -85,6 +85,13 @@ class FogbedDistributedExperiment(Experiment):
             raise ContainerNotFound(f'Container {name} not found.')
         return container
 
+
+    def get_virtual_instance(self, name: str) -> VirtualInstance:
+        datacenter = Services.get_virtual_instance_by_name(name)
+        if(datacenter is None):
+            raise VirtualInstanceNotFound(name)
+        return datacenter
+    
 
     def get_virtual_instances(self) -> List[VirtualInstance]:
         return list(Services.virtual_instances().values())

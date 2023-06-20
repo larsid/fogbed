@@ -59,6 +59,10 @@ class Services:
         raise ContainerNotFound(f'Container {name} not found.')
     
     @staticmethod
+    def get_virtual_instance_by_name(name: str) -> 'VirtualInstance | None':
+        return nodes.get(name)
+
+    @staticmethod
     def get_container_by_ip(ip: str) -> 'Container | None':
         for container in Services.get_all_containers():
             if(container.ip == ip):

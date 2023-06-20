@@ -24,6 +24,10 @@ class Experiment(ABC):
         pass
 
     @abstractmethod
+    def get_virtual_instance(self, name: str) -> VirtualInstance:
+        pass
+    
+    @abstractmethod
     def get_virtual_instances(self) -> List[VirtualInstance]:
         pass        
 
