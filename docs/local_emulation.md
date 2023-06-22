@@ -75,7 +75,7 @@ The `FogbedExperiment` class offers some helper methods like:
 <b>`add_docker`</b>
 <i>(container: Container, datacenter: VirtualInstance)
 
-* Adds a container to a virtual instance.´
+* Adds a container to a virtual instance.
 * Raises a `ContainerAlreadyExists` exception if name or ip already exists.
 </i>
 
@@ -113,7 +113,7 @@ The `FogbedExperiment` class offers some helper methods like:
 <b>`get_virtual_instance`</b>
 <i>(name: str) -> VirtualInstance
 
-* Returns a virtual instances by name.
+* Returns a virtual instance by name.
 * Raises a `VirtualInstanceNotFound` exception if name doesn't exist.
 </i>
 

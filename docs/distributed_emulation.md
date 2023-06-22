@@ -151,7 +151,7 @@ The `FogbedDistributedExperiment` class offers some helper methods like:
 <b>`get_virtual_instance`</b>
 <i>(name: str) -> VirtualInstance
 
-* Returns a virtual instances by name.
+* Returns a virtual instance by name.
 * Raises a `VirtualInstanceNotFound` exception if name doesn't exist.
 </i>
 

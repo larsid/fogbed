@@ -68,6 +68,7 @@ nav:
   
   - Examples: 
     - Sensors: 'examples.md'
+  - Plugins:
     - FogBesu: https://github.com/EsauM10/fogbesu
     - FogLedger: https://github.com/larsid/FogLedger
    
