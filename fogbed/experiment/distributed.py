@@ -3,7 +3,6 @@ from typing import Any, Dict, List, Optional
 from fogbed.emulation import Services
 from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable, VirtualInstanceNotFound, WorkerAlreadyExists
 from fogbed.experiment import Experiment
-from fogbed.experiment.link import Controller
 from fogbed.helpers import (
     get_ip_address,
     start_openflow_controller,
@@ -11,8 +10,9 @@ from fogbed.helpers import (
     verify_if_container_name_exists,
     verify_if_datacenter_exists
 )
-from fogbed.node.instance import VirtualInstance
 from fogbed.node.container import Container
+from fogbed.node.controller import Controller
+from fogbed.node.instance import VirtualInstance
 from fogbed.node.services.remote_docker import RemoteDocker
 from fogbed.node.worker import Worker
 from fogbed.resources.protocols import ResourceModel
