@@ -8,7 +8,7 @@ from fogbed.helpers import (
     verify_if_container_name_exists,
     verify_if_datacenter_exists
 )
-from fogbed.net import Fogbed
+from fogbed.experiment.net import Fogbed
 from fogbed.node.container import Container
 from fogbed.node.instance import VirtualInstance
 from fogbed.node.services.local_docker import LocalDocker
