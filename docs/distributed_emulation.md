@@ -163,6 +163,14 @@ The `FogbedDistributedExperiment` class offers some helper methods like:
 </i>
 
 
+<b>`get_worker`</b>
+<i>(ip: str) -> Worker
+
+* Returns a worker by ip/hostname.
+* Raises a `WorkerNotFound` exception if name doesn't exist.
+</i>
+
+
 <b>`remove_docker`</b>
 <i>(name: str)
 

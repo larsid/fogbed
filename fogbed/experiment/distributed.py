@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 from fogbed.emulation import Services
-from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable, VirtualInstanceNotFound, WorkerAlreadyExists
+from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable, VirtualInstanceNotFound, WorkerAlreadyExists, WorkerNotFound
 from fogbed.experiment import Experiment
 from fogbed.helpers import (
     get_ip_address,
@@ -96,8 +96,16 @@ class FogbedDistributedExperiment(Experiment):
     def get_virtual_instances(self) -> List[VirtualInstance]:
         return list(Services.virtual_instances().values())
 
+
+    def get_worker(self, ip: str) -> Worker:
+        if(self.workers.get(ip) is None):
+            raise WorkerNotFound(ip)
+        return self.workers[ip]
+
+
     def _get_worker_by_datacenter(self, datacenter: VirtualInstance) -> Worker:
         return self.workers[datacenter.get_ip()]
+
 
     def remove_docker(self, name: str):
         datacenter = Services.get_virtual_instance_by_container(name)

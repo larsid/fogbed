@@ -20,3 +20,7 @@ class VirtualInstanceNotFound(Exception):
 class WorkerAlreadyExists(Exception):
     def __init__(self, ip: str) -> None:
         super().__init__(f'Already exist a worker with ip={ip}')
+
+class WorkerNotFound(Exception):
+    def __init__(self, ip: str) -> None:
+        super().__init__(f'Worker {ip} not found.')
