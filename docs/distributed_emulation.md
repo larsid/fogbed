@@ -167,7 +167,7 @@ The `FogbedDistributedExperiment` class offers some helper methods like:
 <i>(ip: str) -> Worker
 
 * Returns a worker by ip/hostname.
-* Raises a `WorkerNotFound` exception if name doesn't exist.
+* Raises a `WorkerNotFound` exception if ip/hostname doesn't exist.
 </i>
 
 
