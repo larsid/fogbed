@@ -65,7 +65,8 @@ nav:
     - Resource Models: 'resource_models.md'
     - Local Emulation: 'local_emulation.md'
     - Distributed Emulation: 'distributed_emulation.md'
-  
+    - Using Config Files: 'config_files.md'
+    
   - Examples: 
     - Sensors: 'examples.md'
   - Plugins:
