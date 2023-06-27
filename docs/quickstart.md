@@ -1,6 +1,6 @@
 After having installed fogbed you can start an example topology. Copy the example below and save to a file:
 
-```py
+```py title="topology.py"
 from fogbed import (
     FogbedExperiment, Container, setLogLevel
 )

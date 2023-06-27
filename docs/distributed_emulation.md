@@ -2,7 +2,7 @@
 A topology can be partitioned across different machines using the `FogbedDistributedExperiment` class. This class enables centralized control of a cluster of remote machines.
 
 Unlike the `FogbedExperiment`, now we need to add the virtual instances within `Worker` objects. These workers can be connected using tunnels through the Fogbed API to allow the comunication between distributed containers.
-```py
+```py title="topology.py"
 from fogbed import (
     FogbedDistributedExperiment, 
     Container

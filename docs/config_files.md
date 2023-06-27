@@ -2,71 +2,70 @@ Fogbed accepts a `topology.yml` file to build an `Experiment`.
 
 To create a `FogbedExperiment`, define the following sections: `containers`, `instances`, and `links`. Furthermore, you have the option to create a single topology by setting the `is_distributed` section to control when the topology should be distributed across the workers.
 
-See the example of a single topology:
+??? example "See the example of a single topology:"
+    ``` yaml title="topology.yml"
+    is_distributed: false
 
-```
-is_distributed: false
+    containers:
+      node1:
+        dimage: ubuntu:trusty
+        dcmd: /bin/bash
+        environment:
+          DATA_PATH: /tmp/data
+        ports:
+          - 80: 8000
+        resources: medium
+      node2:
+        dimage: ubuntu:trusty
+      node3:
+        dimage: ubuntu:trusty
+      node4:
+        dimage: ubuntu:trusty
 
-containers:
-  node1:
-    dimage: ubuntu:trusty
-    dcmd: /bin/bash
-    environment:
-      DATA_PATH: /tmp/data
-    ports:
-      - 80: 8000
-    resources: medium
-  node2:
-    dimage: ubuntu:trusty
-  node3:
-    dimage: ubuntu:trusty
-  node4:
-    dimage: ubuntu:trusty
-
-instances:
-  cloud:
-    model: 
-      type: cloud
-      max_cu: 32
-      max_mu: 2048
-    containers: ['node1']
+    instances:
+      cloud:
+        model: 
+          type: cloud
+          max_cu: 32
+          max_mu: 2048
+        containers: ['node1']
+          
+      fog:
+        model: 
+          type: fog
+          max_cu: 8
+          max_mu: 512
+        containers: ['node2']
       
-  fog:
-    model: 
-      type: fog
-      max_cu: 8
-      max_mu: 512
-    containers: ['node2']
-  
-  edge:
-    model: 
-      type: edge
-      max_cu: 1
-      max_mu: 128
-    containers: ['node3', 'node4']
+      edge:
+        model: 
+          type: edge
+          max_cu: 1
+          max_mu: 128
+        containers: ['node3', 'node4']
 
-links:
-  cloud_fog: 
-    delay: 10ms
-  fog_edge: 
-
-workers:
-  worker1:
-    ip: hostname1
-    port: 5000
-    reachable: ['cloud']
-    instances: ['cloud']
-  
-  worker2:
-    ip: hostname2
-    port: 5000
-    reachable: ['fog']
-    instances: ['fog', 'edge']
     links:
-      fog_edge:
+      cloud_fog: 
+        delay: 10ms
+      fog_edge: 
 
-tunnels: [worker1_worker2]
-```
+    workers:
+      worker1:
+        ip: hostname1
+        port: 5000
+        reachable: ['cloud']
+        instances: ['cloud']
+      
+      worker2:
+        ip: hostname2
+        port: 5000
+        reachable: ['fog']
+        instances: ['fog', 'edge']
+        links:
+          fog_edge:
+
+    tunnels: ['worker1_worker2']
+    ```
 
 To run that topology use the command:
 ```
@@ -80,7 +79,7 @@ sudo fogbed -c /path/to/topology.yml
     and run `sudo RunWorker` in each machine.
 
 ## Using the ExperimentBuilder
-```py
+```py title="experiment.py"
 from fogbed import ExperimentBuilder
 
 if(__name__=='__main__'):

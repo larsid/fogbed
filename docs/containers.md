@@ -84,7 +84,7 @@ print(d1.cmd('cat /tmp/data/key.pub'))
 
 ## Building Images
 To run an container image within Fogbed, first it's necessary to install some packages:
-```
+``` dockerfile
 FROM ubuntu:focal
 
 RUN apt-get update \
