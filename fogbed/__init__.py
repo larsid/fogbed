@@ -8,5 +8,5 @@ from fogbed.node.worker import Worker
 from fogbed.resources import Resources
 from fogbed.resources.flavors import HardwareResources
 from fogbed.resources.models import CloudResourceModel, EdgeResourceModel, FogResourceModel
-
+from fogbed.parsing.builder import ExperimentBuilder
 from mininet.log import setLogLevel

@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="fogbed",
-    version="1.11.3",
+    version="1.12.3",
     description='Containernet fork that add Fogbed support.',
     long_description='Containernet fork that add Fogbed support.',
     keywords=['networking', 'emulator', 'protocol', 'Internet', 'OpenFlow', 'SDN', 'fog'],
@@ -19,6 +19,11 @@ setup(
     install_requires = [
         'clusternet @ https://github.com/EsauM10/clusternet/tarball/main#egg=clusternet'
     ],
+    entry_points={
+        'console_scripts': [
+            'fogbed = fogbed.scripts:main',
+        ]
+    },
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False

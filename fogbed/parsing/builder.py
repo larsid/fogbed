@@ -1,9 +1,8 @@
-from fogbed import Experiment, setLogLevel
+from fogbed import Experiment
 from fogbed.parsing.factories.distributed import DistributedExperimentFactory
 from fogbed.parsing.factories.local import LocalExperimentFactory
 from fogbed.parsing.parser import YMLParser
 
-setLogLevel('info')
 
 class ExperimentBuilder:
     def __init__(self, filename: str) -> None:
