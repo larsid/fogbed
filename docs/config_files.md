@@ -69,7 +69,7 @@ To create a `FogbedExperiment`, define the following sections: `containers`, `in
 
 To run that topology use the command:
 ```
-sudo fogbed -c /path/to/topology.yml
+sudo fogbed /path/to/topology.yml
 ```
 
 !!! tip
