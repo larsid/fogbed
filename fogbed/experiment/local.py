@@ -98,11 +98,14 @@ class FogbedExperiment(Experiment):
     def start_cli(self):
         CLI(self.net)
 
-    def start(self):
-        self.net.start()
+    def _set_docker_services(self):
         for container in self.get_containers():
             docker = self.net.getDocker(container.name)
             container.set_docker(LocalDocker(docker))
+
+    def start(self):
+        self.net.start()
+        self._set_docker_services()
 
     def stop(self):
         self.net.stop()
