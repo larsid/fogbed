@@ -1,5 +1,7 @@
 from typing import Any, Dict, List, Optional
 
+from clusternet import ClusterMonitoring
+
 from fogbed.emulation import Services
 from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable, VirtualInstanceNotFound, WorkerAlreadyExists, WorkerNotFound
 from fogbed.experiment import Experiment
@@ -24,13 +26,19 @@ class FogbedDistributedExperiment(Experiment):
         controller_ip: Optional[str] = None, 
         controller_port: int = 6633,
         max_cpu: float = 1.0,
-        max_memory: int = 512
+        max_memory: int = 512,
+        metrics_enabled: bool = False
     ):
         Services(max_cpu, max_memory)
         self.controller_ip   = controller_ip
         self.controller_port = controller_port
+        self.metrics_enabled = metrics_enabled
         self.workers: Dict[str, Worker] = {}
         self.is_running = False
+        self.monitor = ClusterMonitoring(
+            monitor_server=get_ip_address(),
+            grafana_uid='fogbed'
+        )
 
 
     def add_docker(self, container: Container, datacenter: VirtualInstance):
@@ -116,6 +124,11 @@ class FogbedDistributedExperiment(Experiment):
             worker.net.remove_link(name, datacenter.switch)
             worker.net.remove_docker(name)
 
+    def _start_monitoring_service(self):
+        if(self.metrics_enabled):
+            workers = [worker.net for worker in self.workers.values()]
+            self.monitor.workers = workers
+            self.monitor.start()
 
     def start(self):
         if(self.controller_ip is None):
@@ -124,10 +137,14 @@ class FogbedDistributedExperiment(Experiment):
 
         for worker in self.workers.values():
             worker.start(self.controller_ip, self.controller_port)
+        self._start_monitoring_service()
         self.is_running = True
 
     
     def stop(self):
         for worker in self.workers.values():
             worker.stop()
+
+        self.monitor.stop()
         self.is_running = False
+

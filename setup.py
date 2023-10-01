@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="fogbed",
-    version="1.13.3",
+    version="1.14.3",
     description='Containernet fork that add Fogbed support.',
     long_description='Containernet fork that add Fogbed support.',
     keywords=['networking', 'emulator', 'protocol', 'Internet', 'OpenFlow', 'SDN', 'fog'],
@@ -17,7 +17,7 @@ setup(
         'Operating System :: Ubunbu OS'
     ],
     install_requires = [
-        'clusternet @ https://github.com/EsauM10/clusternet/tarball/main#egg=clusternet'
+        'clusternet >= 0.9.2'
     ],
     entry_points={
         'console_scripts': [

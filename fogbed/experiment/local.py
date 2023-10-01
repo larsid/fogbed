@@ -1,9 +1,12 @@
 from typing import Any, List, Optional, Type
 
+from clusternet import ClusterMonitoring
+
 from fogbed.emulation import Services
 from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable, VirtualInstanceNotFound
 from fogbed.experiment import Experiment
 from fogbed.helpers import (
+    get_ip_address,
     verify_if_container_ip_exists,
     verify_if_container_name_exists,
     verify_if_datacenter_exists
@@ -25,11 +28,17 @@ class FogbedExperiment(Experiment):
         controller=Controller, 
         switch: Type[Switch]=OVSSwitch,
         max_cpu: float = 1.0,
-        max_memory: int = 512
+        max_memory: int = 512,
+        metrics_enabled: bool = False
     ):
         Services(max_cpu, max_memory)
+        self.metrics_enabled = metrics_enabled
         self.topology = Topo()
         self.net = Fogbed(topo=self.topology, build=False, controller=controller, switch=switch)
+        self.monitor = ClusterMonitoring(
+            monitor_server=get_ip_address(),
+            grafana_uid='fogbed'
+        )
     
 
     def add_link(self, node1: VirtualInstance, node2: VirtualInstance, **params: Any):
@@ -106,6 +115,9 @@ class FogbedExperiment(Experiment):
     def start(self):
         self.net.start()
         self._set_docker_services()
+        if(self.metrics_enabled):
+            self.monitor.start()
 
     def stop(self):
-        self.net.stop()
+        self.net.stop()  
+        self.monitor.stop()
