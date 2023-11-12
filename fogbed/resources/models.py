@@ -52,7 +52,7 @@ class EdgeResourceModel(ResourceModel):
 
 
 
-# ================================================================================== #
+# ================================================================================= #
 class CloudResourceModel(EdgeResourceModel):
     def __init__(self, max_cu: float=32, max_mu: int=1024) -> None:
         super().__init__(max_cu, max_mu)
