@@ -38,3 +38,6 @@ Then access the url `http://localhost:3000` on your browser to visualize a React
 
 ## Documentation
 Project documentation is available at https://larsid.github.io/fogbed/
+
+## Publications
+A. Coutinho, U. Damasceno, E. Mascarenhas, A. C. Santos, J. E. B. T. da Silva and F. Greve, "[Rapid-Prototyping of Integrated Edge/Fog and DLT/Blockchain Systems with Fogbed](https://ieeexplore.ieee.org/document/10279234)," ICC 2023 - IEEE International Conference on Communications, Rome, Italy, 2023, pp. 622-627, doi: 10.1109/ICC45041.2023.10279234.
