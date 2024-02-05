@@ -64,7 +64,7 @@ sudo RunWorker -p=5000
 ```
 copy and save the code to a file and run it with:
 ```
-python3 topology.py
+sudo python3 topology.py
 ```
 
 ## Setting Controller Address
