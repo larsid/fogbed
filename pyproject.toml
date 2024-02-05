@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fogbed"
+version = "1.0.0"
+authors = [
+  {name="Esaú Mascarenhas"},
+]
+description = "Containernet fork that add Fogbed support"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = ["clusternet >= 0.9.2"]
+keywords = ["networking", "emulator", "protocol", "Internet", "OpenFlow", "SDN", "fog"]
+license = {text = "MIT License"}
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3.8",
+    "Intended Audience :: Developers",
+    "Topic :: System :: Distributed Computing",
+    "Topic :: System :: Emulators"
+]
+
+[project.scripts]
+fogbed = "fogbed.scripts:main"
+
+[project.urls]
+Homepage = "https://github.com/EsauM10/fogbed"
