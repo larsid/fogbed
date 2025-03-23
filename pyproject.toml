@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fogbed"
-version = "1.0.0"
+version = "1.1.0"
 authors = [
   {name="Esaú Mascarenhas"},
 ]
-description = "Containernet fork that add Fogbed support"
+description = "Fog computing emulation platform."
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = ["clusternet >= 0.9.2"]
