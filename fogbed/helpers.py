@@ -1,5 +1,6 @@
 import socket
 import subprocess
+
 from fogbed.emulation import Services
 from fogbed.exceptions import ContainerAlreadyExists, VirtualInstanceAlreadyExists
 
@@ -17,6 +18,9 @@ def verify_if_datacenter_exists(name: str):
 
 def resolve_ip(ip: str) -> str:
     return socket.gethostbyname(ip)
+
+def run_command(commands: list[str]):
+    subprocess.call(commands)
 
 def get_tunnel_command(port: str, interface: str, ip: str) -> str:
     return f'ovs-vsctl add-port {port} {interface} -- set interface {interface} type=gre options:remote_ip={ip} options:df_default=false'
