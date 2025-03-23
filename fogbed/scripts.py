@@ -1,17 +1,14 @@
 import argparse
 
+from fogbed.parsing.builder import ExperimentBuilder
 from fogbed.helpers import (
     create_file,
     read_file,
     run_command
 )
 
-def build(filename: str):
-    try:
-        from fogbed.parsing.builder import ExperimentBuilder
-    except:
-        print('Containernet is not installed, run: fogbed install')
 
+def build(filename: str):
     exp = ExperimentBuilder(filename).build()
     
     try:
@@ -26,17 +23,20 @@ def build(filename: str):
 def install_containernet():
     print('Installing Containernet...')
     branch = 'ubuntu_2004'
-    containernet_folder = f'containernet-{branch}'
+    unzipped_folder = f'containernet-{branch}'
+    containernet_folder = 'containernet'
 
     run_command(['sudo', 'apt-get', 'install', 'ansible'])
     run_command(
         ['wget', f'https://github.com/containernet/containernet/archive/refs/heads/{branch}.zip'])
     run_command(['unzip', f'{branch}.zip'])
+    run_command(['mv', unzipped_folder, containernet_folder])
 
     if(branch == 'ubuntu_2004'):
-        install_sh = read_file(f'{containernet_folder}/util/install.sh')
+        filename = f'{containernet_folder}/util/install.sh'
+        install_sh = read_file(filename)
         new_file = install_sh.replace('git://', 'https://')
-        create_file(filename=f'{containernet_folder}/util/install.sh', data=new_file)
+        create_file(filename, data=new_file)
 
     run_command([
         'sudo', 

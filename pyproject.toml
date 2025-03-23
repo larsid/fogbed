@@ -11,7 +11,10 @@ authors = [
 description = "Fog computing emulation platform."
 readme = "README.md"
 requires-python = ">=3.8"
-dependencies = ["clusternet >= 0.9.2"]
+dependencies = [
+  "clusternet @ git+https://github.com/EsauM10/clusternet.git",
+  "mininet @ git+https://github.com/containernet/containernet.git"
+]
 keywords = ["networking", "emulator", "protocol", "Internet", "OpenFlow", "SDN", "fog"]
 license = {text = "MIT License"}
 classifiers = [
