@@ -1,8 +1,6 @@
 import argparse
-import os
 import subprocess
 from typing import List
-from pathlib import Path
 
 def run_command(commands: List[str]):
     subprocess.call(commands)
@@ -37,11 +35,9 @@ def build(filename: str):
 def install_containernet():
     print('Installing Containernet...')
     branch = 'ubuntu_2004'
-    home_path = str(Path.home())
     unzipped_folder = f'containernet-{branch}'
     containernet_folder = 'containernet'
 
-    os.chdir(home_path)
     run_command(['sudo', 'apt-get', 'install', 'ansible'])
     run_command(
         ['wget', f'https://github.com/containernet/containernet/archive/refs/heads/{branch}.zip'])
@@ -59,7 +55,7 @@ def install_containernet():
         'ansible-playbook', 
         '-i', '"localhost,"', 
         '-c', 'local',
-        'containernet/ansible/install.yml'])
+        f'{containernet_folder}/ansible/install.yml'])
     run_command(['sudo', 'rm', '-rf', f'{branch}.zip'])
 
 
