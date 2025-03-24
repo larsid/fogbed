@@ -1,17 +1,9 @@
 import socket
 import subprocess
-from typing import List
 
 from fogbed.emulation import Services
 from fogbed.exceptions import ContainerAlreadyExists, VirtualInstanceAlreadyExists
 
-def create_file(filename: str, data: str):
-    with open(filename, mode='w') as file:
-        file.write(data)
-
-def read_file(filename: str) -> str:
-    with open(filename, mode='r') as file:
-        return file.read()
 
 def verify_if_container_ip_exists(ip: str):
     if(Services.get_container_by_ip(ip) is not None):
@@ -27,9 +19,6 @@ def verify_if_datacenter_exists(name: str):
 
 def resolve_ip(ip: str) -> str:
     return socket.gethostbyname(ip)
-
-def run_command(commands: List[str]):
-    subprocess.call(commands)
 
 def get_tunnel_command(port: str, interface: str, ip: str) -> str:
     return f'ovs-vsctl add-port {port} {interface} -- set interface {interface} type=gre options:remote_ip={ip} options:df_default=false'

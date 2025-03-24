@@ -1,14 +1,28 @@
 import argparse
+import os
+import subprocess
+from typing import List
+from pathlib import Path
 
-from fogbed.parsing.builder import ExperimentBuilder
-from fogbed.helpers import (
-    create_file,
-    read_file,
-    run_command
-)
+def run_command(commands: List[str]):
+    subprocess.call(commands)
+
+def create_file(filename: str, data: str):
+    with open(filename, mode='w') as file:
+        file.write(data)
+
+def read_file(filename: str) -> str:
+    with open(filename, mode='r') as file:
+        return file.read()
+
 
 
 def build(filename: str):
+    try:
+        from fogbed.parsing.builder import ExperimentBuilder
+    except:
+        print('Containernet is not installed, run: fogbed install')
+
     exp = ExperimentBuilder(filename).build()
     
     try:
@@ -23,9 +37,11 @@ def build(filename: str):
 def install_containernet():
     print('Installing Containernet...')
     branch = 'ubuntu_2004'
+    home_path = str(Path.home())
     unzipped_folder = f'containernet-{branch}'
     containernet_folder = 'containernet'
 
+    os.chdir(home_path)
     run_command(['sudo', 'apt-get', 'install', 'ansible'])
     run_command(
         ['wget', f'https://github.com/containernet/containernet/archive/refs/heads/{branch}.zip'])
@@ -43,8 +59,8 @@ def install_containernet():
         'ansible-playbook', 
         '-i', '"localhost,"', 
         '-c', 'local',
-        f'{containernet_folder}/ansible/install.yml'])
-    run_command(['sudo', 'rm', '-rf', containernet_folder, f'{branch}.zip'])
+        'containernet/ansible/install.yml'])
+    run_command(['sudo', 'rm', '-rf', f'{branch}.zip'])
 
 
 def run_worker(port: int):

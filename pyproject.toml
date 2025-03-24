@@ -12,8 +12,7 @@ description = "Fog computing emulation platform."
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
-  "clusternet @ git+https://github.com/EsauM10/clusternet.git",
-  "mininet @ git+https://github.com/containernet/containernet.git"
+  "clusternet @ git+https://github.com/EsauM10/clusternet.git"
 ]
 keywords = ["networking", "emulator", "protocol", "Internet", "OpenFlow", "SDN", "fog"]
 license = {text = "MIT License"}
