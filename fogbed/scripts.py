@@ -32,9 +32,8 @@ def build(filename: str):
         exp.stop()
 
 
-def install_containernet():
+def install_containernet(branch: str):
     print('Installing Containernet...')
-    branch = 'ubuntu_2004'
     unzipped_folder = f'containernet-{branch}'
     containernet_folder = 'containernet'
 
@@ -56,11 +55,10 @@ def install_containernet():
         '-i', '"localhost,"', 
         '-c', 'local',
         f'{containernet_folder}/ansible/install.yml'])
-    run_command(['sudo', 'rm', '-rf', f'{branch}.zip'])
+    run_command(['rm', '-rf', f'{branch}.zip'])
 
 
 def run_worker(port: int):
-    print(f'Running Worker on port={port}')
     run_command(['sudo', 'RunWorker', f'-p={port}'])
 
 
@@ -68,7 +66,8 @@ def main():
     global_parser = argparse.ArgumentParser(prog='fogbed')
     subparsers    = global_parser.add_subparsers(dest='command', title='commands')
 
-    subparsers.add_parser('install', help='install Containernet')
+    install_parser = subparsers.add_parser('install', help='install Containernet')
+    install_parser.add_argument('-b', '--branch', type=str, default='master', help='Containernet branch name to install')
 
     run_parser = subparsers.add_parser('run', help='run a topology especified in a file .yml')
     run_parser.add_argument('config_file', type=str, help='YML config file') 
@@ -81,7 +80,7 @@ def main():
     if(args.command == 'run'):
         build(filename=args.config_file)
     elif(args.command == 'install'):
-        install_containernet()
+        install_containernet(branch=args.branch)
     elif(args.command == 'worker'):
         run_worker(port=int(args.port))
     else:
