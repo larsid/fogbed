@@ -55,7 +55,7 @@ class Worker:
 
             for container in datacenter:
                 self.net.add_docker(container.name, **container.params)
-                self.net.add_link(container.name, datacenter.switch)
+                self.net.add_link(container.name, datacenter.switch, **container.link_params)
                 service = RemoteDocker(container.name, self.net.url)
                 container.set_docker(service)
 
