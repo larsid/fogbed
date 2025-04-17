@@ -51,7 +51,7 @@ class FogbedDistributedExperiment(Experiment):
             if(self.is_running):
                 worker = self._get_worker_by_datacenter(datacenter)
                 worker.net.add_docker(container.name, **container.params)
-                worker.net.add_link(container.name, datacenter.switch)
+                worker.net.add_link(container.name, datacenter.switch, **container.link_params)
                 worker.net.config_default(container.name)
                 service = RemoteDocker(container.name, worker.net.url)
                 container.set_docker(service)

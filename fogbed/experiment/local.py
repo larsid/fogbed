@@ -63,11 +63,11 @@ class FogbedExperiment(Experiment):
             info(f'{container.name}: Allocation of container was blocked by resource model.\n\n')
         else:
             self.topology.addHost(container.name, cls=Docker, **container.params)
-            self.topology.addLink(container.name, datacenter.switch)
+            self.topology.addLink(container.name, datacenter.switch, **container.link_params)
 
             if(self.net.is_running):
                 self.net.addDocker(container.name, **container.params)
-                self.net.addLink(container.name, datacenter.switch)
+                self.net.addLink(container.name, datacenter.switch, **container.link_params)
                 docker = self.net.getDocker(container.name)
                 docker.configDefault()
                 container.set_docker(LocalDocker(docker))

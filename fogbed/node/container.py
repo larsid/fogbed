@@ -17,6 +17,7 @@ class Container:
         port_bindings: Dict[int, int] = {},
         volumes: List[str] = [],
         resources: HardwareResources = Resources.SMALL,
+        link_params: Dict[str, Any] = {},
         **params: Any
     ):
         self.name        = name
@@ -28,6 +29,7 @@ class Container:
         self.ports       = list(self.bindings.keys())
         self.volumes     = volumes.copy()
         self.resources   = resources
+        self.link_params = link_params.copy()
         self._params     = params
         self._service: Optional[DockerService] = None
     
