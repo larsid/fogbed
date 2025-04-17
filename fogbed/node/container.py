@@ -29,9 +29,9 @@ class Container:
         self.ports       = list(self.bindings.keys())
         self.volumes     = volumes.copy()
         self.resources   = resources
+        self.link_params = link_params.copy()
         self._params     = params
         self._service: Optional[DockerService] = None
-        self.link_params = link_params
     
 
     def cmd(self, command: str) -> str:
