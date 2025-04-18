@@ -9,6 +9,7 @@
     port_bindings: Dict[int, int] = {}, 
     volumes: List[str] = [],
     resources: HardwareResources = Resources.SMALL,
+    link_params: Dict[str, Any] = {},
     **params: Any
 )
 </i>
@@ -102,3 +103,33 @@ from fogbed import Container
 d1 = Container(name='d1', dimage='TAG:latest')
 ```
 For a complete reference about container requirements visit the <a href="https://github.com/containernet/containernet/wiki" target="_blank">Containernet Wiki.</a>
+
+
+## Customizing links
+Sometimes you may want to customize the links to enable fine-grained control over the link characteristics between an instance’s internal switch and its associated containers.
+
+This can be done by passing the `link_params`, where you can define a `dict` with the link configuration, just like in 
+<a href="https://github.com/mininet/mininet/wiki/Introduction-to-Mininet#setting-performance-parameters" target="_blank">
+Mininet.
+</a>
+
+```py
+from fogbed import Container
+
+d1 = Container(
+    name='d1', 
+    link_params={
+        'bw': 10, 
+        'delay': '5ms', 
+        'loss': 10, 
+        'max_queue_size': 1000, 
+        'use_htb': True
+    }
+)
+```
+!!! tip
+    To apply the same link configuration to all containers within an instance, you can pass these parameters when creating the link between instances.
+
+    ```py
+    exp.add_link(cloud, edge, delay='50ms')
+    ```
