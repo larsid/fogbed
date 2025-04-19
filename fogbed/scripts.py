@@ -1,18 +1,10 @@
 import argparse
-import subprocess
-from typing import List
 
-def run_command(commands: List[str]):
-    subprocess.call(commands)
-
-def create_file(filename: str, data: str):
-    with open(filename, mode='w') as file:
-        file.write(data)
-
-def read_file(filename: str) -> str:
-    with open(filename, mode='r') as file:
-        return file.read()
-
+from fogbed.helpers import (
+    create_file, 
+    read_file, 
+    run_command
+)
 
 
 def build(filename: str):

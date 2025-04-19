@@ -1,5 +1,6 @@
 import socket
 import subprocess
+from typing import List
 
 
 def resolve_ip(ip: str) -> str:
@@ -18,3 +19,15 @@ def start_openflow_controller(ip: str, port: int):
 
     if(code == 0):
         print(f'[{hostname}]: OpenFlow controller listening on: {ip}:{port}')
+
+
+def run_command(commands: List[str]):
+    subprocess.call(commands)
+
+def create_file(filename: str, data: str):
+    with open(filename, mode='w') as file:
+        file.write(data)
+
+def read_file(filename: str) -> str:
+    with open(filename, mode='r') as file:
+        return file.read()
