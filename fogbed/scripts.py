@@ -1,27 +1,30 @@
 import argparse
+import os
+import tempfile
 
 from fogbed.helpers import (
-    create_file, 
+    create_file,
+    get_experiment_template_code, 
     read_file, 
     run_command
 )
 
 
 def build(filename: str):
-    try:
-        from fogbed.parsing.builder import ExperimentBuilder
-    except:
-        print('Containernet is not installed, run: fogbed install')
+    if(filename.endswith('.py')):
+        run_command(['sudo', 'python3', filename])
+        return
+    
+    code = get_experiment_template_code(filename=os.path.abspath(filename))
 
-    exp = ExperimentBuilder(filename).build()
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as file:
+        file.write(code)
+        temp_filename = file.name
     
     try:
-        exp.start()
-        input('\nPress Enter to exit...')
-    except Exception as ex:
-        print(ex)
+        run_command(['sudo', 'python3', temp_filename])
     finally:
-        exp.stop()
+        os.remove(temp_filename)
 
 
 def install_containernet(branch: str):
@@ -63,8 +66,8 @@ def main():
     install_parser = subparsers.add_parser('install', help='install Containernet')
     install_parser.add_argument('-b', '--branch', type=str, default='master', help='Containernet branch name to install')
 
-    run_parser = subparsers.add_parser('run', help='run a topology especified in a file .yml')
-    run_parser.add_argument('config_file', type=str, help='YML config file') 
+    run_parser = subparsers.add_parser('run', help='run a topology especified in a file .yml or .py')
+    run_parser.add_argument('file', type=str, help='topology file') 
 
     worker_parser = subparsers.add_parser('worker', help='run a worker')
     worker_parser.add_argument('-p', '--port', type=int, default=5000, help='run server on especified port (default: 5000)')
@@ -72,7 +75,7 @@ def main():
     args = global_parser.parse_args()
     
     if(args.command == 'run'):
-        build(filename=args.config_file)
+        build(filename=args.file)
     elif(args.command == 'install'):
         install_containernet(branch=args.branch)
     elif(args.command == 'worker'):

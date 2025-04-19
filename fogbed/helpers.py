@@ -31,3 +31,23 @@ def create_file(filename: str, data: str):
 def read_file(filename: str) -> str:
     with open(filename, mode='r') as file:
         return file.read()
+
+def get_experiment_template_code(filename: str) -> str:
+    return f'''
+try:
+    from fogbed import setLogLevel
+    from fogbed.parsing.builder import ExperimentBuilder
+except:
+    print("Containernet is not installed, run: fogbed install")
+
+setLogLevel("info")
+exp = ExperimentBuilder("{filename}").build()
+
+try:
+    exp.start()
+    input("Press Enter to exit...")
+except Exception as ex:
+    print(ex)
+finally:
+    exp.stop()
+    '''
