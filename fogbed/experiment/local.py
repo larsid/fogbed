@@ -5,12 +5,7 @@ from clusternet import ClusterMonitoring
 from fogbed.emulation import Services
 from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable, VirtualInstanceNotFound
 from fogbed.experiment import Experiment
-from fogbed.helpers import (
-    get_ip_address,
-    verify_if_container_ip_exists,
-    verify_if_container_name_exists,
-    verify_if_datacenter_exists
-)
+from fogbed.helpers import get_ip_address
 from fogbed.experiment.net import Fogbed
 from fogbed.node.container import Container
 from fogbed.node.instance import VirtualInstance
@@ -46,7 +41,7 @@ class FogbedExperiment(Experiment):
 
 
     def add_virtual_instance(self, name: str, resource_model: Optional[ResourceModel] = None) -> VirtualInstance:
-        verify_if_datacenter_exists(name)
+        Services.verify_if_datacenter_exists(name)
         datacenter = VirtualInstance(name, resource_model)
         Services.add_virtual_instance(datacenter)
         self.topology.addSwitch(datacenter.switch)
@@ -54,8 +49,8 @@ class FogbedExperiment(Experiment):
     
 
     def add_docker(self, container: Container, datacenter: VirtualInstance):
-        verify_if_container_name_exists(container.name)
-        verify_if_container_ip_exists(container.ip)
+        Services.verify_if_container_name_exists(container.name)
+        Services.verify_if_container_ip_exists(container.ip)
         
         try:
             datacenter.create_container(container)
