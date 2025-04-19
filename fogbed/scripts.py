@@ -55,6 +55,8 @@ def install_containernet(branch: str):
         '-i', '"localhost,"', 
         '-c', 'local',
         f'{containernet_folder}/ansible/install.yml'])
+    
+    run_command(['sudo', 'pip', 'install', 'git+https://github.com/containernet/containernet.git'])
     run_command(['rm', '-rf', f'{branch}.zip'])
 
 
