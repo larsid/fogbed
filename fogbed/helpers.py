@@ -1,19 +1,7 @@
 import socket
 import subprocess
-from fogbed.emulation import Services
-from fogbed.exceptions import ContainerAlreadyExists, VirtualInstanceAlreadyExists
+from typing import List
 
-def verify_if_container_ip_exists(ip: str):
-    if(Services.get_container_by_ip(ip) is not None):
-        raise ContainerAlreadyExists(f'Container with ip={ip} already exists.')
-
-def verify_if_container_name_exists(name: str):
-    if(Services.get_container_by_name(name) is not None):
-        raise ContainerAlreadyExists(f'Container with name={name} already exists.')
-
-def verify_if_datacenter_exists(name: str):
-    if(name in Services.virtual_instances()):
-        raise VirtualInstanceAlreadyExists(f'Datacenter {name} already exists.')
 
 def resolve_ip(ip: str) -> str:
     return socket.gethostbyname(ip)
@@ -31,3 +19,24 @@ def start_openflow_controller(ip: str, port: int):
 
     if(code == 0):
         print(f'[{hostname}]: OpenFlow controller listening on: {ip}:{port}')
+
+
+def run_command(commands: List[str]):
+    subprocess.call(commands)
+
+def get_experiment_template_code(filename: str) -> str:
+    return f'''
+from fogbed import setLogLevel
+from fogbed.parsing.builder import ExperimentBuilder   
+
+setLogLevel("info")
+exp = ExperimentBuilder("{filename}").build()
+
+try:
+    exp.start()
+    input("Press Enter to exit...")
+except Exception as ex:
+    print(ex)
+finally:
+    exp.stop()
+    '''

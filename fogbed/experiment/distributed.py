@@ -1,16 +1,21 @@
 from typing import Any, Dict, List, Optional
 
-from clusternet import ClusterMonitoring
+try:
+    from clusternet import ClusterMonitoring
+except: pass
 
 from fogbed.emulation import Services
-from fogbed.exceptions import ContainerNotFound, NotEnoughResourcesAvailable, VirtualInstanceNotFound, WorkerAlreadyExists, WorkerNotFound
+from fogbed.exceptions import (
+    ContainerNotFound, 
+    NotEnoughResourcesAvailable, 
+    VirtualInstanceNotFound, 
+    WorkerAlreadyExists, 
+    WorkerNotFound
+)
 from fogbed.experiment import Experiment
 from fogbed.helpers import (
     get_ip_address,
-    start_openflow_controller,
-    verify_if_container_ip_exists, 
-    verify_if_container_name_exists,
-    verify_if_datacenter_exists
+    start_openflow_controller
 )
 from fogbed.node.container import Container
 from fogbed.node.controller import Controller
@@ -42,8 +47,8 @@ class FogbedDistributedExperiment(Experiment):
 
 
     def add_docker(self, container: Container, datacenter: VirtualInstance):
-        verify_if_container_name_exists(container.name)
-        verify_if_container_ip_exists(container.ip)
+        Services.verify_if_container_name_exists(container.name)
+        Services.verify_if_container_ip_exists(container.ip)
 
         try:
             datacenter.create_container(container)
@@ -76,7 +81,7 @@ class FogbedDistributedExperiment(Experiment):
     
 
     def add_virtual_instance(self, name: str, resource_model: Optional[ResourceModel] = None) -> VirtualInstance:
-        verify_if_datacenter_exists(name)
+        Services.verify_if_datacenter_exists(name)
         datacenter = VirtualInstance(name, resource_model)
         Services.add_virtual_instance(datacenter)
         return datacenter

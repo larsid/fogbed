@@ -60,11 +60,11 @@ Subsequently, the workers are connected using the `add_tunnel` method.
 
 To run that example, start a service in each worker with:
 ```
-sudo RunWorker -p=5000
+fogbed worker -p=5000
 ```
 copy and save the code to a file and run it with:
 ```
-sudo python3 topology.py
+fogbed run topology.py
 ```
 
 ## Setting Controller Address

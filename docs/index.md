@@ -11,20 +11,32 @@ Fogbed is a framework and toolset integration designed for rapid prototyping of 
 
 
 ## Install
-### 1. Install Containernet
-```
-sudo apt-get install ansible
-```
 
-```
-git clone https://github.com/containernet/containernet.git
-```
+=== "Latest"
+    Install Fogbed
+    ```
+    sudo pip install fogbed
+    ```
+    Install Containernet
+    ```
+    fogbed install 
+    ```
 
-```
-sudo ansible-playbook -i "localhost," -c local containernet/ansible/install.yml
-```
+=== "1.1.x"
+    Install Containernet
+    ```
+    sudo apt-get install ansible
+    ```
 
-### 2. Install Fogbed
-```
-sudo pip install fogbed
-```
+    ```
+    git clone https://github.com/containernet/containernet.git
+    ```
+
+    ```
+    sudo ansible-playbook -i "localhost," -c local containernet/ansible/install.yml
+    ```
+
+    Install Fogbed
+    ```
+    sudo pip install fogbed
+    ```

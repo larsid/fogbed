@@ -37,7 +37,7 @@ finally:
 ```
 and then run it with:
 ```
-sudo python3 topology.py
+fogbed run topology.py
 ```
 
 Here we have the instantiation of a fog topology followed by the definition of 3 Virtual Instances. A `VirtualInstance` in the context of fogbed is a unit that can have one or more containers linked together by a single switch.
