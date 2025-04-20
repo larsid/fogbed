@@ -2,7 +2,7 @@ Fogbed accepts a `topology.yml` file to build an `Experiment`.
 
 To create a `FogbedExperiment`, define the following sections: `containers`, `instances`, and `links`. Furthermore, you have the option to create a single topology by setting the `is_distributed` section to control when the topology should be distributed across the workers.
 
-??? example "See the example of a single topology:"
+??? example "Example of topology with .yml file:"
     ``` yaml title="topology.yml"
     is_distributed: false
 
@@ -69,14 +69,17 @@ To create a `FogbedExperiment`, define the following sections: `containers`, `in
 
 To run that topology use the command:
 ```
-sudo fogbed /path/to/topology.yml
+fogbed run topology.yml
 ```
 
 !!! tip
     If you set `is_distributed: true` that example will run the experiment using two workers.
 
     Make sure the IP addresses and ports are configured according to the experiment script
-    and run `sudo RunWorker` in each machine.
+    and run a worker in each machine with:
+    ```
+    fogbed worker
+    ```
 
 ## Using the ExperimentBuilder
 ```py title="experiment.py"
@@ -100,5 +103,5 @@ if(__name__=='__main__'):
 
 To run that experiment use the command:
 ```
-sudo python3 experiment.py
+fogbed run experiment.py
 ```

@@ -9,28 +9,20 @@ Fogbed is a framework and toolset integration for rapid prototyping of fog compo
 Before installing Fogbed it is necessary to install some dependencies and Containernet, as shown in the steps below:
 
 
-#### 1. Install Containernet
-```
-sudo apt-get install ansible
-```
-
-```
-git clone https://github.com/containernet/containernet.git
-```
-
-```
-sudo ansible-playbook -i "localhost," -c local containernet/ansible/install.yml
-```
-
-#### 2. Install Fogbed
+#### 1. Install Fogbed
 ```
 sudo pip install fogbed
+```
+
+#### 2. Install Containernet
+```
+fogbed install 
 ```
 
 ## Get Started
 After having installed fogbed you can start an example topology, copy the example in `examples/sensors/sensors.py` and run with:
 ```
-sudo python3 sensors.py
+fogbed run sensors.py
 ```
 Then access the url `http://localhost:3000` on your browser to visualize a React application consuming a REST API what monitor some devices which send health random data.
 
