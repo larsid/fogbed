@@ -3,9 +3,7 @@ import os
 import tempfile
 
 from fogbed.helpers import (
-    create_file,
-    get_experiment_template_code, 
-    read_file, 
+    get_experiment_template_code,
     run_command
 )
 
@@ -37,12 +35,6 @@ def install_containernet(branch: str):
         ['wget', f'https://github.com/containernet/containernet/archive/refs/heads/{branch}.zip'])
     run_command(['unzip', f'{branch}.zip'])
     run_command(['mv', unzipped_folder, containernet_folder])
-
-    if(branch == 'ubuntu_2004'):
-        filename = f'{containernet_folder}/util/install.sh'
-        install_sh = read_file(filename)
-        new_file = install_sh.replace('git://', 'https://')
-        create_file(filename, data=new_file)
 
     run_command([
         'sudo', 

@@ -24,14 +24,6 @@ def start_openflow_controller(ip: str, port: int):
 def run_command(commands: List[str]):
     subprocess.call(commands)
 
-def create_file(filename: str, data: str):
-    with open(filename, mode='w') as file:
-        file.write(data)
-
-def read_file(filename: str) -> str:
-    with open(filename, mode='r') as file:
-        return file.read()
-
 def get_experiment_template_code(filename: str) -> str:
     return f'''
 from fogbed import setLogLevel
