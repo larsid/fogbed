@@ -34,11 +34,8 @@ def read_file(filename: str) -> str:
 
 def get_experiment_template_code(filename: str) -> str:
     return f'''
-try:
-    from fogbed import setLogLevel
-    from fogbed.parsing.builder import ExperimentBuilder
-except:
-    print("Containernet is not installed, run: fogbed install")
+from fogbed import setLogLevel
+from fogbed.parsing.builder import ExperimentBuilder   
 
 setLogLevel("info")
 exp = ExperimentBuilder("{filename}").build()

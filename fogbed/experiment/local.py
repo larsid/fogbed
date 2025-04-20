@@ -1,6 +1,8 @@
 from typing import Any, List, Optional, Type
 
-from clusternet import ClusterMonitoring
+try:
+    from clusternet import ClusterMonitoring
+except: pass
 
 from fogbed.emulation import Services
 from fogbed.exceptions import (
