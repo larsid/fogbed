@@ -5,6 +5,7 @@ from fogbed.exceptions import ContainerNotFound
 from fogbed.node.container import Container
 from fogbed.resources.protocols import ResourceModel
 
+from fogbed.fails.models import FailModel
 
 
 class VirtualInstance(object):
@@ -12,7 +13,8 @@ class VirtualInstance(object):
 
     def __init__(self, 
         name: str, 
-        resource_model: Optional[ResourceModel] = None
+        resource_model: Optional[ResourceModel] = None,
+        fail_model: Optional[FailModel] = None
     ):
         self.label      = name
         self.switch     = self._create_switch()
@@ -20,6 +22,7 @@ class VirtualInstance(object):
         self._reachable = False
         self.containers: Dict[str, Container] = {}
         self.resource_model: Optional[ResourceModel] = resource_model
+        self.fail_model: Optional[FailModel] = fail_model
         
     
     def create_container(self, container: Container):

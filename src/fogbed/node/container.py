@@ -3,6 +3,8 @@ from typing import Any, Dict, List, Optional
 from fogbed.node.services import DockerService
 from fogbed.resources.flavors import HardwareResources, Resources
 
+from fogbed.fails.models import FailModel
+
 from mininet.util import ipAdd
 
 class Container:
@@ -105,6 +107,11 @@ class Container:
         self._params['port_bindings'] = self.bindings
         self._params['volumes'] = self.volumes        
         return self._params
+    
+    @property
+    def fail_model(self) -> 'FailModel | None':
+        fail_model = self.params.get('fail_model')
+        return fail_model
 
     def __repr__(self) -> str:
         cpu_quota  = self.cpu_quota
