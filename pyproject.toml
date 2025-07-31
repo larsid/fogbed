@@ -30,3 +30,7 @@ fogbed = "fogbed.scripts:main"
 
 [project.urls]
 Homepage = "https://github.com/EsauM10/fogbed"
+
+[tool.setuptools.packages.find]
+include = ["fogbed*"]
+exclude = ["containernet*", "openflow*"]

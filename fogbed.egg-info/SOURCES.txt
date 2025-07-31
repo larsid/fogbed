@@ -5,6 +5,7 @@ fogbed/emulation.py
 fogbed/exceptions.py
 fogbed/helpers.py
 fogbed/scripts.py
+fogbed/test.py
 fogbed.egg-info/PKG-INFO
 fogbed.egg-info/SOURCES.txt
 fogbed.egg-info/dependency_links.txt
