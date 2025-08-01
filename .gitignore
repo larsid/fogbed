@@ -11,3 +11,4 @@ containernet
 venv-fails
 openflow
 examples/testsNew
+fogbed.egg-info
