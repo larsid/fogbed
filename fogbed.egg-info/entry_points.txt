@@ -1,2 +1,0 @@
-[console_scripts]
-fogbed = fogbed.scripts:main
