@@ -41,6 +41,8 @@ fogbed/parsing/parser.py
 fogbed/parsing/factories/__init__.py
 fogbed/parsing/factories/distributed.py
 fogbed/parsing/factories/local.py
+fogbed/patches/__init__.py
+fogbed/patches/cgroups_v2_patch.py
 fogbed/resources/__init__.py
 fogbed/resources/allocation.py
 fogbed/resources/flavors.py
