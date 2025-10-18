@@ -4,13 +4,15 @@ import tempfile
 
 from fogbed.helpers import (
     get_experiment_template_code,
-    run_command
+    get_os_version,
+    run_command,
+    run_python_file
 )
 
 
 def build(filename: str):
     if(filename.endswith('.py')):
-        run_command(['sudo', 'python3', filename])
+        run_python_file(filename)
         return
     
     code = get_experiment_template_code(filename=os.path.abspath(filename))
@@ -20,7 +22,7 @@ def build(filename: str):
         temp_filename = file.name
     
     try:
-        run_command(['sudo', 'python3', temp_filename])
+        run_python_file(temp_filename)
     finally:
         os.remove(temp_filename)
 
@@ -35,20 +37,21 @@ def install_containernet(branch: str):
         ['wget', f'https://github.com/containernet/containernet/archive/refs/heads/{branch}.zip'])
     run_command(['unzip', f'{branch}.zip'])
     run_command(['mv', unzipped_folder, containernet_folder])
-
     run_command([
         'sudo', 
         'ansible-playbook', 
         '-i', '"localhost,"', 
         '-c', 'local',
         f'{containernet_folder}/ansible/install.yml'])
-    
     run_command(['sudo', 'pip', 'install', 'git+https://github.com/containernet/containernet.git'])
     run_command(['rm', '-rf', f'{branch}.zip'])
 
 
 def run_worker(port: int):
-    run_command(['sudo', 'RunWorker', f'-p={port}'])
+    if(get_os_version() == 'Ubuntu20.04'):
+        run_command(['sudo', 'RunWorker', f'-p={port}'])
+    else:
+        run_command(['sudo', './venv/bin/RunWorker', f'-p={port}'])
 
 
 def main():

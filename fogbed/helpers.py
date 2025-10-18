@@ -13,6 +13,10 @@ def get_ip_address() -> str:
     output = subprocess.check_output(['hostname', '--all-ip-addresses'], text=True)
     return output.split(' ')[0]
 
+def get_os_version() -> str:
+    distro = subprocess.run(['lsb_release', '-irs'], capture_output=True, text=True)
+    return distro.stdout.replace('\n', '')
+
 def start_openflow_controller(ip: str, port: int):
     hostname = socket.gethostname()
     code = subprocess.call(['controller', '-D', f'ptcp:{port}'])
@@ -20,9 +24,15 @@ def start_openflow_controller(ip: str, port: int):
     if(code == 0):
         print(f'[{hostname}]: OpenFlow controller listening on: {ip}:{port}')
 
-
 def run_command(commands: List[str]):
     subprocess.call(commands)
+
+def run_python_file(filename: str):
+    if(get_os_version() == 'Ubuntu20.04'):
+        run_command(['sudo', 'python3', filename])
+    else:
+        run_command(['./venv/bin/python3', filename])
+
 
 def get_experiment_template_code(filename: str) -> str:
     return f'''
