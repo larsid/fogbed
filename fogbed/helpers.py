@@ -2,6 +2,7 @@ import socket
 import subprocess
 from typing import List
 
+UBUNTU_2004 = 'Ubuntu20.04'
 
 def resolve_ip(ip: str) -> str:
     return socket.gethostbyname(ip)
@@ -27,8 +28,14 @@ def start_openflow_controller(ip: str, port: int):
 def run_command(commands: List[str]):
     subprocess.call(commands)
 
+def run_pip_install(package: str):
+    if(get_os_version() == UBUNTU_2004):
+        run_command(['sudo', 'pip', 'install', package])
+    else:
+        run_command(['pip', 'install', package])
+
 def run_python_file(filename: str):
-    if(get_os_version() == 'Ubuntu20.04'):
+    if(get_os_version() == UBUNTU_2004):
         run_command(['sudo', 'python3', filename])
     else:
         run_command(['./venv/bin/python3', filename])

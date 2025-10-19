@@ -3,9 +3,11 @@ import os
 import tempfile
 
 from fogbed.helpers import (
+    UBUNTU_2004,
     get_experiment_template_code,
     get_os_version,
     run_command,
+    run_pip_install,
     run_python_file
 )
 
@@ -43,12 +45,12 @@ def install_containernet(branch: str):
         '-i', '"localhost,"', 
         '-c', 'local',
         f'{containernet_folder}/ansible/install.yml'])
-    run_command(['sudo', 'pip', 'install', 'git+https://github.com/containernet/containernet.git'])
     run_command(['rm', '-rf', f'{branch}.zip'])
+    run_pip_install('git+https://github.com/containernet/containernet.git')
 
 
 def run_worker(port: int):
-    if(get_os_version() == 'Ubuntu20.04'):
+    if(get_os_version() == UBUNTU_2004):
         run_command(['sudo', 'RunWorker', f'-p={port}'])
     else:
         run_command(['sudo', './venv/bin/RunWorker', f'-p={port}'])
