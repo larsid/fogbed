@@ -14,4 +14,4 @@ except Exception as ex:
 finally:
     exp.stop()
 
-# Run with: sudo python3 tests/local_with_topology_file.py
+# Run with: fogbed run tests/local_with_topology_file.py

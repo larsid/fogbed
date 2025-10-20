@@ -31,4 +31,4 @@ except Exception as ex:
 finally:
     exp.stop()
 
-# Run with: sudo python3 tests/local_metrics_enabled.py
+# Run with: fogbed run tests/local_metrics_enabled.py

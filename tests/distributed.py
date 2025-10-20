@@ -35,7 +35,7 @@ except Exception as ex:
 finally:
     exp.stop()
 
-# Run a Worker with: sudo RunWorker
+# Run a Worker with: fogbed worker -p=5000
 # Change the Worker IP with your machine ip adddress
 #    ex: worker1 = exp.add_worker(ip='192.168.0.185', port=5000)
-# Run this example with: sudo python3 tests/distributed.py
+# Run this example with: fogbed run tests/distributed.py

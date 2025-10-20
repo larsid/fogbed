@@ -10,8 +10,8 @@ Fogbed is a framework and toolset integration designed for rapid prototyping of 
 * [Python 3.8+](https://www.python.org/)
 
 
-## Install on Ubuntu 20.04
-
+## Install
+### Ubuntu 20.04
 === "Latest"
     Install Fogbed
     ```
@@ -40,3 +40,21 @@ Fogbed is a framework and toolset integration designed for rapid prototyping of 
     ```
     sudo pip install fogbed
     ```
+
+### Ubuntu 22.04 or Later
+Create and activate a virtual environment:
+```
+python3 -m venv venv
+```
+```
+source venv/bin/activate
+```
+
+Install Fogbed
+```
+pip install fogbed
+```
+Install Containernet
+```
+fogbed install 
+```
