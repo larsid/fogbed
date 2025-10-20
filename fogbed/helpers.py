@@ -38,7 +38,7 @@ def run_python_file(filename: str):
     if(get_os_version() == UBUNTU_2004):
         run_command(['sudo', 'python3', filename])
     else:
-        run_command(['./venv/bin/python3', filename])
+        run_command(['sudo', './venv/bin/python3', filename])
 
 
 def get_experiment_template_code(filename: str) -> str:
