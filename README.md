@@ -6,18 +6,16 @@ Fogbed is a framework and toolset integration for rapid prototyping of fog compo
 
 ## Install
 
-Before installing Fogbed it is necessary to install some dependencies and Containernet, as shown in the steps below:
+All installation and dependency management steps are automated in the `install-fogbed.sh` script. The script installs Fogbed, Containernet/Mininet, and their required packages, and it can also uninstall an existing setup when needed. During installation it checks for required system packages, configures Docker and Python dependencies, sets up the Fogbed Python package in editable mode, and optionally registers the Fogbed systemd service so the controller can be started at boot.
 
+```bash
+git clone https://github.com/larsid/fogbed.git
+cd fogbed
+chmod +x install-fogbed.sh
+sudo ./install-fogbed.sh
+```
 
-#### 1. Install Fogbed
-```
-sudo pip install fogbed
-```
-
-#### 2. Install Containernet
-```
-fogbed install 
-```
+Run `sudo ./install-fogbed.sh --help` to see the available options, including reinstalling without the systemd service or removing an existing installation.
 
 ## Get Started
 After having installed fogbed you can start an example topology, copy the example in `examples/sensors/sensors.py` and run with:
