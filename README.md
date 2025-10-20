@@ -36,12 +36,12 @@ The script clones the [Containernet](https://github.com/containernet/containerne
 
 A Python virtual environment is created at `/opt/fogbed/venv`. This environment isolates Fogbed's Python libraries from system libraries, avoiding version conflicts. Inside the virtual environment, the script installs the `fogbed` and `containernet` libraries using `pip`.
 
-### 6. System Commands Configuration
+### 5. System Commands Configuration
 
-To facilitate the use of the tool, the script performs the following actions:
+To facilitate the use of the Fogbed, the script performs the following actions:
 
 - Creates a wrapper script at `/usr/local/bin/fogbed` that allows executing Python scripts with Fogbed's virtual environment from any directory.
-- Creates a symbolic link to Mininet's `mn` executable at `/usr/local/bin/mn`, making it globally accessible.
+- Creates a symbolic link to Mininet's `mn` executable at `/usr/local/bin/mn`, making it globally accessible. This can be particularly useful after a Fogbed experiment finishes with an error, allowing you to run the sudo mn -c (clean) command from any system path.
 
 ### 6. Systemd Service Configuration
 
