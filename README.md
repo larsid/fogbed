@@ -6,11 +6,10 @@ Fogbed is a framework and toolset integration for rapid prototyping of fog compo
 
 ## Install
 
-All installation and dependency management steps are automated in the `install-fogbed.sh` script. The script installs Fogbed, Containernet/Mininet, and their required packages, and it can also uninstall an existing setup when needed. During installation it checks for required system packages, configures Docker and Python dependencies, sets up the Fogbed Python package in editable mode, and optionally registers the Fogbed systemd service so the controller can be started at boot.
+All installation and dependency management steps are automated in the `install-fogbed.sh` script. The script installs Containernet/Mininet, Fogbed and their required packages in the /opt/fogbed/venv directory. Also the script can also uninstall an existing setup when needed. During installation it checks for required system packages, configures Docker and Python dependencies, sets up the Fogbed Python package in editable mode, and optionally registers the Fogbed systemd service so the controller can be started at boot.
 
 ```bash
-git clone https://github.com/larsid/fogbed.git
-cd fogbed
+wget https://raw.githubusercontent.com/larsid/fogbed/main/install-fogbed.sh
 chmod +x install-fogbed.sh
 sudo ./install-fogbed.sh
 ```
