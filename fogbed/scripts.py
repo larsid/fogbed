@@ -1,5 +1,6 @@
 import argparse
 import os
+from pathlib import Path
 import tempfile
 
 from fogbed.helpers import (
@@ -32,7 +33,7 @@ def build(filename: str):
 def install_containernet(branch: str):
     print('Installing Containernet...')
     unzipped_folder = f'containernet-{branch}'
-    containernet_folder = 'containernet'
+    containernet_folder = os.path.join(Path.home(), 'containernet')
 
     run_command(['sudo', 'apt-get', 'install', 'ansible'])
     run_command(
