@@ -6,7 +6,7 @@ Fogbed is a framework and toolset integration for rapid prototyping of fog compo
 
 # Install
 
-The `install-fogbed.sh` script automates the installation of the Fogbed tool and its dependencies on Ubuntu-based systems. The following command uses `wget` to download the script and install Fogbed from the GitHub repository:
+The `install-fogbed.sh` script automates the installation of the Fogbed tool and its dependencies on Ubuntu-based Linux systems. The following command uses `wget` to download the script and install Fogbed from the GitHub repository:
 
 `wget https://raw.githubusercontent.com/larsid/fogbed/main/install-fogbed.sh && chmod +x install-fogbed.sh && sudo ./install-fogbed.sh`
 
