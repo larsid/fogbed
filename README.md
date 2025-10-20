@@ -4,17 +4,63 @@
 
 Fogbed is a framework and toolset integration for rapid prototyping of fog components in virtualized environments using a desktop or distributed approach. Its design meets the postulated requirements of low cost, flexible setup and compatibility with real world technologies. The components are based on Mininet network emulator with Docker container instances as fog virtual nodes.
 
-## Install
+# Install
 
-All installation and dependency management steps are automated in the `install-fogbed.sh` script. The script installs Containernet/Mininet, Fogbed and their required packages in the /opt/fogbed/venv directory. Also the script can also uninstall an existing setup when needed. During installation it checks for required system packages, configures Docker and Python dependencies, sets up the Fogbed Python package in editable mode, and optionally registers the Fogbed systemd service so the controller can be started at boot.
+The `install-fogbed.sh` script automates the installation of the Fogbed tool and its dependencies on Ubuntu-based systems. The following command uses `wget` to download the script and install Fogbed from the GitHub repository:
 
-```bash
-wget https://raw.githubusercontent.com/larsid/fogbed/main/install-fogbed.sh
-chmod +x install-fogbed.sh
-sudo ./install-fogbed.sh
-```
+`wget https://raw.githubusercontent.com/larsid/fogbed/main/install-fogbed.sh && chmod +x install-fogbed.sh && sudo ./install-fogbed.sh`
 
-Run `sudo ./install-fogbed.sh --help` to see the available options, including reinstalling without the systemd service or removing an existing installation.
+This command uses `wget` to retrieve the script from the main branch and saves it to the current directory as `install-fogbed.sh`. Then, it uses chmod (change mode) to add execute permissions to the installation script. The `+x` flag grants execution rights, allowing the script to be run as a program rather than just being read as a text file. Finally, it executes the installation script with superuser privileges using `sudo`, where the `./` prefix indicates that the script is located in the current directory. Administrator privileges are required because the script needs to install system packages, create directories in `/opt`, and configure system services. Below, we detail the steps executed by the installation script.
+
+## Installation Steps
+
+The Fogbed installation script was tested only on Ubuntu 24.04. If you are facing errors while installing on a different system, or if you wish to modify the proposed configuration, you can review the steps performed by the script. The installation process is divided into the following stages:
+
+### 1. System Dependencies Installation
+
+The script begins by updating the system package list and installing essential dependencies through `apt-get`. The installed packages include:
+
+- **Network Tools:** `net-tools`, `iproute2`, `iputils-ping`, `tcpdump`, `iperf`.
+- **Development Tools:** `python3`, `python3-pip`, `git`, `curl`, `ansible`.
+- **Python Virtual Environment:** The `python3.x-venv` package corresponding to the installed Python version.
+
+### 2. Working Directory Setup
+
+A working directory is created at `/opt/fogbed`. If an existing directory is found, it is removed to ensure a clean installation.
+
+### 3. Containernet Installation
+
+The script clones the [Containernet](https://github.com/containernet/containernet) repository to the `/opt/fogbed/containernet` directory and then uses an Ansible playbook to install Containernet and its dependencies, which include Mininet and Open vSwitch.
+
+### 4. Python Virtual Environment Configuration
+
+A Python virtual environment is created at `/opt/fogbed/venv`. This environment isolates Fogbed's Python libraries from system libraries, avoiding version conflicts.
+
+### 5. Fogbed and Containernet Installation in Virtual Environment
+
+Inside the virtual environment, the script installs the `fogbed` and `containernet` libraries using `pip`.
+
+### 6. System Commands Configuration
+
+To facilitate the use of the tool, the script performs the following actions:
+
+- Creates a wrapper script at `/usr/local/bin/fogbed` that allows executing Python scripts with Fogbed's virtual environment from any directory.
+- Creates a symbolic link to Mininet's `mn` executable at `/usr/local/bin/mn`, making it globally accessible.
+
+### 7. Systemd Service Configuration (Optional)
+
+By default, the script configures a `systemd` service called `fogbed-worker.service`. This service ensures that a Fogbed worker process runs in the background and is automatically restarted in case of failures. The creation of this service can be disabled with the `-systemd-disabled` flag.
+
+## Script Options
+
+The installation script accepts the following parameters:
+
+| Parameter | Description |
+|---|---|
+| (none) | Executes the complete installation process. |
+| `-remove` | Removes the Fogbed installation, including the working directory and the `systemd` service. |
+| `-systemd-disabled` | Installs Fogbed but skips the `systemd` service configuration step. |
+| `-h`, `--help` | Displays a help message with available options. |
 
 ## Get Started
 After having installed fogbed you can start an example topology, copy the example in `examples/sensors/sensors.py` and run with:
