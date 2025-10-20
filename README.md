@@ -47,9 +47,9 @@ To facilitate the use of the tool, the script performs the following actions:
 - Creates a wrapper script at `/usr/local/bin/fogbed` that allows executing Python scripts with Fogbed's virtual environment from any directory.
 - Creates a symbolic link to Mininet's `mn` executable at `/usr/local/bin/mn`, making it globally accessible.
 
-### 7. Systemd Service Configuration (Optional)
+### 7. Systemd Service Configuration
 
-By default, the script configures a `systemd` service called `fogbed-worker.service`. This service ensures that a Fogbed worker process runs in the background and is automatically restarted in case of failures. The creation of this service can be disabled with the `-systemd-disabled` flag.
+By default, the script configures a systemd service called `fogbed-worker.service`. This service turns your machine into a "worker node" that can be remotely controlled by a Fogbed distributed emulation experiment. It ensures that the Fogbed worker process runs as root in the background and is automatically restarted in case of failures. This service is not necessary if you only intend to run local experiments or if your machine is used only to control a distributed experiment (rather than acting as a worker node). The creation of this service can be disabled with the -systemd-disabled flag.
 
 ## Script Options
 
