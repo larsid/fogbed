@@ -30,15 +30,11 @@ A working directory is created at `/opt/fogbed`. If an existing directory is fou
 
 ### 3. Containernet Installation
 
-The script clones the [Containernet](https://github.com/containernet/containernet) repository to the `/opt/fogbed/containernet` directory and then uses an Ansible playbook to install Containernet and its dependencies, which include Mininet and Open vSwitch.
+The script clones the [Containernet](https://github.com/containernet/containernet) repository to the `/opt/fogbed/containernet` directory and then uses an Ansible playbook to install Containernet and its system dependencies, which include Docker, Mininet, and Open vSwitch.
 
-### 4. Python Virtual Environment Configuration
+### 4. Fogbed and Containernet Installation in Virtual Environment
 
-A Python virtual environment is created at `/opt/fogbed/venv`. This environment isolates Fogbed's Python libraries from system libraries, avoiding version conflicts.
-
-### 5. Fogbed and Containernet Installation in Virtual Environment
-
-Inside the virtual environment, the script installs the `fogbed` and `containernet` libraries using `pip`.
+A Python virtual environment is created at `/opt/fogbed/venv`. This environment isolates Fogbed's Python libraries from system libraries, avoiding version conflicts. Inside the virtual environment, the script installs the `fogbed` and `containernet` libraries using `pip`.
 
 ### 6. System Commands Configuration
 
@@ -47,7 +43,7 @@ To facilitate the use of the tool, the script performs the following actions:
 - Creates a wrapper script at `/usr/local/bin/fogbed` that allows executing Python scripts with Fogbed's virtual environment from any directory.
 - Creates a symbolic link to Mininet's `mn` executable at `/usr/local/bin/mn`, making it globally accessible.
 
-### 7. Systemd Service Configuration
+### 6. Systemd Service Configuration
 
 By default, the script configures a systemd service called `fogbed-worker.service`. This service turns your machine into a "worker node" that can be remotely controlled by a Fogbed distributed emulation experiment. It ensures that the Fogbed worker process runs as root in the background and is automatically restarted in case of failures. This service is not necessary if you only intend to run local experiments or if your machine is used only to control a distributed experiment (rather than acting as a worker node). The creation of this service can be disabled with the -systemd-disabled flag.
 
