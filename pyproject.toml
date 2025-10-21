@@ -4,18 +4,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fogbed"
-version = "1.2.0"
+version = "1.3.0"
 authors = [
-  {name="Esaú Mascarenhas"},
+  {name="Esaú Mascarenhas and Antonio Coutinho"},
 ]
-description = "Fog computing emulation platform."
+description = "Fog and edge computing emulation platform."
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
   "clusternet >= 0.9.3",
   "urllib3 >= 1.26.0"
 ]
-keywords = ["networking", "emulator", "protocol", "Internet", "OpenFlow", "SDN", "fog"]
+keywords = ["networking", "emulator", "protocol", "Internet", "OpenFlow", "SDN", "fog", "edge"]
 license = {text = "MIT License"}
 classifiers = [
     "Development Status :: 5 - Production/Stable",
