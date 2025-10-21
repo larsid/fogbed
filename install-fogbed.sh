@@ -23,38 +23,6 @@ show_help() {
     echo "  It will replace existing installations in '$FOGBED_DIR' and '$CONTAINERNET_DIR'."
 }
 
-create_fogbed_sh() {
-    local target_path="$1"
-    cat > "$target_path" << 'EOF'
-#!/bin/bash
-#
-# Wrapper to execute a Python script using the Fogbed virtual environment.
-# This version executes scripts from the user's current directory.
-#
-
-# Define the path to the venv Python interpreter.
-VENV_PYTHON="/opt/fogbed/venv/bin/python3"
-
-# Check if the user specified a script to run.
-if [ "$#" -eq 0 ]; then
-    echo "Error: You need to specify which Python script to execute." >&2
-    echo "Usage: fogbed <path_to_script.py> [arguments...]" >&2
-    exit 1
-fi
-
-# The first argument is the path (relative or absolute) to the script.
-SCRIPT_ARG="$1"
-
-# Remove the first argument from the list, so that the rest ($@)
-# is passed to the Python script.
-shift
-
-# Execute the script using the venv Python, passing the script path
-# and the remaining arguments. The shell resolves the relative path automatically.
-exec "$VENV_PYTHON" "$SCRIPT_ARG" "$@"
-EOF
-}
-
 create_fogbed_worker_service() {
     local target_path="$1"
     cat > "$target_path" << 'EOF'
@@ -105,11 +73,11 @@ uninstall() {
         echo "      INFO: Fogbed directory not found."
     fi
     if [ -f "/usr/local/bin/fogbed" ]; then
-        echo "      Removing Fogbed system command script file '/usr/local/bin/fogbed' ..."
+        echo "      Removing system command '/usr/local/bin/fogbed' ..."
         sudo rm /usr/local/bin/fogbed
-        echo "      Fogbed system command script removed successfully."
+        echo "      Fogbed system command removed successfully."
     else
-        echo "      INFO: Fogbed system command script file not found."
+        echo "      INFO: '/usr/local/bin/fogbed' file not found."
     fi
 
     # Step 3: Inform about remaining dependencies
@@ -172,10 +140,8 @@ install() {
     sudo "$FOGBED_DIR/venv/bin/pip" install fogbed
 
     echo "      Setting up Fogbed system commands to virtual environment ..."
-    echo "      Creating the Fogbed shell script at /usr/local/bin/fogbed ..."
-    create_fogbed_sh "/tmp/fogbed.sh"
-    sudo mv /tmp/fogbed.sh /usr/local/bin/fogbed
-    sudo chmod 755 /usr/local/bin/fogbed
+    echo "      Creating a symbolic link for /opt/fogbed/venv/bin/fogbed at /usr/local/bin/fogbed ..."
+    sudo ln -s /opt/fogbed/venv/bin/fogbed /usr/local/bin/fogbed
     echo "      Creating a symbolic link for /opt/fogbed/venv/bin/mn at /usr/local/bin/mn ..."
     sudo ln -s /opt/fogbed/venv/bin/mn /usr/local/bin/mn
 
