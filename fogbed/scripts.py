@@ -1,17 +1,22 @@
 import argparse
 import os
+from pathlib import Path
 import tempfile
 import sys
 
 from fogbed.helpers import (
+    UBUNTU_2004,
     get_experiment_template_code,
-    run_command
+    get_os_version,
+    run_command,
+    run_pip_install,
+    run_python_file
 )
 
 
 def build(filename: str):
     if(filename.endswith('.py')):
-        run_command(['sudo', sys.executable, filename])
+        run_python_file(filename)
         return
     
     code = get_experiment_template_code(filename=os.path.abspath(filename))
@@ -21,7 +26,7 @@ def build(filename: str):
         temp_filename = file.name
     
     try:
-        run_command(['sudo', sys.executable, temp_filename])
+        run_python_file(temp_filename)
     finally:
         os.remove(temp_filename)
 
@@ -29,27 +34,28 @@ def build(filename: str):
 def install_containernet(branch: str):
     print('Installing Containernet...')
     unzipped_folder = f'containernet-{branch}'
-    containernet_folder = 'containernet'
+    containernet_folder = os.path.join(Path.home(), 'containernet')
 
     run_command(['sudo', 'apt-get', 'install', 'ansible'])
     run_command(
         ['wget', f'https://github.com/containernet/containernet/archive/refs/heads/{branch}.zip'])
     run_command(['unzip', f'{branch}.zip'])
     run_command(['mv', unzipped_folder, containernet_folder])
-
     run_command([
         'sudo', 
         'ansible-playbook', 
         '-i', '"localhost,"', 
         '-c', 'local',
         f'{containernet_folder}/ansible/install.yml'])
-    
-    run_command(['sudo', 'pip', 'install', 'git+https://github.com/containernet/containernet.git'])
     run_command(['rm', '-rf', f'{branch}.zip'])
+    run_pip_install('git+https://github.com/containernet/containernet.git')
 
 
 def run_worker(port: int):
-    run_command(['sudo', 'RunWorker', f'-p={port}'])
+    run_worker_path = os.path.join(sys.prefix, 'bin', 'RunWorker')
+    if(get_os_version() == UBUNTU_2004):
+        run_worker_path = 'RunWorker'
+    run_command(['sudo', run_worker_path, f'-p={port}'])
 
 
 def main():

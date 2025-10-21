@@ -78,7 +78,7 @@ fogbed run topology.yml
     Make sure the IP addresses and ports are configured according to the experiment script
     and run a worker in each machine with:
     ```
-    fogbed worker
+    fogbed worker -p=5000
     ```
 
 ## Using the ExperimentBuilder
