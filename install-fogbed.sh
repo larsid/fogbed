@@ -141,9 +141,15 @@ install() {
     sudo "$FOGBED_DIR/venv/bin/pip" install fogbed
 
     echo "      Setting up Fogbed system commands to virtual environment ..."
-    echo "      Creating a symbolic link for /opt/fogbed/venv/bin/fogbed at /usr/local/bin/fogbed ..."
+    echo "      Creating symbolic link for Fogbed at /usr/local/bin/fogbed ..."
+    if [ -f "/usr/local/bin/fogbed" ] || [ -L "/usr/local/bin/fogbed" ]; then
+        sudo rm /usr/local/bin/fogbed
+    fi
     sudo ln -s /opt/fogbed/venv/bin/fogbed /usr/local/bin/fogbed
-    echo "      Creating a symbolic link for /opt/fogbed/venv/bin/mn at /usr/local/bin/mn ..."
+    echo "      Creating a symbolic link for Mininet at /usr/local/bin/mn ..."
+    if [ -f "/usr/local/bin/mn" ] || [ -L "/usr/local/bin/mn" ]; then
+        sudo rm /usr/local/bin/mn
+    fi
     sudo ln -s /opt/fogbed/venv/bin/mn /usr/local/bin/mn
 
     echo "[5/5] Configuring systemd service ..."
