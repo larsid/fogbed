@@ -34,7 +34,7 @@ The script clones the [Containernet](https://github.com/containernet/containerne
 
 ### 4. Fogbed and Containernet Installation in Virtual Environment
 
-A Containernet limitation requires that Fogbed be installed inside a Python virtual environment. As of Ubuntu 24.04, Containernet installation as root is no longer supported, and it is non-functional on Ubuntu 22.04 because of a [setuptools issue](https://github.com/pypa/setuptools/issues/4483). A Python virtual environment is created at `/opt/fogbed/venv`. This environment isolates Fogbed's Python libraries from system libraries, avoiding version conflicts. Inside the virtual environment, the script installs the `fogbed` and `containernet` libraries using `pip`.
+Containernet installation as root is no longer possible starting from Ubuntu 24.04, and it is non-functional on Ubuntu 22.04 due to a [setuptools issue](https://github.com/pypa/setuptools/issues/4483). This Containernet limitation also requires that Fogbed be installed inside a Python virtual environment. Therefore, a Python virtual environment is created at `/opt/fogbed/venv`. This environment isolates Fogbed's Python libraries from system libraries, avoiding version conflicts. Inside the virtual environment, the script installs the `fogbed` and `containernet` libraries using `pip`.
 
 ### 5. System Commands Configuration
 
