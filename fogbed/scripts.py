@@ -2,6 +2,7 @@ import argparse
 import os
 from pathlib import Path
 import tempfile
+import sys
 
 from fogbed.helpers import (
     UBUNTU_2004,
