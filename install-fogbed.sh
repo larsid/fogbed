@@ -110,6 +110,7 @@ install() {
     sudo apt-get update
     # Install networks tools for use with fogbed and containers
     sudo apt -y install net-tools iproute2 iputils-ping tcpdump iperf
+    # Install the python3 environment and tools
     sudo apt-get install -y python3 python3-pip git curl ansible
     # Install venv package dynamically based on python version
     sudo apt-get install -y python$(python3 --version | awk '{print $2}' | cut -d '.' -f 1,2)-venv
