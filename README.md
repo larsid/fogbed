@@ -30,11 +30,11 @@ A working directory is created at `/opt/fogbed`. If an existing directory is fou
 
 ### 3. Containernet Installation
 
-The script clones the [Containernet](https://github.com/containernet/containernet) repository to the `/opt/fogbed/containernet` directory and then uses an Ansible playbook to install Containernet and its system dependencies, which include Docker, Mininet, and Open vSwitch.
+The script clones the [Containernet](https://github.com/containernet/containernet) repository to the `/opt/fogbed/containernet` directory and then uses an Ansible playbook to install Containernet and its system dependencies, which include Docker, Mininet, and Open vSwitch. 
 
 ### 4. Fogbed and Containernet Installation in Virtual Environment
 
-A Python virtual environment is created at `/opt/fogbed/venv`. This environment isolates Fogbed's Python libraries from system libraries, avoiding version conflicts. Inside the virtual environment, the script installs the `fogbed` and `containernet` libraries using `pip`.
+A Containernet limitation requires that Fogbed be installed inside a Python virtual environment. As of Ubuntu 24.04, Containernet installation as root is no longer supported, and it is non-functional on Ubuntu 22.04 because of a [setuptools issue](https://github.com/pypa/setuptools/issues/4483). A Python virtual environment is created at `/opt/fogbed/venv`. This environment isolates Fogbed's Python libraries from system libraries, avoiding version conflicts. Inside the virtual environment, the script installs the `fogbed` and `containernet` libraries using `pip`.
 
 ### 5. System Commands Configuration
 
@@ -47,9 +47,9 @@ To facilitate the use of the Fogbed, the script performs the following actions:
 
 By default, the script configures a systemd service called `fogbed-worker.service`. This service turns your machine into a "worker node" that can be remotely controlled by a Fogbed distributed emulation experiment. It ensures that the Fogbed worker process runs as root in the background and is automatically restarted in case of failures. This service is not necessary if you only intend to run local experiments or if your machine is used only to control a distributed experiment (rather than acting as a worker node). The creation of this service can be disabled with the -systemd-disabled flag.
 
-## Script Options
+## Fogbed Installation Script Options
 
-The installation script accepts the following parameters:
+The Fogbed installation script accepts the following parameters:
 
 | Parameter | Description |
 |---|---|
@@ -59,7 +59,12 @@ The installation script accepts the following parameters:
 | `-h`, `--help` | Displays a help message with available options. |
 
 ## Get Started
-After having installed fogbed you can start an example topology, copy the example in `examples/sensors/sensors.py` and run with:
+
+After installing Fogbed, you can start an example topology. First, clone the Fogbed repository locally:
+```
+git clone https://github.com/larsid/fogbed
+```
+Then, run the example script from the `fogbed/examples` directory (e.g., `sensors\sensors.py`) with:
 ```
 fogbed run sensors.py
 ```
