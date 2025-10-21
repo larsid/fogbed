@@ -1,5 +1,6 @@
 import socket
 import subprocess
+import sys
 from typing import List
 
 UBUNTU_2004 = 'Ubuntu20.04'
@@ -35,10 +36,7 @@ def run_pip_install(package: str):
         run_command(['pip', 'install', package])
 
 def run_python_file(filename: str):
-    if(get_os_version() == UBUNTU_2004):
-        run_command(['sudo', 'python3', filename])
-    else:
-        run_command(['sudo', './venv/bin/python3', filename])
+    run_command(['sudo', sys.executable, filename])
 
 
 def get_experiment_template_code(filename: str) -> str:
