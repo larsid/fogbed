@@ -5,7 +5,9 @@ import tempfile
 import sys
 
 from fogbed.helpers import (
+    UBUNTU_2004,
     get_experiment_template_code,
+    get_os_version,
     run_command,
     run_pip_install,
     run_python_file
@@ -51,6 +53,8 @@ def install_containernet(branch: str):
 
 def run_worker(port: int):
     run_worker_path = os.path.join(sys.prefix, 'bin', 'RunWorker')
+    if(get_os_version() == UBUNTU_2004):
+        run_worker_path = 'RunWorker'
     run_command(['sudo', run_worker_path, f'-p={port}'])
 
 
