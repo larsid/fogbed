@@ -1,5 +1,5 @@
-![](https://img.shields.io/badge/python-3.8+-blue.svg)
-![](https://img.shields.io/badge/Ubuntu-20.04-orange.svg)
+![](https://img.shields.io/badge/python-3.12+-blue.svg)
+![](https://img.shields.io/badge/Ubuntu-24.04-orange.svg)
 # Fogbed
 
 Fogbed is a framework and toolset integration for rapid prototyping of fog components in virtualized environments using a desktop or distributed approach. Its design meets the postulated requirements of low cost, flexible setup and compatibility with real world technologies. The components are based on [Mininet](https://github.com/mininet/mininet)/[Containernet](https://github.com/containernet/containernet) network emulator with Docker container instances as fog virtual nodes.
