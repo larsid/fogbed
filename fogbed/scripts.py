@@ -1,6 +1,7 @@
 import argparse
 import os
 import tempfile
+import sys
 
 from fogbed.helpers import (
     get_experiment_template_code,
@@ -10,7 +11,7 @@ from fogbed.helpers import (
 
 def build(filename: str):
     if(filename.endswith('.py')):
-        run_command(['sudo', 'python3', filename])
+        run_command(['sudo', sys.executable, filename])
         return
     
     code = get_experiment_template_code(filename=os.path.abspath(filename))
@@ -20,7 +21,7 @@ def build(filename: str):
         temp_filename = file.name
     
     try:
-        run_command(['sudo', 'python3', temp_filename])
+        run_command(['sudo', sys.executable, temp_filename])
     finally:
         os.remove(temp_filename)
 
