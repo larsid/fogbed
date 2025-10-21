@@ -64,7 +64,7 @@ After installing Fogbed, you can start an example topology. First, clone the Fog
 ```
 git clone https://github.com/larsid/fogbed
 ```
-Then, run the example script from the `fogbed/examples` directory (e.g., `sensors\sensors.py`) with:
+Then, run the example script from the `fogbed/examples/sensors/` directory (e.g., `sensors.py`) with:
 ```
 fogbed run sensors.py
 ```
