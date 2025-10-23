@@ -10,17 +10,17 @@ You can install Fogbed directly from the GitHub repository in a single step by u
 ```
 wget https://raw.githubusercontent.com/larsid/fogbed/main/install-fogbed.sh && chmod +x install-fogbed.sh && sudo ./install-fogbed.sh
 ```
-The `install-fogbed.sh` script automates the installation of the Fogbed tool and its dependencies on Ubuntu-based Linux systems. This command uses `wget` to retrieve the script from the main branch and saves it to the current directory as `install-fogbed.sh`. Then, it uses chmod (change mode) to add execute permissions to the installation script. The `+x` flag grants execution rights, allowing the script to be run as a program rather than just being read as a text file. Finally, it executes the installation script with superuser privileges using `sudo`, where the `./` prefix indicates that the script is located in the current directory. Administrator privileges are required because the script needs to install system packages, create directories in `/opt`, and configure system services. Below, we detail the steps executed by the installation script.
+The command uses `wget` to retrieve the Fogbed install script from the main branch and saves it to the current directory as `install-fogbed.sh`. The `install-fogbed.sh` script automates the installation of the Fogbed tool and its dependencies on Ubuntu-based Linux systems. The command uses `wget` to retrieve the script from the main branch and saves it to the current directory as `install-fogbed.sh`. Then, it uses chmod (change mode) to add execute permissions to the installation script. Finally, it executes the installation script with superuser privileges using `sudo`. Administrator privileges are required because the script needs to install system packages, create directories in `/opt/fogbed`, and configure system services. Below, we detail the steps executed by the installation script.
 
 ## Installation Steps
 
-The Fogbed installation script was tested only on Ubuntu 24.04. If you are facing errors while installing on a different system, or if you wish to modify the proposed configuration, you can review the steps performed by the script. The installation process is divided into the following stages:
+The Fogbed installation script was tested only on the Ubuntu 24.04 Linux system. If you encounter errors while installing on a different system or wish to modify the proposed configuration, you can review the steps performed by the script. The installation process is divided into the following six stages:
 
 ### 1. System Dependencies Installation
 
 The script begins by updating the system package list and installing essential dependencies through `apt-get`. The installed packages include:
 
-- **Network Tools:** `net-tools`, `iproute2`, `iputils-ping`, `tcpdump`, `iperf`.
+- **Network Tools to interact with containers:** `net-tools`, `iproute2`, `iputils-ping`, `tcpdump`, `iperf`.
 - **Development Tools:** `python3`, `python3-pip`, `git`, `curl`, `ansible`.
 - **Python Virtual Environment:** The `python3.x-venv` package corresponding to the installed Python version.
 
