@@ -106,7 +106,8 @@ install() {
     
     echo "Starting Fogbed Installation ..."
 
-    echo "[1/5] Installing system dependencies (apt) ..."
+    echo "[1/6] Installing system dependencies (apt) ..."
+    
     sudo apt-get update
     # Install networks tools for use with fogbed and containers
     sudo apt -y install net-tools iproute2 iputils-ping tcpdump iperf
@@ -115,7 +116,8 @@ install() {
     # Install venv package dynamically based on python version
     sudo apt-get install -y python$(python3 --version | awk '{print $2}' | cut -d '.' -f 1,2)-venv
     
-    echo "[2/5] Setting up Fogbed working directory ..."
+    echo "[2/6] Setting up Fogbed working directory ..."
+    
     if [ -d "$FOGBED_DIR" ]; then 
         echo "      Found existing directory '$FOGBED_DIR'. Removing it for a clean install ..."
         sudo rm -rf "$FOGBED_DIR"
@@ -124,23 +126,23 @@ install() {
     sudo mkdir "$FOGBED_DIR"
     sudo chown root:root "$FOGBED_DIR" 
 
-    echo "[3/5] Installing Containernet ..."
+    echo "[3/6] Installing Containernet ..."
+    
     echo "      Cloning Containernet repository into '$FOGBED_DIR/containernet' ..."
     sudo git clone https://github.com/containernet/containernet.git "$FOGBED_DIR/containernet"
-    
     echo "      Running Ansible playbook to install Containernet/Mininet dependencies ..."
     sudo ansible-playbook -i "localhost," -c local "$FOGBED_DIR/containernet/ansible/install.yml"
 
-    echo "[4/5] Setting up Fogbed virtual environment ..."
+    echo "[4/6] Setting up Fogbed virtual environment ..."
 
     echo "      Creating Python virtual environment inside '$FOGBED_DIR' ..."
     sudo python3 -m venv "$FOGBED_DIR/venv"
-
     echo "      Installing Containernet and Fogbed into the virtual environment ..."
     sudo "$FOGBED_DIR/venv/bin/pip" install "$FOGBED_DIR/containernet"
     sudo "$FOGBED_DIR/venv/bin/pip" install fogbed
 
-    echo "      Setting up Fogbed system commands to virtual environment ..."
+    echo "[5/6] Setting up Fogbed system commands to virtual environment ..."
+
     echo "      Creating symbolic link for Fogbed at /usr/local/bin/fogbed ..."
     if [ -f "/usr/local/bin/fogbed" ] || [ -L "/usr/local/bin/fogbed" ]; then
         sudo rm /usr/local/bin/fogbed
@@ -152,7 +154,8 @@ install() {
     fi
     sudo ln -s /opt/fogbed/venv/bin/mn /usr/local/bin/mn
 
-    echo "[5/5] Configuring systemd service ..."
+    echo "[6/6] Configuring Fogbed systemd service ..."
+    
     if [ "$install_systemd" = true ]; then
         echo "      Setting up Fogbed Worker as a systemd service ..."
         create_fogbed_worker_service "/tmp/$SERVICE_NAME"
