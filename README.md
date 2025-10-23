@@ -10,11 +10,11 @@ You can install Fogbed directly from the GitHub repository in a single step by u
 ```
 wget https://raw.githubusercontent.com/larsid/fogbed/main/install-fogbed.sh && chmod +x install-fogbed.sh && sudo ./install-fogbed.sh
 ```
-The command uses `wget` to retrieve the Fogbed install script from the main branch and saves it to the current directory as `install-fogbed.sh`. The `install-fogbed.sh` script automates the installation of the Fogbed tool and its dependencies on Ubuntu-based Linux systems. Then, it uses chmod (change mode) to add execute permissions (`+x`) to the `install-fogbed.sh` file. Finally, it executes the installation script with superuser privileges using `sudo`. Administrator privileges are required because the script needs to install system packages, create directories in `/opt/fogbed`, and configure system services. Below, we detail the steps executed by the installation script.
+The command uses `wget` to retrieve the Fogbed install script from the main branch and saves it to the current directory as `install-fogbed.sh`. The `install-fogbed.sh` script automates the installation of the Fogbed tool and its dependencies on Ubuntu-based Linux systems. Then, it uses chmod (change mode) to add execute permissions (`+x`) to the `install-fogbed.sh` file. Finally, it executes the installation script with superuser privileges using `sudo`. Administrator privileges are required because the script needs to install system packages, create directories in `/opt/fogbed`, and configure system services.
 
 ## Installation Steps
 
-The Fogbed installation script was tested only on the Ubuntu 24.04 Linux system. If you encounter errors while installing on a different system or wish to modify the proposed configuration, you can review the steps performed by the script. The installation process is divided into the following six stages:
+Below, we detail the steps executed by the installation script. The Fogbed installation script was tested only on the Ubuntu 24.04 Linux system. If you encounter errors while installing on a different system or wish to modify the proposed configuration, you can review the steps performed by the script. The installation process is divided into the following six stages:
 
 ### 1. System Dependencies Installation
 
