@@ -66,7 +66,7 @@ git clone https://github.com/larsid/fogbed
 ```
 Then, run the example script from the `fogbed/examples/sensors/` directory (e.g., `sensors.py`) with:
 ```
-fogbed run sensors.py
+fogbed run fogbed/examples/sensors/sensors.py
 ```
 Then access the url `http://localhost:3000` on your browser to visualize a React application consuming a REST API what monitor some devices which send health random data.
 
