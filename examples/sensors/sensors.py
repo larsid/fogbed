@@ -11,19 +11,21 @@ exp = FogbedExperiment()
 def create_devices(number: int) -> List[VirtualInstance]:
     return [exp.add_virtual_instance(f'edge{i+1}') for i in range(number)]
 
-
 def create_sensors(devices: List[VirtualInstance], server_url: str):
     for i, device in enumerate(devices):
         name = f'User{i+1}'
-        exp.add_docker(
-            container=Container(
-                name=name, 
-                dcmd='python3 device.py',
-                dimage='esaum/device:latest',
-                environment={'UID': name, 'URL': server_url}
-            ), 
-            datacenter=device)
 
+        sensor_container = Container(
+            name=name, 
+            dcmd='python3 device.py',
+            dimage='larsid/covid-device:latest',
+            environment={'UID': name, 'URL': server_url}
+        )
+        sensor_container.environment['BIND_IP'] = sensor_container.ip
+        exp.add_docker(
+            container=sensor_container, 
+            datacenter=device
+        )
 
 def create_links(cloud: VirtualInstance, devices: List[VirtualInstance]):
     for device in devices:
@@ -36,14 +38,15 @@ if(__name__=='__main__'):
 
     server = Container(
         name='server', 
-        dimage='esaum/covid-api:latest',
+        dimage='larsid/covid-api:latest',
         dcmd='python3 app.py',
         port_bindings={8000: 8000},
     )
+
     react_app = Container(
         name='monitor',
         dcmd='npm start',
-        dimage='esaum/covid-monitor:latest',
+        dimage='larsid/covid-monitor:latest',
         environment={'REACT_APP_API_URL': 'http://localhost:8000'},
         port_bindings={3000: 3000},
     )
