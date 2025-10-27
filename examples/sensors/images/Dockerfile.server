@@ -9,7 +9,7 @@ RUN apt-get update \
     pip \
     python3.8-venv \
     wget \
-    && wget https://github.com/EsauM10/covid-api/archive/main.tar.gz \
+    && wget https://github.com/larsid/covid-api/archive/main.tar.gz \
     && tar -xvzf main.tar.gz \
     && cp -a covid-api-main/  app/ \
     && rm -rf main.tar.gz \
