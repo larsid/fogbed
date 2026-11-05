@@ -1,19 +1,10 @@
 # Fail Injection
-Fogbed can inject failures into containers and virtual instances to evaluate the resilience of fog applications. The same API works in local and distributed emulation: fail models are attached with the `fail_model` parameter and a `FailController` runs them while the experiment is running.
+Fogbed can inject failures into containers and virtual instances to evaluate the resilience of fog and edge applications. Fail models are attached with the `fail_model` param and a `FailController` runs them while the experiment is running. The same API works in local and distributed emulation.
 
 ## Fail Models
-| Model | Behavior |
-|---|---|
-| `CrashFail` | Removes the container and its link after `life_time` seconds. The node stays down until the controller is stopped. |
-| `DisconnectFail` | Disables the container link after `life_time` seconds, keeping the container state. |
-| `AvailabilityFail` | Splits time into slots of `slot_time` seconds and keeps the nodes up for an `availability` fraction of the slots, using crash or disconnect according to `availability_mode`. |
-
-When a model is attached to a virtual instance, it applies to the containers of that instance:
-
-- `CrashFail` and `DisconnectFail` select `fail_rate` of the containers. `split_method` rounds the amount up (`UP`), down (`DOWN`) or randomly with the expected value (`RANDOM`), and `selection_method` picks the first containers (`SEQUENTIAL`) or random ones (`RANDOM`).
-- `AvailabilityFail` takes down, in each slot, enough random containers to keep the instance availability at the requested value.
-
-When attached to a container, the model applies only to it. For `AvailabilityFail`, the container stays up in the first slots of each cycle, for example 1 of every 2 slots for `availability=0.5`.
+* `CrashFail` - removes the container and its link after `life_time` seconds. The container stays down until the controller is stopped.
+* `DisconnectFail` - disables the link of the container after `life_time` seconds and keeps the container state.
+* `AvailabilityFail` - divides the time into slots of `slot_time` seconds and keeps the containers up in a fraction of the slots defined by `availability`. The `availability_mode` param defines if the containers are crashed or disconnected.
 
 ```py
 from fogbed import AvailabilityFail, AvailabilityMode, Container, CrashFail
@@ -26,110 +17,122 @@ edge = exp.add_virtual_instance('edge', fail_model=AvailabilityFail(
 d1 = Container('d1', fail_model=CrashFail(life_time=20))
 ```
 
-## Local Emulation
-```py title="local.py"
-import time
+A fail model attached to a container affects only that container. A fail model attached to a virtual instance affects the containers of the instance, and the following params define which containers fail.
 
-from fogbed import (
-    AvailabilityFail, AvailabilityMode, Container, CrashFail,
-    FailController, FogbedExperiment, setLogLevel
-)
+* `fail_rate` - fraction of the containers affected by `CrashFail` and `DisconnectFail`.
+* `split_method` - rounds the number of affected containers up (`SplitMethod.UP`), down (`SplitMethod.DOWN`) or randomly (`SplitMethod.RANDOM`).
+* `selection_method` - selects the first containers (`SelectionMethod.SEQUENTIAL`) or random containers (`SelectionMethod.RANDOM`).
 
-setLogLevel('info')
+With `AvailabilityFail`, the virtual instance takes down random containers in each slot to keep the requested availability.
 
-exp  = FogbedExperiment()
-fog  = exp.add_virtual_instance('fog')
-edge = exp.add_virtual_instance('edge', fail_model=AvailabilityFail(
-    availability=0.5, slot_time=2, availability_mode=AvailabilityMode.DISCONNECT))
 
-exp.add_docker(Container('gw'), fog)
-exp.add_docker(Container('d1', fail_model=CrashFail(life_time=20)), edge)
-exp.add_docker(Container('d2'), edge)
-exp.add_link(fog, edge)
+## Running the Failures
+=== "Local"
 
-fails = FailController(exp, seed=42)
+    ```py title="local.py"
+    import time
 
-try:
-    exp.start()
-    fails.start()
-    time.sleep(60)
-    print(fails.metrics())
-finally:
+    from fogbed import (
+        AvailabilityFail, AvailabilityMode, Container, CrashFail,
+        FailController, FogbedExperiment
+    )
+
+    exp  = FogbedExperiment()
+    fog  = exp.add_virtual_instance('fog')
+    edge = exp.add_virtual_instance('edge', fail_model=AvailabilityFail(
+        availability=0.5, slot_time=2, availability_mode=AvailabilityMode.DISCONNECT))
+
+    exp.add_docker(Container('gw'), fog)
+    exp.add_docker(Container('d1', fail_model=CrashFail(life_time=20)), edge)
+    exp.add_docker(Container('d2'), edge)
+    exp.add_link(fog, edge)
+
+    fails = FailController(exp, seed=42)
+
     try:
-        fails.stop()
+        exp.start()
+        fails.start()
+        time.sleep(60)
+        print(fails.metrics())
     finally:
-        exp.stop()
-```
+        try:
+            fails.stop()
+        finally:
+            exp.stop()
+    ```
 
-## Distributed Emulation
-In distributed emulation, the controller groups the fail models by worker and sends each worker a fail plan with a common start time. Each worker executes its plan locally, so the network latency between the machines does not affect the timing of the failures.
+=== "Distributed"
 
-```py title="distributed.py"
-exp  = FogbedDistributedExperiment()
-fog  = exp.add_virtual_instance('fog')
-edge = exp.add_virtual_instance('edge', fail_model=AvailabilityFail(
-    availability=0.5, slot_time=2, availability_mode=AvailabilityMode.DISCONNECT))
+    ```py title="distributed.py"
+    import time
 
-exp.add_docker(Container('gw'), fog)
-exp.add_docker(Container('d1', fail_model=CrashFail(life_time=20)), edge)
-exp.add_docker(Container('d2'), edge)
+    from fogbed import (
+        AvailabilityFail, AvailabilityMode, Container, CrashFail,
+        FailController, FogbedDistributedExperiment
+    )
 
-worker1 = exp.add_worker(ip='192.168.0.151')
-worker2 = exp.add_worker(ip='192.168.0.152')
-worker1.add(fog, reachable=True)
-worker2.add(edge, reachable=True)
-exp.add_tunnel(worker1, worker2)
+    exp  = FogbedDistributedExperiment()
+    fog  = exp.add_virtual_instance('fog')
+    edge = exp.add_virtual_instance('edge', fail_model=AvailabilityFail(
+        availability=0.5, slot_time=2, availability_mode=AvailabilityMode.DISCONNECT))
 
-fails = FailController(exp, seed=42, start_delay=2.0, max_clock_skew=0.5)
+    exp.add_docker(Container('gw'), fog)
+    exp.add_docker(Container('d1', fail_model=CrashFail(life_time=20)), edge)
+    exp.add_docker(Container('d2'), edge)
 
-try:
-    exp.start()
-    fails.start()
-    time.sleep(60)
-    events = fails.events()
-finally:
+    worker1 = exp.add_worker(ip='192.168.0.151')
+    worker2 = exp.add_worker(ip='192.168.0.152')
+    worker1.add(fog, reachable=True)
+    worker2.add(edge, reachable=True)
+    exp.add_tunnel(worker1, worker2)
+
+    fails = FailController(exp, seed=42)
+
     try:
-        fails.stop()
+        exp.start()
+        fails.start()
+        time.sleep(60)
+        print(fails.events())
     finally:
-        exp.stop()
-```
+        try:
+            fails.stop()
+        finally:
+            exp.stop()
+    ```
+
+The `seed` param makes the random choices reproducible, so an experiment produces the same sequence of failures in local and distributed emulation.
+
+In distributed emulation, each worker receives the fail models of its virtual instances and runs them locally from a common start time. This way the network latency between the machines does not change the timing of the failures.
 
 !!! warning
-    The workers must run `fogbed worker`, which serves the fail routes, and 
-    their clocks should be synchronized with NTP. The controller measures the 
-    clock offset of each worker on `start()`, shifts the start time of each 
-    plan and the timestamps of its events by that offset, and logs a warning 
-    when it exceeds `max_clock_skew` seconds.
+    In distributed emulation the workers must run the `fogbed worker` command 
+    and their clocks should be synchronized with NTP. The controller measures 
+    the clock offset of each worker in `start()`, compensates it in the start 
+    time and in the events, and logs a warning when the offset is greater than 
+    `max_clock_skew` seconds.
 
-## Controller
-| Method | Description |
-|---|---|
-| `start()` | Schedules the fail models of the running experiment. |
-| `stop()` | Cancels the failures and restores every failed node, raising `FailInjectionError` if a node cannot be restored. |
-| `fail(name, mode)` | Immediately crashes (`'crash'`) or disconnects (`'disconnect'`) a container. |
-| `recover(name)` | Immediately recovers a failed container. |
-| `status()` | Returns the state of the fail models and nodes (per worker in distributed mode). |
-| `events()` | Returns the transitions of the nodes, ordered by time. |
-| `metrics()` | Returns uptime, downtime, failures, availability, MTBF and MTTR of each node. |
 
-The `seed` parameter makes the random choices reproducible, so the same experiment yields the same failure sequence in local and distributed emulation.
+## Fail Controller
+* `start()` - starts the fail models of the running experiment.
+* `stop()` - stops the failures and restores the failed containers. It raises `FailInjectionError` if a container cannot be restored.
+* `fail(name, mode)` - crashes (`'crash'`) or disconnects (`'disconnect'`) a container immediately.
+* `recover(name)` - recovers a failed container immediately.
+* `status()` - returns the state of the fail models and containers. In distributed emulation the state is grouped by worker.
+* `events()` - returns the events ordered by time. Each event has the container, the state (`on` or `off`), the action (`crash`, `disconnect`, `recover` or `reconnect`), the timestamp and the source (`local` or the worker address).
+* `metrics()` - returns the uptime, downtime, number of failures, availability, MTBF and MTTR of each container between `start()` and `stop()`.
 
-Each event records the node, its state (`on` or `off`), the action (`crash`, `disconnect`, `recover` or `reconnect`), the timestamp and the source (`local` or the worker address).
 
-## Recovery Semantics
-- A crashed container is recreated with its original parameters, IP and MAC addresses, and switch port, so existing flows and ARP caches remain valid.
-- A fail model only recovers the nodes it took down: a crashed container is not revived by an availability cycle.
-- A crash takes over a disconnected container.
+## Recovery
+A crashed container is recreated with the same params, IP address, MAC address and switch port, so the flows and ARP tables of the network remain valid. A fail model only recovers the containers that it took down, which means that a crashed container is not recovered by an availability cycle. If a disconnected container receives a crash, the crash takes priority.
 
-## Worker Routes
-The `fogbed worker` command serves the clusternet routes plus the following ones:
 
-| Method | Route | Description |
-|---|---|---|
-| POST | `/fails` | Registers the fail plan of the worker. |
-| POST | `/fails/start` | Schedules the plan at its `start_at` time. |
-| POST | `/fails/stop` | Cancels the failures and restores the nodes. |
-| GET | `/fails/status` | Returns the state of the fail models and nodes and the worker clock. |
-| GET | `/fails/events` | Returns the event log. |
-| POST | `/containers/<name>/fail` | Immediately fails a container (`mode` is `crash` or `disconnect`). |
-| POST | `/containers/<name>/recover` | Recovers a failed container. |
+## Worker API
+The `fogbed worker` command runs the clusternet worker with the following routes.
+
+* `POST /fails` - registers the fail plan of the worker.
+* `POST /fails/start` - starts the fail plan at its `start_at` time.
+* `POST /fails/stop` - stops the failures and restores the containers.
+* `GET /fails/status` - returns the state of the fail models, the containers and the worker clock.
+* `GET /fails/events` - returns the events of the worker.
+* `POST /containers/<name>/fail` - fails a container immediately with the `crash` or `disconnect` mode.
+* `POST /containers/<name>/recover` - recovers a failed container.
