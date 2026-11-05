@@ -13,6 +13,8 @@ from fogbed.exceptions import ContainerNotFound, FailInjectionError
 from fogbed.fails.agent import FailAgent
 from fogbed.fails.plan import FailPlan, NodeSpec
 
+from mininet.log import info
+
 
 def conflict(body: Dict[str, Any]) -> HttpResponse:
     return HttpResponse(status_code=409, body=body)
@@ -152,6 +154,17 @@ def create_fails_blueprint(agent_provider: Callable[[], FailAgent]) -> Blueprint
     def make_response(controller: Controller):
         response = controller.handle(parse_request(request))
         return jsonify(response.body), response.status_code
+
+    @blueprint.before_app_request
+    def stop_fails_with_worker():
+        agent = agent_provider()
+        if(request.path != '/stop' or not agent.is_running):
+            return
+
+        try:
+            agent.stop()
+        except FailInjectionError as ex:
+            info(f'*** [{get_hostname()}]: {ex}\n')
 
     @blueprint.route('/fails', methods=['POST'])
     def load_fail_plan():

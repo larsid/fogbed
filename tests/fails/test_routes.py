@@ -161,3 +161,33 @@ def test_stop_reports_restore_failure(client, operator):
 
     assert response.status_code == 500
     assert 'd5 is broken' in response.json['error']
+
+
+def test_worker_stop_route_stops_running_fails(agent, operator):
+    app = Flask(__name__)
+    app.register_blueprint(create_fails_blueprint(lambda: agent))
+    app.add_url_rule('/stop', 'stop', lambda: ('stopped', 200))
+    client = app.test_client()
+
+    client.post('/fails', json=plan_dict())
+    client.post('/fails/start')
+    wait_for(lambda: operator.calls == [('crash', 'd1')])
+
+    assert client.get('/stop').status_code == 200
+    assert not agent.is_running
+    assert operator.calls == [('crash', 'd1'), ('recover', 'd1')]
+
+
+def test_worker_stop_route_survives_restore_failure(agent, operator):
+    app = Flask(__name__)
+    app.register_blueprint(create_fails_blueprint(lambda: agent))
+    app.add_url_rule('/stop', 'stop', lambda: ('stopped', 200))
+    client = app.test_client()
+
+    client.post('/fails', json=plan_dict())
+    client.post('/fails/start')
+    wait_for(lambda: operator.calls == [('crash', 'd1')])
+    operator.broken.add('d1')
+
+    assert client.get('/stop').status_code == 200
+    assert not agent.is_running
