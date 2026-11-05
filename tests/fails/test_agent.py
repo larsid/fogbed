@@ -1,6 +1,5 @@
-import threading
 import time
-from typing import List, Optional, Set, Tuple
+from typing import List
 
 import pytest
 
@@ -16,27 +15,8 @@ from fogbed.fails.models import (
     SelectionMethod,
     SplitMethod
 )
-from fogbed.fails.operators import NodeOperator
 from fogbed.fails.plan import FailPlan, FailTarget, NodeSpec, TargetKind
-
-
-class FakeOperator(NodeOperator):
-    def __init__(self, broken: Optional[Set[str]] = None):
-        self.calls: List[Tuple[str, str]] = []
-        self.broken = broken or set()
-        self._lock = threading.Lock()
-
-    def _call(self, action: str, node: NodeSpec):
-        if(node.name in self.broken):
-            raise RuntimeError(f'{node.name} is broken')
-        with self._lock:
-            self.calls.append((action, node.name))
-
-    def crash(self, node: NodeSpec): self._call('crash', node)
-    def recover(self, node: NodeSpec): self._call('recover', node)
-    def disconnect(self, node: NodeSpec): self._call('disconnect', node)
-    def reconnect(self, node: NodeSpec): self._call('reconnect', node)
-    def exists(self, name: str) -> bool: return True
+from fakes import FakeOperator
 
 
 def node_target(name: str, model: FailModel) -> FailTarget:
