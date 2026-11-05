@@ -1,6 +1,6 @@
 import threading
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Dict, Optional
 
 from fogbed.exceptions import ContainerNotFound, FailInjectionError
 from fogbed.fails.plan import NodeSpec
@@ -37,6 +37,7 @@ class ContainernetOperator(NodeOperator):
     ):
         self.net_provider = net_provider
         self.on_recover   = on_recover
+        self._macs: Dict[str, str] = {}
         self._lock = threading.Lock()
 
     def exists(self, name: str) -> bool:
@@ -51,6 +52,7 @@ class ContainernetOperator(NodeOperator):
             if(hasattr(switch, 'detach')):
                 switch.detach(interface)
 
+            self._macs[node.name] = net[node.name].MAC()
             net.removeLink(node1=node.name, node2=node.switch)
             net.removeDocker(node.name)
 
@@ -63,7 +65,11 @@ class ContainernetOperator(NodeOperator):
             if(node.switch not in net):
                 raise FailInjectionError(f'Switch {node.switch} not found')
 
-            net.addDocker(node.name, **node.params)
+            params = dict(node.params)
+            if(node.name in self._macs):
+                params.setdefault('mac', self._macs[node.name])
+
+            net.addDocker(node.name, **params)
             net.addLink(node.name, node.switch, cls=TCLink, **node.link_params)
             docker = net[node.name]
             docker.configDefault()

@@ -37,7 +37,7 @@ def test_recover_recreates_container_with_original_params(net):
     operator.recover(SPEC)
 
     assert net.calls == [
-        ('addDocker', 'd1', {'ip': '10.0.0.7', 'dimage': 'alpine'}),
+        ('addDocker', 'd1', {'ip': '10.0.0.7', 'dimage': 'alpine', 'mac': '00:00:00:00:00:02'}),
         ('addLink', 'd1', 's2', {'cls': TCLink, 'bw': 10})
     ]
     assert net['d1'].configured

@@ -12,6 +12,9 @@ class FakeNode:
         self.configured = False
         self.detached: List['FakeInterface'] = []
 
+    def MAC(self) -> str:
+        return f'00:00:00:00:00:{len(self.name):02d}'
+
     def configDefault(self):
         self.configured = True
 
