@@ -44,6 +44,7 @@ class FailAgent:
         self.started_at: Optional[float] = None
         self.stopped_at: Optional[float] = None
         self._lock = threading.RLock()
+        self._node_locks: Dict[str, threading.RLock] = {}
         self._stop_event = threading.Event()
         self._running = False
         self._plan = FailPlan()
@@ -63,7 +64,7 @@ class FailAgent:
                 raise FailInjectionError('A fail plan is already running')
 
             self._plan = plan
-            self._specs.update(plan.node_specs)
+            self._specs = {**{name: self._specs[name] for name in self._failures}, **plan.node_specs}
             self._threads = {}
             self._errors.clear()
             self._events.clear()
@@ -80,14 +81,14 @@ class FailAgent:
             if(start_at is None):
                 start_at = self.clock()
 
-            self._stop_event.clear()
+            self._stop_event = threading.Event()
             self._running = True
             self.started_at = start_at
             self.stopped_at = None
             self._threads = {
                 target_owner(target): threading.Thread(
                     target=self._run_target,
-                    args=(target, start_at),
+                    args=(target, start_at, self._stop_event),
                     name=f'fail-{target_owner(target)}',
                     daemon=True
                 )
@@ -101,16 +102,22 @@ class FailAgent:
         with self._lock:
             if(self._running):
                 self.stopped_at = self.clock()
+            stop_event = self._stop_event
+            threads = list(self._threads.values())
 
-        self._stop_event.set()
+        stop_event.set()
+        deadline = time.monotonic() + self.join_timeout
 
-        for thread in list(self._threads.values()):
-            thread.join(self.join_timeout)
+        for thread in threads:
+            thread.join(max(0.0, deadline - time.monotonic()))
+
+        errors = self._restore_failed_nodes()
 
         with self._lock:
-            for name in list(self._failures):
-                self._safely('stop', lambda: self.recover_node(name))
             self._running = False
+
+        if(errors):
+            raise FailInjectionError(f'Could not restore nodes: {"; ".join(errors)}')
 
     def fail_node(self, name: str, mode: str, owner: Optional[str] = None, spec: Optional[NodeSpec] = None) -> bool:
         if(mode not in RECOVERY_ACTIONS):
@@ -118,6 +125,8 @@ class FailAgent:
 
         with self._lock:
             node = self._get_spec(name, spec)
+
+        with self._get_node_lock(name):
             failure = self._failures.get(name)
 
             if(failure is not None and not (mode == CRASH and failure.mode == DISCONNECT)):
@@ -128,13 +137,16 @@ class FailAgent:
             else:
                 self.operator.disconnect(node)
 
-            self._failures[name] = NodeFailure(mode, owner)
+            with self._lock:
+                self._failures[name] = NodeFailure(mode, owner)
             self._record(name, NodeState.OFF, mode)
             return True
 
     def recover_node(self, name: str, owner: Optional[str] = None) -> bool:
         with self._lock:
             node = self._get_spec(name)
+
+        with self._get_node_lock(name):
             failure = self._failures.get(name)
 
             if(failure is None):
@@ -147,7 +159,8 @@ class FailAgent:
             else:
                 self.operator.reconnect(node)
 
-            self._failures.pop(name)
+            with self._lock:
+                self._failures.pop(name)
             self._record(name, NodeState.ON, RECOVERY_ACTIONS[failure.mode])
             return True
 
@@ -189,6 +202,34 @@ class FailAgent:
             raise ContainerNotFound(f'Container {name} not found.')
         return node
 
+    def _get_node_lock(self, name: str) -> threading.RLock:
+        with self._lock:
+            return self._node_locks.setdefault(name, threading.RLock())
+
+    def _restore_failed_nodes(self) -> List[str]:
+        errors: List[str] = []
+
+        with self._lock:
+            names = list(self._failures)
+
+        for name in names:
+            try:
+                self.recover_node(name)
+            except Exception as ex:
+                with self._get_node_lock(name), self._lock:
+                    self._failures.pop(name, None)
+                    message = f'{name}: {ex}'
+                    self._errors.append(f'stop: {message}')
+                errors.append(message)
+
+        return errors
+
+    def _fail_owned_node(self, name: str, mode: str, owner: str, stop_event: threading.Event) -> bool:
+        with self._get_node_lock(name):
+            if(stop_event.is_set()):
+                return False
+            return self.fail_node(name, mode, owner)
+
     def _is_target_active(self, target: FailTarget) -> bool:
         thread = self._threads.get(target_owner(target))
         return thread is not None and thread.is_alive()
@@ -205,29 +246,36 @@ class FailAgent:
                 self._errors.append(message)
             info(f'*** Fail error on {message}\n')
 
-    def _wait_until(self, moment: float) -> bool:
+    def _wait_until(self, moment: float, stop_event: threading.Event) -> bool:
         delay = moment - self.clock()
         if(delay <= 0):
-            return not self._stop_event.is_set()
-        return not self._stop_event.wait(delay)
+            return not stop_event.is_set()
+        return not stop_event.wait(delay)
 
     def _create_rng(self, owner: str) -> random.Random:
         if(self._plan.seed is None):
             return random.Random()
         return random.Random(f'{self._plan.seed}:{owner}')
 
-    def _run_target(self, target: FailTarget, start_at: float):
+    def _run_target(self, target: FailTarget, start_at: float, stop_event: threading.Event):
         owner = target_owner(target)
         rng = self._create_rng(owner)
         model = target.fail_model
 
         if(isinstance(model, AvailabilityFail)):
-            self._run_availability(target, model, owner, start_at, rng)
+            self._run_availability(target, model, owner, start_at, rng, stop_event)
         elif(isinstance(model, TimedFail)):
-            self._run_timed(target, model, owner, start_at, rng)
+            self._run_timed(target, model, owner, start_at, rng, stop_event)
 
-    def _run_timed(self, target: FailTarget, model: TimedFail, owner: str, start_at: float, rng: random.Random):
-        if(not self._wait_until(start_at + model.life_time)):
+    def _run_timed(self,
+        target: FailTarget,
+        model: TimedFail,
+        owner: str,
+        start_at: float,
+        rng: random.Random,
+        stop_event: threading.Event
+    ):
+        if(not self._wait_until(start_at + model.life_time, stop_event)):
             return
 
         names = target.node_names
@@ -237,24 +285,33 @@ class FailAgent:
 
         mode = CRASH if(isinstance(model, CrashFail)) else DISCONNECT
         for name in names:
-            self._safely(owner, lambda: self.fail_node(name, mode, owner))
+            if(stop_event.is_set()):
+                return
+            self._safely(owner, lambda: self._fail_owned_node(name, mode, owner, stop_event))
 
-    def _run_availability(self, target: FailTarget, model: AvailabilityFail, owner: str, start_at: float, rng: random.Random):
+    def _run_availability(self,
+        target: FailTarget,
+        model: AvailabilityFail,
+        owner: str,
+        start_at: float,
+        rng: random.Random,
+        stop_event: threading.Event
+    ):
         names = target.node_names
         mode = model.availability_mode.value
         down_nodes = self._create_down_nodes(target, model, rng)
         slot = 0
 
-        while(self._wait_until(start_at + slot * model.slot_time)):
+        while(self._wait_until(start_at + slot * model.slot_time, stop_event)):
             down = down_nodes(slot)
 
             for name in names:
-                if(name not in down):
+                if(name not in down and not stop_event.is_set()):
                     self._safely(owner, lambda: self.recover_node(name, owner))
 
             for name in names:
-                if(name in down and not self._stop_event.is_set()):
-                    self._safely(owner, lambda: self.fail_node(name, mode, owner))
+                if(name in down):
+                    self._safely(owner, lambda: self._fail_owned_node(name, mode, owner, stop_event))
 
             elapsed_slots = math.floor((self.clock() - start_at) / model.slot_time)
             slot = max(slot + 1, elapsed_slots)

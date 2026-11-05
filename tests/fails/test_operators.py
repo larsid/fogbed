@@ -84,3 +84,15 @@ def test_net_is_resolved_on_every_operation(net):
     assert operator.exists('d1')
     nets[0] = FakeNet()
     assert not operator.exists('d1')
+
+
+def test_recover_resumes_after_partial_recovery(net):
+    operator = ContainernetOperator(lambda: net)
+    operator.crash(SPEC)
+    net.addDocker('d1')
+    net.calls.clear()
+
+    operator.recover(SPEC)
+
+    assert [call[0] for call in net.calls] == ['addLink']
+    assert net.linksBetween(net['d1'], net['s2'])

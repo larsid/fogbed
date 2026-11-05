@@ -1,4 +1,5 @@
 import threading
+import time
 from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
 from fogbed.exceptions import ContainerNotFound
@@ -87,13 +88,15 @@ class FakeNet:
 
 
 class FakeOperator(NodeOperator):
-    def __init__(self, broken: Optional[Set[str]] = None, missing: Optional[Set[str]] = None):
+    def __init__(self, broken: Optional[Set[str]] = None, missing: Optional[Set[str]] = None, delay: float = 0.0):
         self.calls: List[Tuple[str, str]] = []
         self.broken = broken or set()
         self.missing = missing or set()
+        self.delay = delay
         self._lock = threading.Lock()
 
     def _call(self, action: str, node: NodeSpec):
+        time.sleep(self.delay)
         if(node.name in self.missing):
             raise ContainerNotFound(f'Container {node.name} not found.')
         if(node.name in self.broken):

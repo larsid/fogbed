@@ -63,10 +63,10 @@ class ContainernetOperator(NodeOperator):
         with self._lock:
             net = self._get_running_net()
 
-            if(node.name in net):
-                raise FailInjectionError(f'Container {node.name} is already running')
             if(node.switch not in net):
                 raise FailInjectionError(f'Switch {node.switch} not found')
+            if(node.name in net and net.linksBetween(net[node.name], net[node.switch])):
+                raise FailInjectionError(f'Container {node.name} is already running')
 
             params = dict(node.params)
             if(node.name in self._macs):
@@ -77,7 +77,8 @@ class ContainernetOperator(NodeOperator):
             if(port is not None):
                 link_params['port2'] = port
 
-            net.addDocker(node.name, **params)
+            if(node.name not in net):
+                net.addDocker(node.name, **params)
             net.addLink(node.name, node.switch, cls=TCLink, **link_params)
 
             if(ofport is not None):

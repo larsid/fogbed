@@ -254,3 +254,72 @@ def test_loading_new_plan_clears_previous_run(agent, operator):
 
     assert agent.events() == []
     assert agent.started_at is None
+
+
+def test_stop_interrupts_target_in_the_middle_of_its_nodes():
+    operator = FakeOperator(delay=0.1)
+    agent = FailAgent(operator)
+    model = CrashFail(fail_rate=1, life_time=0)
+    agent.load(FailPlan([instance_target('edge', model, [f'd{i}' for i in range(10)])]))
+    agent.start()
+
+    wait_for(lambda: len(operator.calls) >= 1)
+    agent.stop()
+    crashed = [name for action, name in operator.calls if action == 'crash']
+    recovered = [name for action, name in operator.calls if action == 'recover']
+    time.sleep(0.3)
+
+    assert len(crashed) < 10
+    assert sorted(recovered) == sorted(crashed)
+    assert len(operator.calls) == len(crashed) + len(recovered)
+    assert agent.status()['failures'] == {}
+
+
+def test_previous_run_does_not_resume_after_new_start(agent, operator):
+    agent.load(FailPlan([node_target('d1', CrashFail(life_time=0.3))]))
+    agent.start()
+    agent.stop()
+    agent.load(FailPlan([node_target('d2', CrashFail(life_time=10))]))
+    agent.start()
+
+    time.sleep(0.5)
+    assert operator.calls == []
+
+
+def test_restore_failure_is_reported_and_node_is_released(agent, operator):
+    agent.load(FailPlan([node_target('d1', CrashFail(life_time=10))]))
+    agent.fail_node('d1', 'crash')
+    operator.broken.add('d1')
+
+    with pytest.raises(FailInjectionError) as error:
+        agent.stop()
+
+    assert 'd1 is broken' in str(error.value)
+    assert agent.status()['failures'] == {}
+    assert any('d1 is broken' in message for message in agent.status()['errors'])
+
+    operator.broken.clear()
+    agent.load(FailPlan([node_target('d1', CrashFail(life_time=0))]))
+    assert agent.fail_node('d1', 'crash')
+
+
+def test_status_is_not_blocked_by_slow_operations():
+    operator = FakeOperator(delay=0.5)
+    agent = FailAgent(operator)
+    agent.load(FailPlan([node_target('d1', CrashFail(life_time=0))]))
+    agent.start()
+    time.sleep(0.1)
+
+    started = time.time()
+    agent.status()
+    assert time.time() - started < 0.2
+
+    agent.stop()
+
+
+def test_load_keeps_specs_of_failed_nodes_only(agent):
+    agent.load(FailPlan([node_target('d1', CrashFail()), node_target('d2', CrashFail())]))
+    agent.fail_node('d1', 'disconnect')
+    agent.load(FailPlan([node_target('d3', CrashFail())]))
+
+    assert agent.status()['nodes'] == {'d1': 'off', 'd3': 'on'}

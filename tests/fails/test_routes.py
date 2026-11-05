@@ -150,3 +150,14 @@ def test_operator_failure_returns_server_error(agent, client, operator):
 
     assert response.status_code == 500
     assert 'd4 is broken' in response.json['error']
+
+
+def test_stop_reports_restore_failure(client, operator):
+    spec = NodeSpec('d5', 's1').to_dict()
+    client.post('/containers/d5/fail', json={'mode': 'crash', 'spec': spec})
+    operator.broken.add('d5')
+
+    response = client.post('/fails/stop')
+
+    assert response.status_code == 500
+    assert 'd5 is broken' in response.json['error']
