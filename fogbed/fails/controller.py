@@ -187,7 +187,8 @@ class RemoteFailController(FailBackend):
 
         start_at = time.time() + self.start_delay
         for ip, targets in groups.items():
-            self._get_client(ip).load_plan(FailPlan(targets, start_at, self.seed))
+            worker_start_at = start_at + self.clock_offsets.get(ip, 0.0)
+            self._get_client(ip).load_plan(FailPlan(targets, worker_start_at, self.seed))
 
         for ip in groups:
             self._get_client(ip).start()
@@ -216,7 +217,7 @@ class RemoteFailController(FailBackend):
 
     def events(self) -> List[FailEvent]:
         events = [
-            dataclasses.replace(event, source=ip)
+            dataclasses.replace(event, source=ip, timestamp=event.timestamp - self.clock_offsets.get(ip, 0.0))
             for ip in self.experiment.workers
             for event in self._get_client(ip).events()
         ]
@@ -245,7 +246,7 @@ class RemoteFailController(FailBackend):
     def _warn_clock_skew(self):
         for ip, offset in self.clock_offsets.items():
             if(abs(offset) > self.max_clock_skew):
-                info(f'*** Warning: worker {ip} clock differs {offset:.3f}s from the controller, synchronize clocks with NTP\n')
+                info(f'*** Warning: worker {ip} clock differs {offset:.3f}s from the controller, synchronize clocks with NTP for accurate timing\n')
 
     def _group_targets(self) -> Dict[str, List[FailTarget]]:
         groups: Dict[str, List[FailTarget]] = {ip: [] for ip in self.experiment.workers}

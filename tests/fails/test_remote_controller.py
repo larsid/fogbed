@@ -97,7 +97,7 @@ def test_remote_controller_sends_plans_only_to_workers_with_targets(cluster):
     assert cluster.agents[W1].status()['targets'] == []
     targets = cluster.agents[W2].status()['targets']
     assert [(target['kind'], target['name']) for target in targets] == [('node', 'd1'), ('instance', 'edge')]
-    assert cluster.agents[W2].started_at == controller.started_at
+    assert cluster.agents[W2].started_at == pytest.approx(controller.started_at, abs=0.05)
     assert before + 0.2 <= controller.started_at <= time.time() + 0.2
     assert controller.nodes == ['d1', 'd2']
 
@@ -151,7 +151,7 @@ def test_remote_controller_rejects_unassigned_instances(cluster):
         RemoteFailController(experiment, client_factory=cluster.client_factory).start()
 
 
-def test_remote_controller_measures_clock_offsets():
+def test_remote_controller_compensates_clock_offsets():
     cluster = Cluster({W1: 0.0, W2: 3.0})
     try:
         controller = RemoteFailController(create_experiment(), start_delay=0.1, client_factory=cluster.client_factory)
@@ -159,6 +159,13 @@ def test_remote_controller_measures_clock_offsets():
 
         assert controller.clock_offsets[W1] == pytest.approx(0.0, abs=0.2)
         assert controller.clock_offsets[W2] == pytest.approx(3.0, abs=0.2)
+        assert cluster.agents[W2].started_at == pytest.approx(controller.started_at + 3.0, abs=0.2)
+
+        wait_for(lambda: ('crash', 'd1') in cluster.operators[W2].calls)
+        controller.stop()
+        crash = next(event for event in controller.events() if event.action == 'crash')
+
+        assert controller.started_at + 0.05 <= crash.timestamp <= controller.stopped_at
     finally:
         cluster.stop()
 

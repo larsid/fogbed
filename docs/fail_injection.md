@@ -96,9 +96,10 @@ finally:
 
 !!! warning
     The workers must run `fogbed worker`, which serves the fail routes, and 
-    their clocks must be synchronized with NTP. The controller measures the 
-    clock offset of each worker on `start()` and logs a warning when it exceeds 
-    `max_clock_skew` seconds.
+    their clocks should be synchronized with NTP. The controller measures the 
+    clock offset of each worker on `start()`, shifts the start time of each 
+    plan and the timestamps of its events by that offset, and logs a warning 
+    when it exceeds `max_clock_skew` seconds.
 
 ## Controller
 | Method | Description |
