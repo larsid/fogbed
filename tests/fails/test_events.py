@@ -88,6 +88,7 @@ def test_metrics_ignore_order_duplicates_and_clip_window():
     metrics = compute_metrics(events, start=0, end=60)['d1']
 
     assert metrics.failures == 1
+    assert metrics.repairs == 0
     assert metrics.downtime == 60
     assert metrics.uptime == 0
 

@@ -199,14 +199,14 @@ class RemoteFailController(FailBackend):
     def stop(self):
         errors: List[str] = []
 
+        if(self._started_at is not None and self._stopped_at is None):
+            self._stopped_at = time.time()
+
         for ip in self.experiment.workers:
             try:
                 self._get_client(ip).stop()
             except Exception as ex:
                 errors.append(f'{ex}')
-
-        if(self._started_at is not None and self._stopped_at is None):
-            self._stopped_at = time.time()
 
         if(errors):
             raise FailInjectionError('; '.join(errors))

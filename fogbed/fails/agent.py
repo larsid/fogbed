@@ -98,6 +98,10 @@ class FailAgent:
                 thread.start()
 
     def stop(self):
+        with self._lock:
+            if(self._running):
+                self.stopped_at = self.clock()
+
         self._stop_event.set()
 
         for thread in list(self._threads.values()):
@@ -106,9 +110,6 @@ class FailAgent:
         with self._lock:
             for name in list(self._failures):
                 self._safely('stop', lambda: self.recover_node(name))
-
-            if(self._running):
-                self.stopped_at = self.clock()
             self._running = False
 
     def fail_node(self, name: str, mode: str, owner: Optional[str] = None, spec: Optional[NodeSpec] = None) -> bool:

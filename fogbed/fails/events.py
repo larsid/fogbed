@@ -99,7 +99,10 @@ def _node_metrics(node: str, events: List[FailEvent], start: float, end: float) 
     failures = repairs = 0
 
     for event in events:
-        timestamp = min(max(event.timestamp, start), end)
+        if(event.timestamp > end):
+            break
+
+        timestamp = max(event.timestamp, start)
         if(event.state == state):
             continue
 

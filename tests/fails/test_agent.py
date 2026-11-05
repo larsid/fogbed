@@ -68,6 +68,7 @@ def test_node_crash_happens_after_life_time_and_is_restored_on_stop(agent, opera
     ]
     assert agent.status()['nodes'] == {'d1': 'on'}
     assert not agent.is_running
+    assert agent.started_at <= agent.events()[0].timestamp <= agent.stopped_at <= agent.events()[1].timestamp
 
 
 def test_instance_disconnect_selects_nodes_by_split_and_selection(agent, operator):

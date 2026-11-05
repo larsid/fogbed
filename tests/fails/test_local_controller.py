@@ -79,7 +79,8 @@ def test_local_controller_runs_plan_and_rebinds_recovered_dockers():
 
     metrics = controller.metrics()['d1']
     assert metrics.failures == 1
-    assert metrics.repairs == 1
+    assert metrics.repairs == 0
+    assert metrics.uptime + metrics.downtime == controller.stopped_at - controller.started_at
 
 
 def test_local_controller_requires_running_experiment():
