@@ -126,9 +126,24 @@ def test_availability_does_not_revive_nodes_owned_by_other_target(agent, operato
 def test_failed_node_is_not_failed_again(agent, operator):
     agent.load(FailPlan([node_target('d1', CrashFail())]))
 
-    assert agent.fail_node('d1', 'disconnect')
+    assert agent.fail_node('d1', 'crash')
     assert not agent.fail_node('d1', 'crash')
-    assert operator.calls == [('disconnect', 'd1')]
+    assert not agent.fail_node('d1', 'disconnect')
+    assert operator.calls == [('crash', 'd1')]
+
+
+def test_crash_escalates_disconnected_node(agent, operator):
+    agent.load(FailPlan([node_target('d1', CrashFail())]))
+
+    assert agent.fail_node('d1', 'disconnect', owner='instance:edge')
+    assert agent.fail_node('d1', 'crash', owner='node:d1')
+    assert not agent.recover_node('d1', owner='instance:edge')
+    assert not agent.fail_node('d1', 'disconnect')
+    assert operator.calls == [('disconnect', 'd1'), ('crash', 'd1')]
+    assert agent.status()['failures'] == {'d1': 'crash'}
+
+    agent.stop()
+    assert operator.calls[-1] == ('recover', 'd1')
 
 
 def test_manual_fail_registers_new_spec(agent, operator):

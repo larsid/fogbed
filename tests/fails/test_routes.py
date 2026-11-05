@@ -108,7 +108,7 @@ def test_immediate_fail_and_recover(client, operator):
 
     response = client.post('/containers/d2/fail', json={'mode': 'disconnect', 'spec': spec})
     assert response.status_code == 200
-    assert client.post('/containers/d2/fail', json={'mode': 'crash'}).status_code == 409
+    assert client.post('/containers/d2/fail', json={'mode': 'disconnect'}).status_code == 409
 
     assert client.post('/containers/d2/recover').status_code == 200
     assert client.post('/containers/d2/recover').status_code == 409

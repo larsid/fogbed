@@ -117,8 +117,9 @@ class FailAgent:
 
         with self._lock:
             node = self._get_spec(name, spec)
+            failure = self._failures.get(name)
 
-            if(name in self._failures):
+            if(failure is not None and not (mode == CRASH and failure.mode == DISCONNECT)):
                 return False
 
             if(mode == CRASH):
