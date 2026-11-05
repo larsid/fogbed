@@ -252,31 +252,29 @@ class FailAgent:
             return not stop_event.is_set()
         return not stop_event.wait(delay)
 
-    def _create_rng(self, owner: str) -> random.Random:
-        if(self._plan.seed is None):
-            return random.Random()
-        return random.Random(f'{self._plan.seed}:{owner}')
+    def _create_seed(self, owner: str) -> Optional[str]:
+        return None if(self._plan.seed is None) else f'{self._plan.seed}:{owner}'
 
     def _run_target(self, target: FailTarget, start_at: float, stop_event: threading.Event):
         owner = target_owner(target)
-        rng = self._create_rng(owner)
         model = target.fail_model
 
         if(isinstance(model, AvailabilityFail)):
-            self._run_availability(target, model, owner, start_at, rng, stop_event)
+            self._run_availability(target, model, owner, start_at, stop_event)
         elif(isinstance(model, TimedFail)):
-            self._run_timed(target, model, owner, start_at, rng, stop_event)
+            self._run_timed(target, model, owner, start_at, stop_event)
 
     def _run_timed(self,
         target: FailTarget,
         model: TimedFail,
         owner: str,
         start_at: float,
-        rng: random.Random,
         stop_event: threading.Event
     ):
         if(not self._wait_until(start_at + model.life_time, stop_event)):
             return
+
+        rng = random.Random(self._create_seed(owner))
 
         names = target.node_names
         if(target.kind == TargetKind.INSTANCE):
@@ -294,12 +292,11 @@ class FailAgent:
         model: AvailabilityFail,
         owner: str,
         start_at: float,
-        rng: random.Random,
         stop_event: threading.Event
     ):
         names = target.node_names
         mode = model.availability_mode.value
-        down_nodes = self._create_down_nodes(target, model, rng)
+        down_nodes = self._create_down_nodes(target, model, self._create_seed(owner))
         slot = 0
 
         while(self._wait_until(start_at + slot * model.slot_time, stop_event)):
@@ -316,11 +313,11 @@ class FailAgent:
             elapsed_slots = math.floor((self.clock() - start_at) / model.slot_time)
             slot = max(slot + 1, elapsed_slots)
 
-    def _create_down_nodes(self, target: FailTarget, model: AvailabilityFail, rng: random.Random) -> Callable[[int], Set[str]]:
+    def _create_down_nodes(self, target: FailTarget, model: AvailabilityFail, seed: Optional[str]) -> Callable[[int], Set[str]]:
         names = target.node_names
 
         if(target.kind == TargetKind.NODE):
             schedule = NodeAvailabilitySchedule(model.availability)
             return lambda slot: set() if(schedule.is_on(slot)) else set(names)
 
-        return InstanceAvailabilitySchedule(names, model.availability, rng).down_nodes
+        return InstanceAvailabilitySchedule(names, model.availability, seed).down_nodes
