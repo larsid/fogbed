@@ -1,17 +1,22 @@
+import dataclasses
 import time
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Callable, Dict, Iterable, List, Optional
 
 from fogbed.exceptions import ContainerNotFound, FailInjectionError
 from fogbed.experiment import Experiment
+from fogbed.experiment.distributed import FogbedDistributedExperiment
 from fogbed.experiment.local import FogbedExperiment
 from fogbed.fails.agent import CRASH, FailAgent
 from fogbed.fails.events import FailEvent, NodeMetrics, compute_metrics
 from fogbed.fails.operators import ContainernetOperator
 from fogbed.fails.plan import FailPlan, FailTarget, NodeSpec, TargetKind
+from fogbed.fails.remote.client import FailWorkerClient
 from fogbed.node.container import Container
 from fogbed.node.instance import VirtualInstance
 from fogbed.node.services.local_docker import LocalDocker
+
+from mininet.log import info
 
 
 def build_node_spec(container: Container, instance: VirtualInstance) -> NodeSpec:
@@ -141,6 +146,129 @@ class LocalFailController(FailBackend):
         self.experiment.get_docker(node.name).set_docker(LocalDocker(docker))
 
 
+class RemoteFailController(FailBackend):
+    def __init__(self,
+        experiment: Any,
+        seed: Optional[int] = None,
+        start_delay: float = 2.0,
+        max_clock_skew: float = 0.5,
+        client_factory: Callable[[str], FailWorkerClient] = FailWorkerClient
+    ):
+        self.experiment     = experiment
+        self.seed           = seed
+        self.start_delay    = start_delay
+        self.max_clock_skew = max_clock_skew
+        self.client_factory = client_factory
+        self.clock_offsets: Dict[str, float] = {}
+        self._clients: Dict[str, FailWorkerClient] = {}
+        self._started_at: Optional[float] = None
+        self._stopped_at: Optional[float] = None
+        self._nodes: List[str] = []
+
+    @property
+    def started_at(self) -> Optional[float]:
+        return self._started_at
+
+    @property
+    def stopped_at(self) -> Optional[float]:
+        return self._stopped_at
+
+    @property
+    def nodes(self) -> List[str]:
+        return list(self._nodes)
+
+    def start(self):
+        if(not self.experiment.is_running):
+            raise FailInjectionError('The experiment must be started before the fail controller')
+
+        groups = {ip: targets for ip, targets in self._group_targets().items() if targets}
+        self.clock_offsets = self.measure_clock_offsets()
+        self._warn_clock_skew()
+
+        start_at = time.time() + self.start_delay
+        for ip, targets in groups.items():
+            self._get_client(ip).load_plan(FailPlan(targets, start_at, self.seed))
+
+        for ip in groups:
+            self._get_client(ip).start()
+
+        self._started_at = start_at
+        self._stopped_at = None
+        self._nodes = list(dict.fromkeys(name for targets in groups.values() for target in targets for name in target.node_names))
+
+    def stop(self):
+        errors: List[str] = []
+
+        for ip in self.experiment.workers:
+            try:
+                self._get_client(ip).stop()
+            except Exception as ex:
+                errors.append(f'{ex}')
+
+        if(self._started_at is not None and self._stopped_at is None):
+            self._stopped_at = time.time()
+
+        if(errors):
+            raise FailInjectionError('; '.join(errors))
+
+    def status(self) -> Dict[str, Any]:
+        return {ip: self._get_client(ip).status() for ip in self.experiment.workers}
+
+    def events(self) -> List[FailEvent]:
+        events = [
+            dataclasses.replace(event, source=ip)
+            for ip in self.experiment.workers
+            for event in self._get_client(ip).events()
+        ]
+        return sorted(events, key=lambda event: event.timestamp)
+
+    def fail(self, name: str, mode: str = CRASH) -> bool:
+        instance = find_virtual_instance(self.experiment.get_virtual_instances(), name)
+        spec = build_node_spec(instance.containers[name], instance)
+        return self._get_client(self._get_worker_ip(instance)).fail_node(name, mode, spec)
+
+    def recover(self, name: str) -> bool:
+        instance = find_virtual_instance(self.experiment.get_virtual_instances(), name)
+        return self._get_client(self._get_worker_ip(instance)).recover_node(name)
+
+    def measure_clock_offsets(self) -> Dict[str, float]:
+        offsets: Dict[str, float] = {}
+
+        for ip in self.experiment.workers:
+            sent_at = time.time()
+            worker_time = float(self._get_client(ip).status()['time'])
+            received_at = time.time()
+            offsets[ip] = worker_time - (sent_at + received_at) / 2
+
+        return offsets
+
+    def _warn_clock_skew(self):
+        for ip, offset in self.clock_offsets.items():
+            if(abs(offset) > self.max_clock_skew):
+                info(f'*** Warning: worker {ip} clock differs {offset:.3f}s from the controller, synchronize clocks with NTP\n')
+
+    def _group_targets(self) -> Dict[str, List[FailTarget]]:
+        groups: Dict[str, List[FailTarget]] = {ip: [] for ip in self.experiment.workers}
+
+        for instance in self.experiment.get_virtual_instances():
+            targets = build_targets([instance])
+            if(targets):
+                groups[self._get_worker_ip(instance)].extend(targets)
+
+        return groups
+
+    def _get_worker_ip(self, instance: VirtualInstance) -> str:
+        ip = instance.get_ip()
+        if(ip not in self.experiment.workers):
+            raise FailInjectionError(f'Virtual instance {instance.label} is not assigned to a worker')
+        return ip
+
+    def _get_client(self, ip: str) -> FailWorkerClient:
+        if(ip not in self._clients):
+            self._clients[ip] = self.client_factory(self.experiment.workers[ip].net.url)
+        return self._clients[ip]
+
+
 class FailController:
     def __init__(self, experiment: Experiment, seed: Optional[int] = None, **options: Any):
         self.experiment = experiment
@@ -148,6 +276,8 @@ class FailController:
 
     @staticmethod
     def _create_backend(experiment: Experiment, seed: Optional[int], **options: Any) -> FailBackend:
+        if(isinstance(experiment, FogbedDistributedExperiment)):
+            return RemoteFailController(experiment, seed, **options)
         if(isinstance(experiment, FogbedExperiment)):
             return LocalFailController(experiment, seed)
         raise TypeError(f'Unsupported experiment type: {type(experiment).__name__}')
