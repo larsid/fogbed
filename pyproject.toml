@@ -25,8 +25,14 @@ classifiers = [
     "Topic :: System :: Emulators"
 ]
 
+[project.optional-dependencies]
+test = ["pytest"]
+
 [project.scripts]
 fogbed = "fogbed.scripts:main"
 
 [project.urls]
 Homepage = "https://larsid.github.io/fogbed"
+
+[tool.pytest.ini_options]
+testpaths = ["tests/fails"]
