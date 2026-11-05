@@ -141,3 +141,12 @@ def test_status_without_plan(client):
     assert not status['running']
     assert status['targets'] == []
     assert 'time' in status
+
+
+def test_operator_failure_returns_server_error(agent, client, operator):
+    operator.broken.add('d4')
+    spec = NodeSpec('d4', 's1').to_dict()
+    response = client.post('/containers/d4/fail', json={'mode': 'crash', 'spec': spec})
+
+    assert response.status_code == 500
+    assert 'd4 is broken' in response.json['error']

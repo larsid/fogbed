@@ -122,8 +122,6 @@ class FailContainerController(Controller):
             return bad_request(error(f'[{hostname}]: {ex}'))
         except ContainerNotFound as ex:
             return not_found(error(f'[{hostname}]: {ex}'))
-        except FailInjectionError as ex:
-            return conflict(error(f'[{hostname}]: {ex}'))
         except Exception as ex:
             return internal_server_error(error(f'[{hostname}]: {ex}'))
 
@@ -144,8 +142,6 @@ class RecoverContainerController(Controller):
 
         except ContainerNotFound as ex:
             return not_found(error(f'[{hostname}]: {ex}'))
-        except FailInjectionError as ex:
-            return conflict(error(f'[{hostname}]: {ex}'))
         except Exception as ex:
             return internal_server_error(error(f'[{hostname}]: {ex}'))
 
