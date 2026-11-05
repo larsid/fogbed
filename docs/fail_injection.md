@@ -55,8 +55,10 @@ try:
     time.sleep(60)
     print(fails.metrics())
 finally:
-    fails.stop()
-    exp.stop()
+    try:
+        fails.stop()
+    finally:
+        exp.stop()
 ```
 
 ## Distributed Emulation
@@ -86,8 +88,10 @@ try:
     time.sleep(60)
     events = fails.events()
 finally:
-    fails.stop()
-    exp.stop()
+    try:
+        fails.stop()
+    finally:
+        exp.stop()
 ```
 
 !!! warning
@@ -100,7 +104,7 @@ finally:
 | Method | Description |
 |---|---|
 | `start()` | Schedules the fail models of the running experiment. |
-| `stop()` | Cancels the failures and restores every failed node. |
+| `stop()` | Cancels the failures and restores every failed node, raising `FailInjectionError` if a node cannot be restored. |
 | `fail(name, mode)` | Immediately crashes (`'crash'`) or disconnects (`'disconnect'`) a container. |
 | `recover(name)` | Immediately recovers a failed container. |
 | `status()` | Returns the state of the fail models and nodes (per worker in distributed mode). |

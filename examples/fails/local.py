@@ -39,5 +39,7 @@ try:
 except Exception as ex: 
     print(ex)
 finally:
-    fails.stop()
-    exp.stop()
+    try:
+        fails.stop()
+    finally:
+        exp.stop()
