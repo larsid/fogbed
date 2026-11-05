@@ -11,6 +11,8 @@ class FakeNode:
         self.name = name
         self.configured = False
         self.detached: List['FakeInterface'] = []
+        self.ports: Dict['FakeInterface', int] = {}
+        self.vsctl_calls: List[Tuple[str, ...]] = []
 
     def MAC(self) -> str:
         return f'00:00:00:00:00:{len(self.name):02d}'
@@ -21,20 +23,31 @@ class FakeNode:
     def detach(self, interface: 'FakeInterface'):
         self.detached.append(interface)
 
+    def vsctl(self, *args: str) -> str:
+        self.vsctl_calls.append(args)
+        if(args[0] == 'get'):
+            return f'{self.ports.get(self._interface(args[2]), 0) + 10}\n'
+        return ''
+
+    def _interface(self, name: str) -> 'FakeInterface':
+        return next(interface for interface in self.ports if interface.name == name)
+
 
 class FakeInterface:
-    def __init__(self, node: FakeNode):
+    def __init__(self, node: FakeNode, port: int):
         self.node = node
+        self.name = f'{node.name}-eth{port}'
         self.status: List[str] = []
+        node.ports[self] = port
 
     def ifconfig(self, status: str):
         self.status.append(status)
 
 
 class FakeLink:
-    def __init__(self, node1: FakeNode, node2: FakeNode):
-        self.intf1 = FakeInterface(node1)
-        self.intf2 = FakeInterface(node2)
+    def __init__(self, node1: FakeNode, node2: FakeNode, port2: Optional[int] = None):
+        self.intf1 = FakeInterface(node1, len(node1.ports))
+        self.intf2 = FakeInterface(node2, len(node2.ports) + 1 if(port2 is None) else port2)
 
 
 class FakeNet:
@@ -60,11 +73,14 @@ class FakeNet:
 
     def addLink(self, node1: str, node2: str, **params: Any):
         self.calls.append(('addLink', node1, node2, params))
-        self.links.append(FakeLink(self.nodes[node1], self.nodes[node2]))
+        self.links.append(FakeLink(self.nodes[node1], self.nodes[node2], params.get('port2')))
 
     def removeLink(self, node1: str, node2: str):
         self.calls.append(('removeLink', node1, node2))
-        self.links = [link for link in self.links if {link.intf1.node.name, link.intf2.node.name} != {node1, node2}]
+        for link in self.linksBetween(self.nodes[node1], self.nodes[node2]):
+            link.intf1.node.ports.pop(link.intf1)
+            link.intf2.node.ports.pop(link.intf2)
+            self.links.remove(link)
 
     def linksBetween(self, node1: FakeNode, node2: FakeNode) -> List[FakeLink]:
         return [link for link in self.links if {link.intf1.node, link.intf2.node} == {node1, node2}]

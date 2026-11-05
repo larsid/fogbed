@@ -1,6 +1,6 @@
 import threading
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, Optional, Tuple
 
 from fogbed.exceptions import ContainerNotFound, FailInjectionError
 from fogbed.fails.plan import NodeSpec
@@ -38,6 +38,7 @@ class ContainernetOperator(NodeOperator):
         self.net_provider = net_provider
         self.on_recover   = on_recover
         self._macs: Dict[str, str] = {}
+        self._ports: Dict[str, Tuple[Optional[int], Optional[str]]] = {}
         self._lock = threading.Lock()
 
     def exists(self, name: str) -> bool:
@@ -49,10 +50,12 @@ class ContainernetOperator(NodeOperator):
             interface = self._get_switch_interface(net, node)
             switch = net[node.switch]
 
+            self._ports[node.name] = (switch.ports.get(interface), self._get_ofport(switch, interface))
+            self._macs[node.name] = net[node.name].MAC()
+
             if(hasattr(switch, 'detach')):
                 switch.detach(interface)
 
-            self._macs[node.name] = net[node.name].MAC()
             net.removeLink(node1=node.name, node2=node.switch)
             net.removeDocker(node.name)
 
@@ -69,8 +72,18 @@ class ContainernetOperator(NodeOperator):
             if(node.name in self._macs):
                 params.setdefault('mac', self._macs[node.name])
 
+            port, ofport = self._ports.get(node.name, (None, None))
+            link_params = dict(node.link_params)
+            if(port is not None):
+                link_params['port2'] = port
+
             net.addDocker(node.name, **params)
-            net.addLink(node.name, node.switch, cls=TCLink, **node.link_params)
+            net.addLink(node.name, node.switch, cls=TCLink, **link_params)
+
+            if(ofport is not None):
+                interface = self._get_switch_interface(net, node)
+                net[node.switch].vsctl('set', 'Interface', interface.name, f'ofport_request={ofport}')
+
             docker = net[node.name]
             docker.configDefault()
 
@@ -87,6 +100,13 @@ class ContainernetOperator(NodeOperator):
         with self._lock:
             net = self._get_running_net()
             self._get_switch_interface(net, node).ifconfig(status)
+
+    def _get_ofport(self, switch: Any, interface: Any) -> Optional[str]:
+        if(not hasattr(switch, 'vsctl')):
+            return None
+
+        ofport = str(switch.vsctl('get', 'Interface', interface.name, 'ofport')).strip()
+        return ofport if(ofport.isdigit()) else None
 
     def _get_running_net(self) -> Any:
         net = self.net_provider()
