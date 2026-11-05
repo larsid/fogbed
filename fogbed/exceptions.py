@@ -27,3 +27,6 @@ class WorkerNotFound(Exception):
 
 class FailPlanError(ValueError):
     pass
+
+class FailInjectionError(Exception):
+    pass
