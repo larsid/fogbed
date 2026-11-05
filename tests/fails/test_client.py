@@ -87,3 +87,18 @@ def test_client_reports_unreachable_worker():
     with pytest.raises(FailInjectionError) as error:
         client.status()
     assert '10.0.0.99' in str(error.value)
+
+
+def test_stop_waits_for_worker_without_timeout():
+    timeouts = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        timeouts[request.url.path] = request.extensions['timeout']
+        return httpx.Response(200, json={'content': {'time': 0}})
+
+    client = FailWorkerClient('http://worker1:5000', client=httpx.Client(transport=httpx.MockTransport(handler), timeout=5))
+    client.stop()
+    client.status()
+
+    assert set(timeouts['/fails/stop'].values()) == {None}
+    assert set(timeouts['/fails/status'].values()) == {5}

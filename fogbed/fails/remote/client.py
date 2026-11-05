@@ -20,7 +20,7 @@ class FailWorkerClient:
         self._request('POST', '/fails/start', body)
 
     def stop(self):
-        self._request('POST', '/fails/stop')
+        self._request('POST', '/fails/stop', timeout=None)
 
     def status(self) -> Dict[str, Any]:
         return self._request('GET', '/fails/status')['content']
@@ -47,13 +47,23 @@ class FailWorkerClient:
         self._verify(response)
         return True
 
-    def _request(self, method: str, path: str, body: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        response = self._send(method, path, body)
+    def _request(self,
+        method: str,
+        path: str,
+        body: Optional[Dict[str, Any]] = None,
+        timeout: Any = httpx.USE_CLIENT_DEFAULT
+    ) -> Dict[str, Any]:
+        response = self._send(method, path, body, timeout)
         return self._verify(response)
 
-    def _send(self, method: str, path: str, body: Optional[Dict[str, Any]]) -> httpx.Response:
+    def _send(self,
+        method: str,
+        path: str,
+        body: Optional[Dict[str, Any]],
+        timeout: Any = httpx.USE_CLIENT_DEFAULT
+    ) -> httpx.Response:
         try:
-            return self.client.request(method, f'{self.url}{path}', json=body)
+            return self.client.request(method, f'{self.url}{path}', json=body, timeout=timeout)
         except httpx.HTTPError as ex:
             raise FailInjectionError(f'{self.url}: {ex}')
 
