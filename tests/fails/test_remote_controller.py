@@ -215,3 +215,20 @@ def test_clock_offset_uses_fastest_sample():
     assert offsets[W1] == pytest.approx(2.0)
     assert offsets[W2] == pytest.approx(-1.0)
 
+
+def test_fail_controller_delegates_to_remote_backend(cluster):
+    controller = FailController(FogbedDistributedExperiment(), client_factory=cluster.client_factory)
+    controller.backend = RemoteFailController(create_experiment(), seed=5, start_delay=0.1, client_factory=cluster.client_factory)
+
+    controller.start()
+    wait_for(lambda: ('crash', 'd1') in cluster.operators[W2].calls)
+
+    status = controller.status()
+    assert set(status) == {W1, W2}
+    assert status[W2]['running']
+    assert controller.fail('gw', 'disconnect')
+    assert controller.recover('gw')
+
+    controller.stop()
+    assert {event.node for event in controller.events()} >= {'d1', 'gw'}
+    assert controller.metrics()['d1'].failures >= 1
