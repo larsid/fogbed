@@ -157,12 +157,11 @@ def create_fails_blueprint(agent_provider: Callable[[], FailAgent]) -> Blueprint
 
     @blueprint.before_app_request
     def stop_fails_with_worker():
-        agent = agent_provider()
-        if(request.path != '/stop' or not agent.is_running):
+        if(request.path != '/stop'):
             return
 
         try:
-            agent.stop()
+            agent_provider().stop()
         except FailInjectionError as ex:
             info(f'*** [{get_hostname()}]: {ex}\n')
 

@@ -191,3 +191,17 @@ def test_worker_stop_route_survives_restore_failure(agent, operator):
 
     assert client.get('/stop').status_code == 200
     assert not agent.is_running
+
+
+def test_worker_stop_route_restores_manual_failures(agent, operator):
+    app = Flask(__name__)
+    app.register_blueprint(create_fails_blueprint(lambda: agent))
+    app.add_url_rule('/stop', 'stop', lambda: ('stopped', 200))
+    client = app.test_client()
+
+    spec = NodeSpec('d2', 's1').to_dict()
+    client.post('/containers/d2/fail', json={'mode': 'crash', 'spec': spec})
+
+    assert client.get('/stop').status_code == 200
+    assert operator.calls == [('crash', 'd2'), ('recover', 'd2')]
+    assert agent.status()['failures'] == {}
