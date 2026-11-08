@@ -89,7 +89,7 @@ def wait_for(condition, timeout: float = 3.0):
     raise AssertionError('condition not reached')
 
 
-def test_remote_controller_sends_plans_only_to_workers_with_targets(cluster):
+def test_remote_controller_sends_plans_to_workers_with_targets(cluster):
     controller = RemoteFailController(create_experiment(), seed=5, start_delay=0.2, client_factory=cluster.client_factory)
     before = time.time()
     controller.start()
@@ -232,3 +232,16 @@ def test_fail_controller_delegates_to_remote_backend(cluster):
     controller.stop()
     assert {event.node for event in controller.events()} >= {'d1', 'gw'}
     assert controller.metrics()['d1'].failures >= 1
+
+
+def test_remote_controller_resets_workers_without_targets(cluster):
+    previous = RemoteFailController(create_experiment(), client_factory=cluster.client_factory)
+    assert previous.fail('gw', 'disconnect')
+    assert previous.recover('gw')
+
+    controller = RemoteFailController(create_experiment(), seed=5, start_delay=0.1, client_factory=cluster.client_factory)
+    controller.start()
+    controller.stop()
+
+    assert cluster.agents[W1].events() == []
+    assert all(event.node != 'gw' for event in controller.events())

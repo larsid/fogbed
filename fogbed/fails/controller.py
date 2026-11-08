@@ -183,7 +183,7 @@ class RemoteFailController(FailBackend):
         if(not self.experiment.is_running):
             raise FailInjectionError('The experiment must be started before the fail controller')
 
-        groups = {ip: targets for ip, targets in self._group_targets().items() if targets}
+        groups = self._group_targets()
         self.clock_offsets = self.measure_clock_offsets()
         self._warn_clock_skew()
 
