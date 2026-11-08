@@ -9,7 +9,7 @@ from fogbed.fails.agent import FailAgent
 from fogbed.fails.events import NodeState
 from fogbed.fails.models import DisconnectFail
 from fogbed.fails.plan import FailPlan, FailTarget, NodeSpec, TargetKind
-from fogbed.fails.remote.client import FailWorkerClient
+from fogbed.fails.remote.client import REQUEST_SENT, RESPONSE_RECEIVED, FailWorkerClient
 from fogbed.fails.remote.routes import create_fails_blueprint
 from fakes import FakeOperator
 
@@ -102,3 +102,36 @@ def test_stop_waits_for_worker_without_timeout():
 
     assert set(timeouts['/fails/stop'].values()) == {None}
     assert set(timeouts['/fails/status'].values()) == {5}
+
+
+class SlowConnectionClient:
+    def __init__(self, connect_delay: float, transfer_delay: float):
+        self.connect_delay  = connect_delay
+        self.transfer_delay = transfer_delay
+
+    def request(self, method, url, json=None, timeout=None, extensions=None):
+        trace = (extensions or {}).get('trace', lambda event, info: None)
+        time.sleep(self.connect_delay)
+        trace(REQUEST_SENT, {})
+        time.sleep(self.transfer_delay)
+        worker_time = time.time()
+        time.sleep(self.transfer_delay)
+        trace(RESPONSE_RECEIVED, {})
+        return httpx.Response(200, json={'content': {'time': worker_time}})
+
+
+def test_clock_sample_ignores_connection_setup():
+    client = FailWorkerClient('http://worker1:5000', client=SlowConnectionClient(connect_delay=0.2, transfer_delay=0.05))
+
+    sample = client.clock()
+
+    assert sample.round_trip == pytest.approx(0.1, abs=0.03)
+    assert sample.offset == pytest.approx(0.0, abs=0.02)
+
+
+def test_clock_sample_without_trace_uses_request_time(client, agent):
+    before = time.time()
+    sample = client.clock()
+
+    assert before <= sample.sent_at <= sample.worker_time <= sample.received_at <= time.time()
+    assert sample.round_trip >= 0

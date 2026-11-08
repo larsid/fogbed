@@ -152,12 +152,14 @@ class RemoteFailController(FailBackend):
         seed: Optional[int] = None,
         start_delay: float = 2.0,
         max_clock_skew: float = 0.5,
+        clock_samples: int = 3,
         client_factory: Callable[[str], FailWorkerClient] = FailWorkerClient
     ):
         self.experiment     = experiment
         self.seed           = seed
         self.start_delay    = start_delay
         self.max_clock_skew = max_clock_skew
+        self.clock_samples  = max(1, clock_samples)
         self.client_factory = client_factory
         self.clock_offsets: Dict[str, float] = {}
         self._clients: Dict[str, FailWorkerClient] = {}
@@ -236,10 +238,8 @@ class RemoteFailController(FailBackend):
         offsets: Dict[str, float] = {}
 
         for ip in self.experiment.workers:
-            sent_at = time.time()
-            worker_time = float(self._get_client(ip).status()['time'])
-            received_at = time.time()
-            offsets[ip] = worker_time - (sent_at + received_at) / 2
+            samples = [self._get_client(ip).clock() for _ in range(self.clock_samples)]
+            offsets[ip] = min(samples, key=lambda sample: sample.round_trip).offset
 
         return offsets
 

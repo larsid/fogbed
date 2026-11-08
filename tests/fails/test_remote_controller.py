@@ -11,7 +11,7 @@ from fogbed.fails.agent import FailAgent
 from fogbed.fails.controller import FailController, RemoteFailController
 from fogbed.fails.events import NodeState
 from fogbed.fails.models import AvailabilityFail, AvailabilityMode, CrashFail
-from fogbed.fails.remote.client import FailWorkerClient
+from fogbed.fails.remote.client import ClockSample, FailWorkerClient
 from fogbed.fails.remote.routes import create_fails_blueprint
 from fakes import FakeOperator
 
@@ -191,3 +191,27 @@ def test_fail_controller_selects_remote_backend_for_distributed_experiments():
     assert isinstance(controller.backend, RemoteFailController)
     assert controller.backend.start_delay == 5
     assert controller.backend.seed == 1
+
+
+class SampledClient:
+    def __init__(self, samples: List[ClockSample]):
+        self.samples = list(samples)
+
+    def clock(self) -> ClockSample:
+        return self.samples.pop(0)
+
+
+def test_clock_offset_uses_fastest_sample():
+    experiment = create_experiment()
+    clients = {
+        f'http://{W1}:5000': SampledClient([ClockSample(0.0, 10.5, 1.0), ClockSample(0.0, 2.05, 0.1), ClockSample(0.0, 3.0, 0.5)]),
+        f'http://{W2}:5000': SampledClient([ClockSample(0.0, -0.95, 0.1)])
+    }
+    controller = RemoteFailController(experiment, clock_samples=3, client_factory=lambda url: clients[url])
+    clients[f'http://{W2}:5000'].samples *= 3
+
+    offsets = controller.measure_clock_offsets()
+
+    assert offsets[W1] == pytest.approx(2.0)
+    assert offsets[W2] == pytest.approx(-1.0)
+

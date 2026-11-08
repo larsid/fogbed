@@ -1,3 +1,5 @@
+import time
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -5,6 +7,25 @@ import httpx
 from fogbed.exceptions import ContainerNotFound, FailInjectionError
 from fogbed.fails.events import FailEvent
 from fogbed.fails.plan import FailPlan, NodeSpec
+
+
+REQUEST_SENT = 'http11.send_request_headers.started'
+RESPONSE_RECEIVED = 'http11.receive_response_headers.complete'
+
+
+@dataclass(frozen=True)
+class ClockSample:
+    sent_at: float
+    worker_time: float
+    received_at: float
+
+    @property
+    def round_trip(self) -> float:
+        return self.received_at - self.sent_at
+
+    @property
+    def offset(self) -> float:
+        return self.worker_time - (self.sent_at + self.received_at) / 2
 
 
 class FailWorkerClient:
@@ -24,6 +45,23 @@ class FailWorkerClient:
 
     def status(self) -> Dict[str, Any]:
         return self._request('GET', '/fails/status')['content']
+
+    def clock(self) -> ClockSample:
+        marks: Dict[str, float] = {}
+
+        def trace(event: str, info: Dict[str, Any]):
+            marks.setdefault(event, time.time())
+
+        sent_at = time.time()
+        response = self._send('GET', '/fails/status', None, extensions={'trace': trace})
+        received_at = time.time()
+        worker_time = float(self._verify(response)['content']['time'])
+
+        return ClockSample(
+            sent_at=marks.get(REQUEST_SENT, sent_at),
+            worker_time=worker_time,
+            received_at=marks.get(RESPONSE_RECEIVED, received_at)
+        )
 
     def events(self) -> List[FailEvent]:
         return [FailEvent.from_dict(event) for event in self._request('GET', '/fails/events')['content']]
@@ -60,10 +98,11 @@ class FailWorkerClient:
         method: str,
         path: str,
         body: Optional[Dict[str, Any]],
-        timeout: Any = httpx.USE_CLIENT_DEFAULT
+        timeout: Any = httpx.USE_CLIENT_DEFAULT,
+        extensions: Optional[Dict[str, Any]] = None
     ) -> httpx.Response:
         try:
-            return self.client.request(method, f'{self.url}{path}', json=body, timeout=timeout)
+            return self.client.request(method, f'{self.url}{path}', json=body, timeout=timeout, extensions=extensions)
         except httpx.HTTPError as ex:
             raise FailInjectionError(f'{self.url}: {ex}')
 
