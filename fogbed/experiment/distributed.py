@@ -13,6 +13,7 @@ from fogbed.exceptions import (
     WorkerNotFound
 )
 from fogbed.experiment import Experiment
+from fogbed.fails.models import FailModel
 from fogbed.helpers import (
     get_ip_address,
     start_openflow_controller
@@ -80,9 +81,13 @@ class FogbedDistributedExperiment(Experiment):
         return worker
     
 
-    def add_virtual_instance(self, name: str, resource_model: Optional[ResourceModel] = None) -> VirtualInstance:
+    def add_virtual_instance(self, 
+        name: str, 
+        resource_model: Optional[ResourceModel] = None, 
+        fail_model: Optional[FailModel] = None
+    ) -> VirtualInstance:
         Services.verify_if_datacenter_exists(name)
-        datacenter = VirtualInstance(name, resource_model)
+        datacenter = VirtualInstance(name, resource_model, fail_model)
         Services.add_virtual_instance(datacenter)
         return datacenter
 
