@@ -2,6 +2,15 @@ try:
     from fogbed.experiment import Experiment
     from fogbed.experiment.local import FogbedExperiment
     from fogbed.experiment.distributed import FogbedDistributedExperiment
+    from fogbed.fails.controller import FailController
+    from fogbed.fails.models import (
+        AvailabilityFail,
+        AvailabilityMode,
+        CrashFail,
+        DisconnectFail,
+        SelectionMethod,
+        SplitMethod
+    )
     from fogbed.node.container import Container
     from fogbed.node.controller import Controller
     from fogbed.node.instance import VirtualInstance

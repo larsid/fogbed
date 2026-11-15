@@ -11,6 +11,7 @@ from fogbed.exceptions import (
     VirtualInstanceNotFound
 )
 from fogbed.experiment import Experiment
+from fogbed.fails.models import FailModel
 from fogbed.helpers import get_ip_address
 from fogbed.experiment.net import Fogbed
 from fogbed.node.container import Container
@@ -46,9 +47,13 @@ class FogbedExperiment(Experiment):
         self.topology.addLink(node1.switch, node2.switch, **params)
 
 
-    def add_virtual_instance(self, name: str, resource_model: Optional[ResourceModel] = None) -> VirtualInstance:
+    def add_virtual_instance(self, 
+        name: str, 
+        resource_model: Optional[ResourceModel] = None, 
+        fail_model: Optional[FailModel] = None
+    ) -> VirtualInstance:
         Services.verify_if_datacenter_exists(name)
-        datacenter = VirtualInstance(name, resource_model)
+        datacenter = VirtualInstance(name, resource_model, fail_model)
         Services.add_virtual_instance(datacenter)
         self.topology.addSwitch(datacenter.switch)
         return datacenter

@@ -7,3 +7,4 @@ stats.txt
 pox
 topology.yml
 .DS_Store
+*.egg-info/

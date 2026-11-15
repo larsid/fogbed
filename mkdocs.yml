@@ -69,6 +69,7 @@ nav:
     - Distributed Emulation: 'distributed_emulation.md'
     - Using Config Files: 'config_files.md'
     - Monitoring Metrics: 'monitoring_metrics.md'
+    - Fail Injection: 'fail_injection.md'
 
   - Examples: 
     - Sensors: 'examples.md'

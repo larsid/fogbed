@@ -24,3 +24,9 @@ class WorkerAlreadyExists(Exception):
 class WorkerNotFound(Exception):
     def __init__(self, ip: str) -> None:
         super().__init__(f'Worker {ip} not found.')
+
+class FailPlanError(ValueError):
+    pass
+
+class FailInjectionError(Exception):
+    pass

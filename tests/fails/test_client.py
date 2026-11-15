@@ -1,0 +1,137 @@
+import time
+
+import httpx
+import pytest
+from flask import Flask
+
+from fogbed.exceptions import ContainerNotFound, FailInjectionError
+from fogbed.fails.agent import FailAgent
+from fogbed.fails.events import NodeState
+from fogbed.fails.models import DisconnectFail
+from fogbed.fails.plan import FailPlan, FailTarget, NodeSpec, TargetKind
+from fogbed.fails.remote.client import REQUEST_SENT, RESPONSE_RECEIVED, FailWorkerClient
+from fogbed.fails.remote.routes import create_fails_blueprint
+from fakes import FakeOperator
+
+
+@pytest.fixture
+def operator() -> FakeOperator:
+    return FakeOperator(missing={'ghost'})
+
+
+@pytest.fixture
+def agent(operator):
+    instance = FailAgent(operator, source='worker1')
+    yield instance
+    instance.stop()
+
+
+@pytest.fixture
+def client(agent) -> FailWorkerClient:
+    app = Flask(__name__)
+    app.register_blueprint(create_fails_blueprint(lambda: agent))
+    transport = httpx.WSGITransport(app=app)
+    return FailWorkerClient('http://worker1:5000/', client=httpx.Client(transport=transport))
+
+
+def test_client_runs_plan_and_reads_events(client, operator):
+    target = FailTarget(TargetKind.NODE, 'd1', DisconnectFail(life_time=0), [NodeSpec('d1', 's1')])
+    client.load_plan(FailPlan([target]))
+    client.start(start_at=time.time())
+
+    deadline = time.time() + 2
+    while(client.status()['nodes'] != {'d1': 'off'} and time.time() < deadline):
+        time.sleep(0.01)
+    assert client.status()['nodes'] == {'d1': 'off'}
+
+    client.stop()
+    events = client.events()
+
+    assert [(event.node, event.state, event.action) for event in events] == [
+        ('d1', NodeState.OFF, 'disconnect'),
+        ('d1', NodeState.ON, 'reconnect')
+    ]
+    assert operator.calls == [('disconnect', 'd1'), ('reconnect', 'd1')]
+
+
+def test_client_immediate_fail_and_recover(client):
+    spec = NodeSpec('d2', 's1', {'ip': '10.0.0.2'})
+
+    assert client.fail_node('d2', 'crash', spec)
+    assert not client.fail_node('d2', 'crash')
+    assert client.recover_node('d2')
+    assert not client.recover_node('d2')
+
+
+def test_client_maps_errors(client):
+    with pytest.raises(ContainerNotFound):
+        client.fail_node('d9', 'crash')
+    with pytest.raises(ContainerNotFound):
+        client.fail_node('ghost', 'crash', NodeSpec('ghost', 's1'))
+    with pytest.raises(FailInjectionError):
+        client.fail_node('d9', 'explode', NodeSpec('d9', 's1'))
+
+    target = FailTarget(TargetKind.NODE, 'd1', DisconnectFail(life_time=10), [NodeSpec('d1', 's1')])
+    client.load_plan(FailPlan([target]))
+    client.start()
+    with pytest.raises(FailInjectionError):
+        client.start()
+
+
+def test_client_reports_unreachable_worker():
+    def refuse(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError('connection refused', request=request)
+
+    client = FailWorkerClient('http://10.0.0.99:5000', client=httpx.Client(transport=httpx.MockTransport(refuse)))
+
+    with pytest.raises(FailInjectionError) as error:
+        client.status()
+    assert '10.0.0.99' in str(error.value)
+
+
+def test_stop_waits_for_worker_without_timeout():
+    timeouts = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        timeouts[request.url.path] = request.extensions['timeout']
+        return httpx.Response(200, json={'content': {'time': 0}})
+
+    client = FailWorkerClient('http://worker1:5000', client=httpx.Client(transport=httpx.MockTransport(handler), timeout=5))
+    client.stop()
+    client.status()
+
+    assert set(timeouts['/fails/stop'].values()) == {None}
+    assert set(timeouts['/fails/status'].values()) == {5}
+
+
+class SlowConnectionClient:
+    def __init__(self, connect_delay: float, transfer_delay: float):
+        self.connect_delay  = connect_delay
+        self.transfer_delay = transfer_delay
+
+    def request(self, method, url, json=None, timeout=None, extensions=None):
+        trace = (extensions or {}).get('trace', lambda event, info: None)
+        time.sleep(self.connect_delay)
+        trace(REQUEST_SENT, {})
+        time.sleep(self.transfer_delay)
+        worker_time = time.time()
+        time.sleep(self.transfer_delay)
+        trace(RESPONSE_RECEIVED, {})
+        return httpx.Response(200, json={'content': {'time': worker_time}})
+
+
+def test_clock_sample_ignores_connection_setup():
+    client = FailWorkerClient('http://worker1:5000', client=SlowConnectionClient(connect_delay=0.2, transfer_delay=0.05))
+
+    sample = client.clock()
+
+    assert sample.round_trip == pytest.approx(0.1, abs=0.03)
+    assert sample.offset == pytest.approx(0.0, abs=0.02)
+
+
+def test_clock_sample_without_trace_uses_request_time(client, agent):
+    before = time.time()
+    sample = client.clock()
+
+    assert before <= sample.sent_at <= sample.worker_time <= sample.received_at <= time.time()
+    assert sample.round_trip >= 0

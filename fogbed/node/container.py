@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Optional
 
+from fogbed.fails.models import FailModel
 from fogbed.node.services import DockerService
 from fogbed.resources.flavors import HardwareResources, Resources
 
@@ -18,6 +19,7 @@ class Container:
         volumes: List[str] = [],
         resources: HardwareResources = Resources.SMALL,
         link_params: Dict[str, Any] = {},
+        fail_model: Optional[FailModel] = None,
         **params: Any
     ):
         self.name        = name
@@ -30,6 +32,7 @@ class Container:
         self.volumes     = volumes.copy()
         self.resources   = resources
         self.link_params = link_params.copy()
+        self.fail_model  = fail_model
         self._params     = params
         self._service: Optional[DockerService] = None
     
